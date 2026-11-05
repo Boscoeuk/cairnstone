@@ -1,0 +1,1661 @@
+{
+  "dataset": "locomo10.json",
+  "dataset_license": "LoCoMo, Snap Research, ACL 2024 (research use)",
+  "backend": "full_context",
+  "answer_model": "glm-5.3-flash",
+  "judge_model": "local-judge",
+  "judge_note": "local-judged; not GPT-judged, so not directly comparable to published LoCoMo figures",
+  "engine": "TensorFold (tensorfold-native)",
+  "timestamp": "2026-11-05T17:08:42.196235+00:00",
+  "aggregate": {
+    "accuracy_by_category": {
+      "commonsense": {
+        "n": 9,
+        "accuracy": 0.778
+      },
+      "multi-hop": {
+        "n": 23,
+        "accuracy": 0.565
+      },
+      "temporal": {
+        "n": 28,
+        "accuracy": 0.429
+      }
+    },
+    "n_questions": 60,
+    "accuracy_overall": 0.533,
+    "judge_ambiguous_count": 0,
+    "mean_context_tokens": 15043.5,
+    "mean_latency_s": 0.82,
+    "median_latency_s": 0.32,
+    "latency_outlier_count": 1,
+    "mean_engine_tokens_per_second": 47.907,
+    "mean_engine_prefill_seconds": 0.694,
+    "prompt_cache_hit_rate": 0.983,
+    "gold_support_present": 0,
+    "retrieval_failures": 28,
+    "answering_failures": 0
+  },
+  "rows": [
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline go to the LGBTQ support group?",
+      "gold": "7 May 2023",
+      "predicted": "Yesterday",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15044,
+      "tokens_estimated": false,
+      "latency_s": 29.366,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 10.572547536631841,
+        "prefill_seconds": 29.227618,
+        "time_to_first_token": 29.264619583,
+        "cached_tokens": 0,
+        "wall_seconds": 29.366
+      },
+      "answer": "Yesterday",
+      "latency_outlier": true
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Melanie paint a sunrise?",
+      "gold": "2022",
+      "predicted": "Last year",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15041,
+      "tokens_estimated": false,
+      "latency_s": 0.223,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.47180538960146,
+        "prefill_seconds": 0.128159,
+        "time_to_first_token": 0.174960833,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.223
+      },
+      "answer": "Last year",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What fields would Caroline be likely to pursue in her educaton?",
+      "gold": "Psychology, counseling certification",
+      "predicted": "Counseling or mental health",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 3,
+      "category_name": "commonsense",
+      "context_tokens": 15047,
+      "tokens_estimated": false,
+      "latency_s": 0.396,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 82.0145036635332,
+        "prefill_seconds": 0.279194916,
+        "time_to_first_token": 0.318720083,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.396
+      },
+      "answer": "Counseling or mental health",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What did Caroline research?",
+      "gold": "Adoption agencies",
+      "predicted": "adoption agencies",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15039,
+      "tokens_estimated": false,
+      "latency_s": 0.237,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 38.79515189918433,
+        "prefill_seconds": 0.113816708,
+        "time_to_first_token": 0.155166875,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.237
+      },
+      "answer": "adoption agencies",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What is Caroline's identity?",
+      "gold": "Transgender woman",
+      "predicted": "Transgender woman",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15040,
+      "tokens_estimated": false,
+      "latency_s": 0.2,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 80.95409036867329,
+        "prefill_seconds": 0.119277333,
+        "time_to_first_token": 0.159017125,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.2
+      },
+      "answer": "Transgender woman",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Melanie run a charity race?",
+      "gold": "The sunday before 25 May 2023",
+      "predicted": "Last Saturday",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.314,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 51.49778076751005,
+        "prefill_seconds": 0.2397165,
+        "time_to_first_token": 0.27007775,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.314
+      },
+      "answer": "Last Saturday",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When is Melanie planning on going camping?",
+      "gold": "June 2023",
+      "predicted": "Next month",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.289,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.67112896896819,
+        "prefill_seconds": 0.21408525,
+        "time_to_first_token": 0.245447084,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.289
+      },
+      "answer": "Next month",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What is Caroline's relationship status?",
+      "gold": "Single",
+      "predicted": "Single",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15041,
+      "tokens_estimated": false,
+      "latency_s": 0.21,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 24.467175864481597,
+        "prefill_seconds": 0.126388083,
+        "time_to_first_token": 0.163621916,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.21
+      },
+      "answer": "Single",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline give a speech at a school?",
+      "gold": "The week before 9 June 2023",
+      "predicted": "Last week",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15044,
+      "tokens_estimated": false,
+      "latency_s": 0.307,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.22202403495493,
+        "prefill_seconds": 0.227376958,
+        "time_to_first_token": 0.260727583,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.307
+      },
+      "answer": "Last week",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline meet up with her friends, family, and mentors?",
+      "gold": "The week before 9 June 2023",
+      "predicted": "Last week",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15048,
+      "tokens_estimated": false,
+      "latency_s": 0.331,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.113067608792335,
+        "prefill_seconds": 0.243690208,
+        "time_to_first_token": 0.284051417,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.331
+      },
+      "answer": "Last week",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "How long has Caroline had her current group of friends for?",
+      "gold": "4 years",
+      "predicted": "4 years",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15046,
+      "tokens_estimated": false,
+      "latency_s": 0.324,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 51.841003641830504,
+        "prefill_seconds": 0.239453208,
+        "time_to_first_token": 0.276723167,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.324
+      },
+      "answer": "4 years",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Where did Caroline move from 4 years ago?",
+      "gold": "Sweden",
+      "predicted": "Sweden",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15044,
+      "tokens_estimated": false,
+      "latency_s": 0.311,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 25.329441042559793,
+        "prefill_seconds": 0.228664417,
+        "time_to_first_token": 0.267710417,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.311
+      },
+      "answer": "Sweden",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "How long ago was Caroline's 18th birthday?",
+      "gold": "10 years ago",
+      "predicted": "Ten years ago",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15045,
+      "tokens_estimated": false,
+      "latency_s": 0.318,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 80.28196739631558,
+        "prefill_seconds": 0.231603,
+        "time_to_first_token": 0.272856958,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.318
+      },
+      "answer": "Ten years ago",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What career path has Caroline decided to persue?",
+      "gold": "counseling or mental health for Transgender people",
+      "predicted": "Counseling or mental health",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15044,
+      "tokens_estimated": false,
+      "latency_s": 0.353,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 81.50494313216733,
+        "prefill_seconds": 0.229499375,
+        "time_to_first_token": 0.273047375,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.353
+      },
+      "answer": "Counseling or mental health",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Would Caroline still want to pursue counseling as a career if she hadn't received support growing up?",
+      "gold": "Likely no",
+      "predicted": "No",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 3,
+      "category_name": "commonsense",
+      "context_tokens": 15053,
+      "tokens_estimated": false,
+      "latency_s": 0.363,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 24.927942665731866,
+        "prefill_seconds": 0.274103584,
+        "time_to_first_token": 0.315622583,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.363
+      },
+      "answer": "No",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What activities does Melanie partake in?",
+      "gold": "pottery, camping, painting, swimming",
+      "predicted": "Running, pottery, painting, playing clarinet, camping, hiking, and spending time with her family",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.605,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 57.85573635113174,
+        "prefill_seconds": 0.214995292,
+        "time_to_first_token": 0.252935459,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.605
+      },
+      "answer": "Running, pottery, painting, playing clarinet, camping, hiking, and spending time with her family",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Melanie sign up for a pottery class?",
+      "gold": "2 July 2023",
+      "predicted": "Yesterday",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15044,
+      "tokens_estimated": false,
+      "latency_s": 0.32,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 24.743416339824694,
+        "prefill_seconds": 0.230948666,
+        "time_to_first_token": 0.271182708,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.32
+      },
+      "answer": "Yesterday",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When is Caroline going to the transgender conference?",
+      "gold": "July 2023",
+      "predicted": "This month",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.308,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 51.700682311999714,
+        "prefill_seconds": 0.222116584,
+        "time_to_first_token": 0.263110416,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.308
+      },
+      "answer": "This month",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Where has Melanie camped?",
+      "gold": "beach, mountains, forest",
+      "predicted": "mountains",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15040,
+      "tokens_estimated": false,
+      "latency_s": 0.208,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.44300560815248,
+        "prefill_seconds": 0.120479292,
+        "time_to_first_token": 0.163041625,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.208
+      },
+      "answer": "mountains",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What do Melanie's kids like?",
+      "gold": "dinosaurs, nature",
+      "predicted": "Dinosaur exhibit",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15041,
+      "tokens_estimated": false,
+      "latency_s": 0.259,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 33.10290036578705,
+        "prefill_seconds": 0.12674125,
+        "time_to_first_token": 0.166458125,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.259
+      },
+      "answer": "Dinosaur exhibit",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Melanie go to the museum?",
+      "gold": "5 July 2023",
+      "predicted": "Yesterday",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.329,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 24.976168364550755,
+        "prefill_seconds": 0.244260209,
+        "time_to_first_token": 0.286172959,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.329
+      },
+      "answer": "Yesterday",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline have a picnic?",
+      "gold": "The week before 6 July 2023",
+      "predicted": "Last week",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15041,
+      "tokens_estimated": false,
+      "latency_s": 0.2,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 49.81123534254589,
+        "prefill_seconds": 0.12748675,
+        "time_to_first_token": 0.157119208,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.2
+      },
+      "answer": "Last week",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Would Caroline likely have Dr. Seuss books on her bookshelf?",
+      "gold": "Yes, since she collects classic children's books",
+      "predicted": "No",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 3,
+      "category_name": "commonsense",
+      "context_tokens": 15048,
+      "tokens_estimated": false,
+      "latency_s": 0.32,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 25.072265791691393,
+        "prefill_seconds": 0.248620292,
+        "time_to_first_token": 0.278315666,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.32
+      },
+      "answer": "No",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What books has Melanie read?",
+      "gold": "\"Nothing is Impossible\", \"Charlotte's Web\"",
+      "predicted": "\"Charlotte's Web\"",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15040,
+      "tokens_estimated": false,
+      "latency_s": 0.231,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 64.44825047168064,
+        "prefill_seconds": 0.119033375,
+        "time_to_first_token": 0.151412666,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.231
+      },
+      "answer": "\"Charlotte's Web\"",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What does Melanie do to destress?",
+      "gold": "Running, pottery",
+      "predicted": "Running",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.294,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 25.333932903078704,
+        "prefill_seconds": 0.214977792,
+        "time_to_first_token": 0.25043725,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.294
+      },
+      "answer": "Running",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline go to the LGBTQ conference?",
+      "gold": "10 July 2023",
+      "predicted": "Two days before that chat",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.387,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 40.188443612097124,
+        "prefill_seconds": 0.220599,
+        "time_to_first_token": 0.2588715,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.387
+      },
+      "answer": "Two days before that chat",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Melanie read the book \"nothing is impossible\"?",
+      "gold": "2022",
+      "predicted": "8:52 pm on 5 December, 2023",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15045,
+      "tokens_estimated": false,
+      "latency_s": 0.436,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 77.76864493055075,
+        "prefill_seconds": 0.23944175,
+        "time_to_first_token": 0.276014541,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.436
+      },
+      "answer": "8:52 pm on 5 December, 2023",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Would Caroline pursue writing as a career option?",
+      "gold": "LIkely no; though she likes reading, she wants to be a counselor",
+      "predicted": "No",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 3,
+      "category_name": "commonsense",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.309,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 25.427176566314074,
+        "prefill_seconds": 0.22234775,
+        "time_to_first_token": 0.263930041,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.309
+      },
+      "answer": "No",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline go to the adoption meeting?",
+      "gold": "The friday before 15 July 2023",
+      "predicted": "Last Friday",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.304,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 51.37096256341103,
+        "prefill_seconds": 0.222235625,
+        "time_to_first_token": 0.257189542,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.304
+      },
+      "answer": "Last Friday",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Melanie go to the pottery workshop?",
+      "gold": "The Friday before 15 July 2023",
+      "predicted": "Last Friday",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.31,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 51.51159752711364,
+        "prefill_seconds": 0.222394334,
+        "time_to_first_token": 0.266219709,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.31
+      },
+      "answer": "Last Friday",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Would Melanie be considered a member of the LGBTQ community?",
+      "gold": "Likely no, she does not refer to herself as part of it",
+      "predicted": "No",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 3,
+      "category_name": "commonsense",
+      "context_tokens": 15045,
+      "tokens_estimated": false,
+      "latency_s": 0.32,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 25.061321922078086,
+        "prefill_seconds": 0.233771667,
+        "time_to_first_token": 0.273732375,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.32
+      },
+      "answer": "No",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Melanie go camping in June?",
+      "gold": "The week before 27 June 2023",
+      "predicted": "June 2023",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.338,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 53.92452588545757,
+        "prefill_seconds": 0.215893167,
+        "time_to_first_token": 0.2565825,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.338
+      },
+      "answer": "June 2023",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What LGBTQ+ events has Caroline participated in?",
+      "gold": "Pride parade, school speech, support group",
+      "predicted": "LGBTQ support group, pride parades, transgender conference, LGBTQ conference, LGBTQ+ counseling workshop, pride event, LGBTQ art show, activist group, youth center volunteering, mentorship program, poetry reading",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.933,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 61.730850168831765,
+        "prefill_seconds": 0.219980083,
+        "time_to_first_token": 0.260643,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.933
+      },
+      "answer": "LGBTQ support group, pride parades, transgender conference, LGBTQ conference, LGBTQ+ counseling workshop, pride event, LGBTQ art show, activist group, youth center volunteering, mentorship program, poetry reading",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline go to a pride parade during the summer?",
+      "gold": "The week before 3 July 2023",
+      "predicted": "Last Friday",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15046,
+      "tokens_estimated": false,
+      "latency_s": 0.334,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 49.6239435527642,
+        "prefill_seconds": 0.241414209,
+        "time_to_first_token": 0.286912833,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.334
+      },
+      "answer": "Last Friday",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What events has Caroline participated in to help children?",
+      "gold": "Mentoring program, school speech",
+      "predicted": "Adoption agency interviews",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15044,
+      "tokens_estimated": false,
+      "latency_s": 0.347,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 51.55068188535587,
+        "prefill_seconds": 0.228145375,
+        "time_to_first_token": 0.267142792,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.347
+      },
+      "answer": "Adoption agency interviews",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Melanie go camping in July?",
+      "gold": "two weekends before 17 July 2023",
+      "predicted": "July 2023",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.328,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 52.94644168276393,
+        "prefill_seconds": 0.214734667,
+        "time_to_first_token": 0.250802416,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.328
+      },
+      "answer": "July 2023",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline join a mentorship program?",
+      "gold": "The weekend before 17 July 2023",
+      "predicted": "Last weekend",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.304,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 51.08828651087617,
+        "prefill_seconds": 0.222683208,
+        "time_to_first_token": 0.261897542,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.304
+      },
+      "answer": "Last weekend",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What did Melanie paint recently?",
+      "gold": "sunset",
+      "predicted": "A horse",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15040,
+      "tokens_estimated": false,
+      "latency_s": 0.213,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.177345555698416,
+        "prefill_seconds": 0.121279417,
+        "time_to_first_token": 0.164039125,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.213
+      },
+      "answer": "A horse",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What activities has Melanie done with her family?",
+      "gold": "Pottery, painting, camping, museum, swimming, hiking",
+      "predicted": "Camping, hiking, beach trips, pottery, painting, museum visits, and volunteering",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.622,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 56.966969565852246,
+        "prefill_seconds": 0.268157208,
+        "time_to_first_token": 0.314275458,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.622
+      },
+      "answer": "Camping, hiking, beach trips, pottery, painting, museum visits, and volunteering",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "In what ways is Caroline participating in the LGBTQ community?",
+      "gold": "Joining activist group, going to pride parades, participating in an art show, mentoring program",
+      "predicted": "Attending support groups, pride parades, conferences, and workshops; mentoring LGBTQ youth; joining an activist group; and organizing an LGBTQ art show",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15045,
+      "tokens_estimated": false,
+      "latency_s": 0.68,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 73.21946508070545,
+        "prefill_seconds": 0.23709775,
+        "time_to_first_token": 0.281384375,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.68
+      },
+      "answer": "Attending support groups, pride parades, conferences, and workshops; mentoring LGBTQ youth; joining an activist group; and organizing an LGBTQ art show",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "How many times has Melanie gone to the beach in 2023?",
+      "gold": "2",
+      "predicted": "Twice",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15048,
+      "tokens_estimated": false,
+      "latency_s": 0.34,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 51.18029173892258,
+        "prefill_seconds": 0.250906083,
+        "time_to_first_token": 0.293110084,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.34
+      },
+      "answer": "Twice",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline join a new activist group?",
+      "gold": "The Tuesday before 20 July 2023",
+      "predicted": "Last Tuesday",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.307,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.719316563295635,
+        "prefill_seconds": 0.222527042,
+        "time_to_first_token": 0.263254792,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.307
+      },
+      "answer": "Last Tuesday",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Would Melanie be more interested in going to a national park or a theme park?",
+      "gold": "National park; she likes the outdoors",
+      "predicted": "National park",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 3,
+      "category_name": "commonsense",
+      "context_tokens": 15050,
+      "tokens_estimated": false,
+      "latency_s": 0.346,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.31114297483499,
+        "prefill_seconds": 0.26231575,
+        "time_to_first_token": 0.302689875,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.346
+      },
+      "answer": "National park",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What kind of art does Caroline make?",
+      "gold": "abstract art",
+      "predicted": "Paintings",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.301,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 49.213456996579986,
+        "prefill_seconds": 0.212310625,
+        "time_to_first_token": 0.253920833,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.301
+      },
+      "answer": "Paintings",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When is Melanie's daughter's birthday?",
+      "gold": "13 August",
+      "predicted": "August 2023",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.326,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 54.16540421779232,
+        "prefill_seconds": 0.20883975,
+        "time_to_first_token": 0.247437917,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.326
+      },
+      "answer": "August 2023",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline attend a pride parade in August?",
+      "gold": "The Friday before 14 August 2023",
+      "predicted": "August 2023",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15044,
+      "tokens_estimated": false,
+      "latency_s": 0.348,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 53.28596850165158,
+        "prefill_seconds": 0.230013542,
+        "time_to_first_token": 0.264962167,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.348
+      },
+      "answer": "August 2023",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Would Melanie be considered an ally to the transgender community?",
+      "gold": "Yes, she is supportive",
+      "predicted": "Yes",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 3,
+      "category_name": "commonsense",
+      "context_tokens": 15045,
+      "tokens_estimated": false,
+      "latency_s": 0.323,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 26.076271372731327,
+        "prefill_seconds": 0.235728833,
+        "time_to_first_token": 0.280404959,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.323
+      },
+      "answer": "Yes",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Who supports Caroline when she has a negative experience?",
+      "gold": "Her mentors, family, and friends",
+      "predicted": "Melanie",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15044,
+      "tokens_estimated": false,
+      "latency_s": 0.319,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.51658384935813,
+        "prefill_seconds": 0.22959275,
+        "time_to_first_token": 0.272190209,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.319
+      },
+      "answer": "Melanie",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What types of pottery have Melanie and her kids made?",
+      "gold": "bowls, cup",
+      "predicted": "Pots, bowls, and a cup",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15045,
+      "tokens_estimated": false,
+      "latency_s": 0.418,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 56.26855116984323,
+        "prefill_seconds": 0.2333915,
+        "time_to_first_token": 0.272828458,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.418
+      },
+      "answer": "Pots, bowls, and a cup",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline and Melanie go to a pride fesetival together?",
+      "gold": "2022",
+      "predicted": "Last year",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15049,
+      "tokens_estimated": false,
+      "latency_s": 0.335,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.66808017098856,
+        "prefill_seconds": 0.25467925,
+        "time_to_first_token": 0.29085525,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.335
+      },
+      "answer": "Last year",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What would Caroline's political leaning likely be?",
+      "gold": "Liberal",
+      "predicted": "Liberal",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 3,
+      "category_name": "commonsense",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.31,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 53.986693251873895,
+        "prefill_seconds": 0.218629209,
+        "time_to_first_token": 0.263632125,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.31
+      },
+      "answer": "Liberal",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What has Melanie painted?",
+      "gold": "Horse, sunset, sunrise",
+      "predicted": "A lake sunrise",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15039,
+      "tokens_estimated": false,
+      "latency_s": 0.241,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 38.97147774972192,
+        "prefill_seconds": 0.113414833,
+        "time_to_first_token": 0.156006708,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.241
+      },
+      "answer": "A lake sunrise",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What are Melanie's pets' names?",
+      "gold": "Oliver, Luna, Bailey",
+      "predicted": "Luna and Oliver",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.33,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 52.77239235513793,
+        "prefill_seconds": 0.208786459,
+        "time_to_first_token": 0.248955417,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.33
+      },
+      "answer": "Luna and Oliver",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline apply to adoption agencies?",
+      "gold": "The week of 23 August 2023",
+      "predicted": "4 January, 2024",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15042,
+      "tokens_estimated": false,
+      "latency_s": 0.366,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 53.56718385038686,
+        "prefill_seconds": 0.215716375,
+        "time_to_first_token": 0.250793291,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.366
+      },
+      "answer": "4 January, 2024",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline draw a self-portrait?",
+      "gold": "The week before 23 August 2023",
+      "predicted": "Last week",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.306,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 52.010701201772264,
+        "prefill_seconds": 0.221762,
+        "time_to_first_token": 0.263699,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.306
+      },
+      "answer": "Last week",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What subject have Caroline and Melanie both painted?",
+      "gold": "Sunsets",
+      "predicted": "Sunsets",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15043,
+      "tokens_estimated": false,
+      "latency_s": 0.303,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.443534869043035,
+        "prefill_seconds": 0.217984709,
+        "time_to_first_token": 0.258172375,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.303
+      },
+      "answer": "Sunsets",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "What symbols are important to Caroline?",
+      "gold": "Rainbow flag, transgender symbol",
+      "predicted": "The rainbow flag mural and eagle",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 1,
+      "category_name": "multi-hop",
+      "context_tokens": 15041,
+      "tokens_estimated": false,
+      "latency_s": 0.31,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 44.54020588710171,
+        "prefill_seconds": 0.128385667,
+        "time_to_first_token": 0.169925209,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.31
+      },
+      "answer": "The rainbow flag mural and eagle",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Caroline encounter people on a hike and have a negative experience?",
+      "gold": "The week before 25 August 2023",
+      "predicted": "Last week",
+      "correct": true,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15048,
+      "tokens_estimated": false,
+      "latency_s": 0.371,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 50.467082946082584,
+        "prefill_seconds": 0.28482825,
+        "time_to_first_token": 0.326176208,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.371
+      },
+      "answer": "Last week",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "When did Melanie make a plate in pottery class?",
+      "gold": "24 August 2023",
+      "predicted": "Yesterday",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 2,
+      "category_name": "temporal",
+      "context_tokens": 15044,
+      "tokens_estimated": false,
+      "latency_s": 0.317,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 26.178923992295335,
+        "prefill_seconds": 0.230565125,
+        "time_to_first_token": 0.271295875,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.317
+      },
+      "answer": "Yesterday",
+      "latency_outlier": false
+    },
+    {
+      "sample_id": "conv-26",
+      "question": "Would Caroline be considered religious?",
+      "gold": "Somewhat, but not extremely religious",
+      "predicted": "No",
+      "correct": false,
+      "judge_ambiguous": false,
+      "category": 3,
+      "category_name": "commonsense",
+      "context_tokens": 15040,
+      "tokens_estimated": false,
+      "latency_s": 0.211,
+      "sources": [
+        "full_conversation"
+      ],
+      "flags": [],
+      "engine": {
+        "engine": "glm-zig",
+        "tokens_per_second": 25.338132308024118,
+        "prefill_seconds": 0.120954083,
+        "time_to_first_token": 0.165161084,
+        "cached_tokens": 15025,
+        "wall_seconds": 0.211
+      },
+      "answer": "No",
+      "latency_outlier": false
+    }
+  ]
+}

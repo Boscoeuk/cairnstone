@@ -1,4 +1,7 @@
 eval/datasets/*.json
+eval/results/cairn-db/
+*.db-shm
+*.db-wal
+*.tmp*
 __pycache__/
 *.pyc
-eval/results/*.json
