@@ -14,6 +14,7 @@ import tempfile
 
 from . import store
 from .llm import DEFAULT_BASE_URL, DEFAULT_MODEL, LLMClient, LLMError
+from .retrieve import _content_tokens
 
 BUCKETS = store.DEFAULT_BUCKETS
 
@@ -23,9 +24,15 @@ personal memory store.
 You will be given one capture: a timestamp line, then the text. Reply with ONLY a JSON \
 object, no prose, no markdown fences, in exactly this shape:
 
-{"facts": [{"text": "...", "quote": "...", "bucket": "people|projects|decisions|customers|misc", "page_title": "...", "page_path": "..."}]}
+{"facts": [{"text": "...", "subject": "...", "quote": "...", "bucket": "people|projects|decisions|customers|misc", "page_title": "...", "page_path": "..."}]}
 
 Rules:
+- "subject": the name of the person (or entity) the fact is about — the speaker, the \
+listener, or a named third party. Resolve it from the quote's grammatical person: \
+"I/my/me" means the subject is the SPEAKER; "you/your" (with no first-person marker) \
+means the subject is the LISTENER, never the speaker; a named third person means the \
+subject is that person. If the quote's grammatical person contradicts the subject, \
+drop the fact entirely.
 - "text": one self-contained fact stated in the capture.
 - Atomic attribute facts for people are REQUIRED whenever the capture implies \
 them: relationship status (single, married, divorced, dating), location, \
@@ -73,7 +80,7 @@ def _validate_payload(payload):
     for f in facts:
         if not isinstance(f, dict):
             return None
-        for key in ("text", "quote", "bucket", "page_title", "page_path"):
+        for key in ("text", "subject", "quote", "bucket", "page_title", "page_path"):
             if not isinstance(f.get(key), str) or not f[key].strip():
                 return None
         if f["bucket"] not in BUCKETS:
@@ -198,13 +205,28 @@ def upsert_page(conn, brain_id, bucket, title, path):
 def write_facts(conn, page_id, version_id, capture_id, facts):
     """Write located facts via store.add_fact. Returns (accepted, rejected).
 
-    `rejected` is a list of (fact_text, reason) tuples.
+    `rejected` is a list of (fact_text, reason) tuples. Three code-enforced guards
+    run before anything is written (policy P3: the model proposes, code disposes):
+    the quote must be located verbatim, the subject must match the quote's
+    grammatical person (phase 7A), and the quote must share a content token with
+    the claim (phase 7D weak-quote guard).
     """
+    capture_text = capture_text_of(conn, capture_id)
     accepted, rejected = [], []
     for f in facts:
-        span = locate(capture_text_of(conn, capture_id), f["quote"])
+        span = locate(capture_text, f["quote"])
         if span is None:
             rejected.append((f["text"], "quote not found in capture"))
+            continue
+        speaker = _speaker_for_quote(capture_text, f["quote"])
+        subject_error = _subject_error(f["subject"], speaker, f["quote"],
+                                       capture_text)
+        if subject_error:
+            rejected.append((f["text"], subject_error))
+            continue
+        if _weak_quote(f["text"], f["quote"], f["subject"]):
+            rejected.append((f["text"], "weak_quote: quote shares no content token "
+                                        "with the fact"))
             continue
         try:
             fact_id = store.add_fact(conn, page_id, version_id, f["text"],
@@ -220,14 +242,150 @@ def capture_text_of(conn, capture_id):
     return store.get_capture(conn, capture_id)["content"]
 
 
+# ------------------------------------------------- subject resolution (7A)
+
+_SPEAKER_RE = re.compile(r"^\s*([A-Za-z][A-Za-z0-9'_]*)\s*:")
+
+_NAME_TOKEN_RE = re.compile(r"\b[A-Z][a-z']+\b")
+
+_FIRST_PERSON_RE = re.compile(r"\b(?:i|i'm|i've|i'd|i'll|my|me|mine|myself)\b",
+                              re.IGNORECASE)
+_SECOND_PERSON_RE = re.compile(r"\b(?:you|you're|you've|you'll|your|yours|yourself)\b",
+                               re.IGNORECASE)
+
+# Capitalised tokens that are not personal names (months, days, sentence starters).
+_NON_NAME_CAPS = frozenset("""
+    The That This There Then They What When Where Why How If But And Also Well
+    Yeah Okay Ok Yes No Maybe Perhaps Anyway Anyway Wow Oh Please Thank Thanks
+    Hey Hi Hello Good Bad Next Last Every Some One Two January February March
+    April May June July August September October November December Monday
+    Tuesday Wednesday Thursday Friday Saturday Sunday
+""".split())
+
+
+def _speaker_of(capture_text):
+    """The capture author: captures begin 'Name: ...' (policy P1 captures are turns)."""
+    m = _SPEAKER_RE.match(capture_text or "")
+    return m.group(1) if m else None
+
+
+_LABEL_RE = re.compile(r"(?:^|\n)\s*([A-Za-z][A-Za-z0-9'_]*)\s*:")
+
+
+def _speaker_for_quote(capture_text, quote):
+    """The author of the turn the quote belongs to.
+
+    Captures begin 'Name: ...'; a capture may carry several turn labels, in which
+    case the quote's speaker is the nearest label at or before the quote's first
+    occurrence. Single-turn captures (the harness norm) resolve to the first label.
+    """
+    labels = [(m.start(), m.group(1))
+              for m in _LABEL_RE.finditer(capture_text or "")]
+    if not labels:
+        return None
+    idx = capture_text.find(quote) if quote else -1
+    if idx >= 0:
+        preceding = [name for pos, name in labels if pos <= idx]
+        if preceding:
+            return preceding[-1]
+    return labels[0][1]
+
+
+def _known_person_names(capture_text):
+    """Names identifiable as people in this capture: the speaker plus any other
+    'Name:' turn labels the capture carries."""
+    names = set()
+    speaker = _speaker_of(capture_text)
+    if speaker:
+        names.add(speaker)
+    for m in re.finditer(r"(?:^|\n)\s*([A-Za-z][A-Za-z0-9'_]*)\s*:", capture_text):
+        names.add(m.group(1))
+    return names
+
+
+def _subject_named(subject, quote):
+    """True when the subject's own name appears in the quote (case-insensitive)."""
+    for token in re.findall(r"[A-Za-z]{2,}", subject or ""):
+        if re.search(r"\b%s\b" % re.escape(token), quote, re.IGNORECASE):
+            return True
+    return False
+
+
+def _subject_error(subject, speaker, quote, capture_text):
+    """Return a rejection reason when the subject contradicts the quote's grammatical
+    person, else None (phase 7A, enforced in code — the prompt alone is not trusted)."""
+    if not subject or not str(subject).strip():
+        return "subject_unresolved: no subject given"
+    subj = str(subject).strip()
+    subj_l = _norm(subj).lower()
+    speaker_l = _norm(speaker).lower() if speaker else None
+    if _FIRST_PERSON_RE.search(quote):
+        if speaker_l and subj_l == speaker_l:
+            return None
+        if not speaker_l:
+            return "subject_unresolved: first-person quote but the capture has no " \
+                   "speaker label"
+        return ("subject_mismatch: first-person quote supports only the speaker %r, "
+                "not subject %r" % (speaker, subj))
+    if _SECOND_PERSON_RE.search(quote):
+        if speaker_l and subj_l != speaker_l:
+            return None
+        return ("subject_mismatch: second-person quote describes the listener, "
+                "not the speaker %r" % speaker)
+    if _subject_named(subj, quote):
+        return None
+    # Third person: when the quote names a recognisable person, the subject must be
+    # that person.
+    mentioned = [t for t in _NAME_TOKEN_RE.findall(quote)
+                 if t in _known_person_names(capture_text)]
+    if mentioned:
+        if any(_norm(t).lower() == subj_l for t in mentioned):
+            return None
+        return ("subject_mismatch: quote is about %s, not subject %r"
+                % (mentioned, subj))
+    # No grammatical-person signal at all: defaulting to the speaker is safe,
+    # attributing to anyone else is not resolvable.
+    if speaker_l and subj_l == speaker_l:
+        return None
+    return "subject_unresolved: quote gives no person signal for subject %r" % subj
+
+
+# ----------------------------------------------------- weak-quote guard (7D)
+
+def _weak_quote(text, quote, subject):
+    """True when the quote shares no content token with the fact's text, ignoring the
+    subject's name (phase 7D). Verbatim location is necessary, not sufficient."""
+    subj_tokens = {w for w in re.findall(r"[a-z0-9]+", (subject or "").lower())}
+    fact_tokens = [w for w in _content_tokens(text) if w not in subj_tokens]
+    quote_tokens = [w for w in _content_tokens(quote) if w not in subj_tokens]
+    if not fact_tokens or not quote_tokens:
+        return False
+    return not _tokens_overlap(fact_tokens, quote_tokens)
+
+
+def _tokens_overlap(a, b):
+    """Exact match, or a shared prefix of >= 4 chars (crude stem: nurse/nursing)."""
+    sb = set(b)
+    for w in a:
+        if w in sb:
+            return True
+        for v in sb:
+            if len(w) >= 4 and len(v) >= 4 and (w.startswith(v[:4])
+                                                or v.startswith(w[:4])):
+                return True
+    return False
+
+
 # -------------------------------------------------------------------- dedupe
 
 def dedupe(conn, brain_id):
     """Link identical claims on the same page as corroboration (policy P7).
 
-    The later fact stays active and carries `duplicate_of` pointing at the canonical one, so
-    history is kept and a brief never repeats the same claim. Nothing is retracted or deleted.
-    Returns the number of duplicates linked.
+    Phase 7B: claims are matched by evidence, not wording. The slot-key machinery
+    (P6) strips numbers/dates, and trailing modifier clauses ("by adopting kids",
+    "through adoption") are cut, so paraphrases of the same claim share a key. The
+    earliest capture is the canonical citation; later facts stay active and carry
+    `duplicate_of`. Nothing is retracted or deleted. Returns the number linked.
     """
     rows = conn.execute(
         "SELECT f.id, f.page_id, f.text FROM facts f JOIN pages p"
@@ -237,7 +395,7 @@ def dedupe(conn, brain_id):
     ).fetchall()
     canonical, linked = {}, 0
     for r in rows:
-        key = (r["page_id"], _norm(r["text"]).lower())
+        key = (r["page_id"], _claim_key(r["text"]))
         if key in canonical:
             conn.execute("UPDATE facts SET duplicate_of = ? WHERE id = ?",
                          (canonical[key], r["id"]))
@@ -248,15 +406,37 @@ def dedupe(conn, brain_id):
     return linked
 
 
+_CLAUSE_CUT_RE = re.compile(r"\s+(?:by|through|via)\s+", re.IGNORECASE)
+
+
+def _claim_key(text):
+    """A claim's evidence key: the slot-key base (value tokens removed) with trailing
+    modifier clauses cut, plus the fact's value tokens and categorical words.
+
+    Two facts are duplicates only when the same claim holds with the same value:
+    '...in March' and '...in April' share a base but differ in values, so they stay
+    distinct for the contradiction pass, while '...by adopting kids' and
+    '...through adoption' collapse to one claim."""
+    base, values = _split_subject_slot(text)
+    if base is None:
+        base = _norm(text).lower()
+    base = _CLAUSE_CUT_RE.split(base)[0].strip()
+    cat = tuple(sorted(m.group(0).lower()
+                       for _, rx in _CATEGORY_SLOTS
+                       for m in rx.finditer(_norm(text))))
+    return (base, cat, values)
+
+
 # ------------------------------------------------------------- contradictions
 
 def supersede_contradictions(conn, brain_id):
     """Supersede older facts whose subject/slot matches but value differs.
 
-    A fact's subject/slot is the text with its value (last number-bearing
-    token group) removed; two active facts on the same page with the same
-    key but different values contradict. The newer capture wins; the older
-    fact is superseded via store.supersede_fact, never deleted.
+    Phase 7C: slots come from two sources — the numeric/date machinery (a fact's
+    text with its value tokens removed) and a small explicit categorical lexicon
+    (relationship status). Two active facts on the same page with the same key but
+    different values contradict. The newer capture wins; the older fact is
+    superseded via store.supersede_fact, never deleted.
     """
     rows = conn.execute(
         "SELECT f.id, f.page_id, f.text, f.capture_id FROM facts f JOIN pages p"
@@ -268,23 +448,52 @@ def supersede_contradictions(conn, brain_id):
     by_page = {}
     for r in rows:
         by_page.setdefault(r["page_id"], []).append(r)
+    superseded_ids = set()
     for page_id, facts in by_page.items():
-        seen = {}
+        seen = {}  # slot key -> (value, row)
         for r in facts:
-            key, value = _split_subject_slot(r["text"])
-            if key is None:
-                continue
-            if key in seen and seen[key][1] != value:
-                old, new = seen[key][2], r
-                # Newer capture id wins (captures are inserted in order).
-                if new["capture_id"] < old["capture_id"]:
-                    old, new = new, old
-                store.supersede_fact(conn, old["id"], new["id"])
-                superseded += 1
-                seen[key] = (key, value, new)
-            else:
-                seen[key] = (key, value, r)
+            for key, value in _fact_slots(r["text"]):
+                prev = seen.get(key)
+                if prev is not None and prev[0] != value:
+                    old, new = prev[1], r
+                    # Newer capture id wins (captures are inserted in order).
+                    if new["capture_id"] < old["capture_id"]:
+                        old, new = new, old
+                    if old["id"] not in superseded_ids:
+                        store.supersede_fact(conn, old["id"], new["id"])
+                        superseded += 1
+                        superseded_ids.add(old["id"])
+                    seen[key] = (value, new)
+                elif prev is None or r["id"] > prev[1]["id"]:
+                    seen[key] = (value, r)
     return superseded
+
+
+# Explicit categorical lexicon (phase 7C, defect D4). Deliberately small: each
+# entry is a slot name and the word set that fills it. The slot key keeps the
+# text BEFORE the matched word, so 'plans to become a single parent' (a plan)
+# never conflicts with 'is married' (a status).
+_CATEGORY_SLOTS = (
+    ("relationship_status",
+     re.compile(r"\b(single|married|divorced|widowed|engaged|dating)\b", re.I)),
+)
+
+
+def _fact_slots(text):
+    """All (slot key, value) pairs a fact asserts: numeric/date slots from
+    _split_subject_slot plus one entry per categorical lexicon match."""
+    slots = []
+    key, value = _split_subject_slot(text)
+    if key is not None:
+        slots.append((key, value))
+    norm = _norm(text)
+    for slot, rx in _CATEGORY_SLOTS:
+        m = rx.search(norm)
+        if m:
+            prefix = _norm(norm[:m.start()]).lower()
+            if prefix:
+                slots.append(("cat:%s:%s" % (slot, prefix), m.group(1).lower()))
+    return slots
 
 
 _VALUE_RE = re.compile(r"\d+|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)"

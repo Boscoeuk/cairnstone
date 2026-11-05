@@ -304,9 +304,16 @@ class CairnBackend(FullContextBackend):
             "SELECT COUNT(*) AS n FROM pages WHERE brain_id = ?", (brain,)).fetchone()["n"]
         conn.close()
         tmp_path.replace(db_path)
+        reasons: dict[str, int] = {}
+        for _, _, reason in summary["facts_rejected"]:
+            key = reason.split(":")[0]
+            reasons[key] = reasons.get(key, 0) + 1
         print(f"  compiled {sample['sample_id']}: {len(captures)} captures, "
               f"{summary['facts_accepted']} facts, {n_pages} pages, "
-              f"{len(summary['failed_captures'])} failed captures", flush=True)
+              f"{len(summary['failed_captures'])} failed captures, "
+              f"{summary['duplicates_linked']} dupes linked, "
+              f"{summary['superseded']} superseded, "
+              f"rejections: {json.dumps(reasons, sort_keys=True)}", flush=True)
 
     def ingest(self, sample: dict) -> None:
         db_path = self.db_dir / f"{sample['sample_id']}.db"

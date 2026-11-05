@@ -26,6 +26,7 @@ class FakeClient:
 
 
 FACT_JSON = ('{"facts": [{"text": "Caroline is a transgender woman",'
+             ' "subject": "Caroline",'
              ' "quote": "I am a transgender woman",'
              ' "bucket": "people", "page_title": "Caroline",'
              ' "page_path": "people/caroline"}]}')
@@ -53,6 +54,7 @@ def test_absent_quote_rejected(db):
     conn, brain = db
     cid = _capture(db)
     client = FakeClient(['{"facts": [{"text": "Melanie has a dog",'
+                         ' "subject": "Melanie",'
                          ' "quote": "Melanie owns a golden retriever",'
                          ' "bucket": "people", "page_title": "Melanie",'
                          ' "page_path": "people/melanie"}]}'])
@@ -105,7 +107,7 @@ def test_duplicates_not_duplicated(db):
     conn, brain = db
     cid = _capture(db)
     cid2 = store.add_capture(conn, brain, "conversation",
-                             "Again: I am a transgender woman.", "test:2")
+                             "Caroline: Again, I am a transgender woman.", "test:2")
     client = FakeClient([FACT_JSON, FACT_JSON])
     result = compile_all(conn, brain, [cid, cid2], client)
     assert result["facts_accepted"] == 2
@@ -123,9 +125,11 @@ def test_contradiction_superseded(db):
     cid1 = store.add_capture(conn, brain, "conversation", text1, "test:1")
     cid2 = store.add_capture(conn, brain, "conversation", text2, "test:2")
     f1 = ('{"facts": [{"text": "Caroline started hormones in March",'
+          ' "subject": "Caroline",'
           ' "quote": "I started hormones in March", "bucket": "decisions",'
           ' "page_title": "Hormones", "page_path": "decisions/hormones"}]}')
     f2 = ('{"facts": [{"text": "Caroline started hormones in April",'
+          ' "subject": "Caroline",'
           ' "quote": "I started hormones in April", "bucket": "decisions",'
           ' "page_title": "Hormones", "page_path": "decisions/hormones"}]}')
     client = FakeClient([f1, f2])
@@ -181,7 +185,8 @@ def test_write_facts_rejects_store_error(db):
     conn, brain = db
     cid = _capture(db)
     page = upsert_page(conn, brain, "people", "Caroline", "people/caroline")
-    facts = [{"text": "x", "quote": "I am a transgender woman",
+    facts = [{"text": "Caroline is a transgender woman", "subject": "Caroline",
+              "quote": "I am a transgender woman",
               "bucket": "people", "page_title": "Caroline",
               "page_path": "people/caroline"}]
     accepted, rejected = write_facts(conn, page, 9999, cid, facts)
@@ -227,7 +232,7 @@ def test_dedupe_links_not_retracts(db):
     conn, brain = db
     cid = _capture(db)
     cid2 = store.add_capture(conn, brain, "conversation",
-                             "Again: I am a transgender woman.", "test:2")
+                             "Caroline: Again, I am a transgender woman.", "test:2")
     client = FakeClient([FACT_JSON, FACT_JSON])
     compile_all(conn, brain, [cid, cid2], client)
     page = store.get_page(conn, "people/caroline")["page"]
@@ -244,9 +249,11 @@ def test_different_slots_are_not_contradictions(db):
     conn, brain = db
     cid1 = store.add_capture(conn, brain, "conversation", "Alice: I have 2 cats.", "test:1")
     cid2 = store.add_capture(conn, brain, "conversation", "Alice: I have 3 dogs.", "test:2")
-    f1 = ('{"facts": [{"text": "Alice has 2 cats", "quote": "I have 2 cats",'
+    f1 = ('{"facts": [{"text": "Alice has 2 cats", "subject": "Alice",'
+          ' "quote": "I have 2 cats",'
           ' "bucket": "people", "page_title": "Alice", "page_path": "people/alice"}]}')
-    f2 = ('{"facts": [{"text": "Alice has 3 dogs", "quote": "I have 3 dogs",'
+    f2 = ('{"facts": [{"text": "Alice has 3 dogs", "subject": "Alice",'
+          ' "quote": "I have 3 dogs",'
           ' "bucket": "people", "page_title": "Alice", "page_path": "people/alice"}]}')
     result = compile_all(conn, brain, [cid1, cid2], FakeClient([f1, f2]))
     assert result["facts_accepted"] == 2
@@ -265,7 +272,7 @@ def test_export_excludes_duplicates(db, tmp_path):
     conn, brain = db
     cid = _capture(db)
     cid2 = store.add_capture(conn, brain, "conversation",
-                             "Again: I am a transgender woman.", "test:2")
+                             "Caroline: Again, I am a transgender woman.", "test:2")
     compile_all(conn, brain, [cid, cid2], FakeClient([FACT_JSON, FACT_JSON]))
     out = tmp_path / "export"
     store.export_markdown(conn, brain, str(out))
@@ -280,11 +287,14 @@ ATOMIC_CAPTURE = (
     "Austin for the new nursing job. Melanie: That's a big change!")
 
 ATOMIC_JSON = ('{"facts": ['
-               ' {"text": "Caroline is single", "quote": "I plan to become a single parent",'
+               ' {"text": "Caroline is single", "subject": "Caroline",'
+               '  "quote": "I plan to become a single parent",'
                '  "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"},'
-               ' {"text": "Caroline lives in Austin", "quote": "moved to Austin",'
+               ' {"text": "Caroline lives in Austin", "subject": "Caroline",'
+               '  "quote": "moved to Austin",'
                '  "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"},'
-               ' {"text": "Caroline is a nurse", "quote": "new nursing job",'
+               ' {"text": "Caroline is a nurse", "subject": "Caroline",'
+               '  "quote": "new nursing job",'
                '  "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"}'
                ']}')
 
@@ -318,6 +328,7 @@ def test_invented_attribute_without_quote_is_rejected(db):
     conn, brain = db
     cid = store.add_capture(conn, brain, "conversation", ATOMIC_CAPTURE, "test:3")
     bad_json = ('{"facts": [{"text": "Caroline is married",'
+                ' "subject": "Caroline",'
                 ' "quote": "Caroline married Sam in June",'
                 ' "bucket": "people", "page_title": "Caroline",'
                 ' "page_path": "people/caroline"}]}')
@@ -325,3 +336,179 @@ def test_invented_attribute_without_quote_is_rejected(db):
     assert result["facts_accepted"] == 0
     assert len(result["facts_rejected"]) == 1
     assert uncited_facts(conn, brain) == []
+
+
+# ---- Phase 7: subject resolution, claim dedupe, categorical contradictions,
+# ---- weak-quote guard.
+
+def test_subject_field_is_required():
+    """Phase 7A: the extraction JSON must carry a subject; shape validation fails
+    without it (one retry, then ExtractError)."""
+    no_subject = ('{"facts": [{"text": "Caroline is single",'
+                  ' "quote": "I am single", "bucket": "people",'
+                  ' "page_title": "Caroline", "page_path": "people/caroline"}]}')
+    with pytest.raises(ExtractError):
+        extract(CAPTURE, FakeClient([no_subject, no_subject]))
+
+
+def test_second_person_question_rejected_for_speaker(db):
+    """Phase 7A defect D1b: Caroline asking Melanie about Melanie's marriage must
+    not yield 'Caroline is married'."""
+    capture = "Caroline: Wow, what an amazing family pic! How long have you been married?"
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation", capture, "test:p7a")
+    fact = ('{"facts": [{"text": "Caroline is married", "subject": "Caroline",'
+            ' "quote": "How long have you been married?", "bucket": "people",'
+            ' "page_title": "Caroline", "page_path": "people/caroline"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([fact]))
+    assert result["facts_accepted"] == 0
+    assert result["facts_rejected"][0][2].startswith("subject_mismatch")
+
+
+def test_second_person_praise_rejected_for_speaker(db):
+    """Phase 7A defect D1: Melanie praising Caroline's motherhood is rejected for
+    Melanie, accepted for Caroline."""
+    capture = ("Melanie: You're doing something amazing! You'll be an awesome mom!")
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation", capture, "test:p7b")
+    bad = ('{"facts": [{"text": "Melanie is a great mom", "subject": "Melanie",'
+           ' "quote": "You\'ll be an awesome mom!", "bucket": "people",'
+           ' "page_title": "Melanie", "page_path": "people/melanie"}]}')
+    good = ('{"facts": [{"text": "Caroline will be an awesome mom",'
+            ' "subject": "Caroline",'
+            ' "quote": "You\'ll be an awesome mom!", "bucket": "people",'
+            ' "page_title": "Caroline", "page_path": "people/caroline"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([bad]))
+    assert result["facts_accepted"] == 0
+    assert result["facts_rejected"][0][2].startswith("subject_mismatch")
+    result2 = compile_all(conn, brain, [cid], FakeClient([good]))
+    assert result2["facts_accepted"] == 1
+    assert result2["facts_rejected"] == []
+
+
+def test_first_person_fact_still_passes(db):
+    """Phase 7A: first-person facts about the speaker are untouched."""
+    conn, brain = db
+    cid = _capture(db)
+    result = compile_all(conn, brain, [cid], FakeClient([FACT_JSON]))
+    assert result["facts_accepted"] == 1
+    assert result["facts_rejected"] == []
+
+
+def test_third_person_quote_requires_named_subject(db):
+    """Phase 7A: when a quote names a recognisable person (a turn label), the fact's
+    subject must be that person."""
+    capture = "Caroline: Hey Melanie!\nMelanie: Caroline is so brave."
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation", capture, "test:p7c")
+    good = ('{"facts": [{"text": "Caroline is so brave", "subject": "Caroline",'
+            ' "quote": "Caroline is so brave", "bucket": "people",'
+            ' "page_title": "Caroline", "page_path": "people/caroline"}]}')
+    bad = ('{"facts": [{"text": "Melanie is so brave", "subject": "Melanie",'
+           ' "quote": "Caroline is so brave", "bucket": "people",'
+           ' "page_title": "Melanie", "page_path": "people/melanie"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([bad]))
+    assert result["facts_accepted"] == 0
+    assert result["facts_rejected"][0][2].startswith("subject_mismatch")
+    result2 = compile_all(conn, brain, [cid], FakeClient([good]))
+    assert result2["facts_accepted"] == 1
+
+
+def test_unresolvable_subject_rejected(db):
+    """Phase 7A: no person signal and the subject is neither named nor the speaker."""
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation",
+                            "Caroline: The wait can be hard.", "test:p7d")
+    fact = ('{"facts": [{"text": "Melanie finds the wait hard", "subject": "Melanie",'
+            ' "quote": "The wait can be hard.", "bucket": "people",'
+            ' "page_title": "Melanie", "page_path": "people/melanie"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([fact]))
+    assert result["facts_accepted"] == 0
+    assert result["facts_rejected"][0][2].startswith("subject_unresolved")
+
+
+def test_near_duplicate_paraphrases_linked(db):
+    """Phase 7B defect D2: paraphrases of the same claim collapse to one canonical
+    fact; the others stay active with duplicate_of set, never retracted."""
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation",
+                            "Caroline: I plan to become a single parent.", "test:p7e")
+    variants = ('{"facts": ['
+                ' {"text": "Caroline plans to become a single parent",'
+                '  "subject": "Caroline", "quote": "I plan to become a single parent",'
+                '  "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"},'
+                ' {"text": "Caroline plans to become a single parent by adopting kids who need a family",'
+                '  "subject": "Caroline", "quote": "I plan to become a single parent",'
+                '  "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"},'
+                ' {"text": "Caroline plans to become a single parent through adoption",'
+                '  "subject": "Caroline", "quote": "I plan to become a single parent",'
+                '  "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"}'
+                ']}')
+    result = compile_all(conn, brain, [cid], FakeClient([variants]))
+    assert result["facts_accepted"] == 3
+    assert result["duplicates_linked"] == 2
+    page = store.get_page(conn, "people/caroline")["page"]
+    all_facts = store.facts_for_page(conn, page["id"], include_duplicates=True)
+    assert len(all_facts) == 3
+    assert all(f["status"] == "active" for f in all_facts), "never retracted"
+    dups = [f for f in all_facts if f["duplicate_of"] is not None]
+    assert len(dups) == 2
+    canonical = [f for f in all_facts if f["duplicate_of"] is None]
+    assert len(canonical) == 1
+    assert all(d["duplicate_of"] == canonical[0]["id"] for d in dups)
+
+
+def test_single_vs_married_contradiction_superseded(db):
+    """Phase 7C defect D4: the exact single-vs-married case must supersede."""
+    conn, brain = db
+    cid1 = store.add_capture(conn, brain, "conversation",
+                             "Caroline: I am single.", "test:p7f1")
+    cid2 = store.add_capture(conn, brain, "conversation",
+                             "Caroline: I am married now.", "test:p7f2")
+    f1 = ('{"facts": [{"text": "Caroline is single", "subject": "Caroline",'
+          ' "quote": "I am single", "bucket": "people", "page_title": "Caroline",'
+          ' "page_path": "people/caroline"}]}')
+    f2 = ('{"facts": [{"text": "Caroline is married", "subject": "Caroline",'
+          ' "quote": "I am married now", "bucket": "people", "page_title": "Caroline",'
+          ' "page_path": "people/caroline"}]}')
+    result = compile_all(conn, brain, [cid1, cid2], FakeClient([f1, f2]))
+    assert result["superseded"] == 1
+    page = store.get_page(conn, "people/caroline")["page"]
+    facts = store.facts_for_page(conn, page["id"])
+    active = [f for f in facts if f["status"] == "active"]
+    assert len(active) == 1 and "married" in active[0]["text"]
+    old = [f for f in facts if f["status"] == "superseded"][0]
+    assert "single" in old["text"] and old["superseded_by"] == active[0]["id"]
+
+
+def test_plan_fact_does_not_contradict_status_fact(db):
+    """Phase 7C precision: 'plans to become a single parent' is a plan, not a
+    status, so it must not supersede 'is married'."""
+    conn, brain = db
+    cid1 = store.add_capture(conn, brain, "conversation",
+                             "Caroline: I am married.", "test:p7g1")
+    cid2 = store.add_capture(conn, brain, "conversation",
+                             "Caroline: I plan to become a single parent.", "test:p7g2")
+    f1 = ('{"facts": [{"text": "Caroline is married", "subject": "Caroline",'
+          ' "quote": "I am married", "bucket": "people", "page_title": "Caroline",'
+          ' "page_path": "people/caroline"}]}')
+    f2 = ('{"facts": [{"text": "Caroline plans to become a single parent",'
+          ' "subject": "Caroline", "quote": "I plan to become a single parent",'
+          ' "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"}]}')
+    result = compile_all(conn, brain, [cid1, cid2], FakeClient([f1, f2]))
+    assert result["superseded"] == 0
+
+
+def test_weak_quote_rejected(db):
+    """Phase 7D defect D3: a verbatim quote sharing no content token with the claim
+    is rejected."""
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation",
+                            "Caroline: I wish I had known you back then!", "test:p7h")
+    fact = ('{"facts": [{"text": "Caroline was not married as of 2023-07-15",'
+            ' "subject": "Caroline",'
+            ' "quote": "I wish I had known you back then!", "bucket": "people",'
+            ' "page_title": "Caroline", "page_path": "people/caroline"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([fact]))
+    assert result["facts_accepted"] == 0
+    assert result["facts_rejected"][0][2].startswith("weak_quote")
