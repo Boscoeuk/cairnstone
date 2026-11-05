@@ -23,6 +23,11 @@ from pathlib import Path
 
 import requests
 
+from cairn import compile as cairn_compile
+from cairn import retrieve
+from cairn import store as cairn_store
+from cairn.llm import LLMClient
+
 DATASET = Path(__file__).parent / "datasets" / "locomo10.json"
 RESULTS_DIR = Path(__file__).parent / "results"
 
@@ -240,6 +245,116 @@ class NaiveRagBackend(FullContextBackend):
 BACKENDS = {b.name: b for b in (FullContextBackend(), NaiveRagBackend())}
 
 
+class CairnBackend(FullContextBackend):
+    """Compile each conversation into a per-sample Cairn brain, answer from the
+    prefix-stable brief (P9): stable compiled content in its own leading system
+    message, the question as the user message — mandatory for TensorFold prefix reuse.
+
+    The compiled SQLite DB is cached per sample under eval/results/cairn-db/<sample>.db;
+    compiling (419 LLM extraction calls for sample 0) is the expensive part and happens
+    once. `--recompile` forces a rebuild.
+    """
+
+    name = "cairn"
+
+    def __init__(self, db_dir: Path = RESULTS_DIR / "cairn-db", recompile: bool = False,
+                 brief_budget: int = 4000):
+        self.db_dir = db_dir
+        self.recompile = recompile
+        self.brief_budget = brief_budget
+
+    # ------------------------------------------------------------- compilation
+    def _captures(self, sample: dict) -> list[tuple[str, str, str]]:
+        """(text, captured_at, source_ref) for every conversation turn."""
+        conv = sample["conversation"]
+        out: list[tuple[str, str, str]] = []
+        for key in sorted(conv, key=_session_sort_key):
+            session = conv[key]
+            if not isinstance(session, list):
+                continue
+            stamp = conv.get(f"{key}_date_time", "unknown")
+            for i, turn in enumerate(session):
+                text = (f"{turn['speaker']}: {turn['text']}"
+                        if "speaker" in turn and "text" in turn else turn.get("text", ""))
+                if text:
+                    out.append((text, stamp, f"locomo:{sample['sample_id']}:{key}:{i}"))
+        return out
+
+    def _compile(self, sample: dict, db_path: Path) -> None:
+        """Compile into a temp DB first, then atomically rename, so a crashed run
+        never leaves a half-compiled brain in the cache."""
+        self.db_dir.mkdir(parents=True, exist_ok=True)
+        tmp_path = db_path.with_suffix(".tmp")
+        if tmp_path.exists():
+            tmp_path.unlink()
+        conn = cairn_store.init_db(str(tmp_path))
+        ws = cairn_store.create_workspace(conn, "eval")
+        brain = cairn_store.create_brain(conn, ws, sample["sample_id"], sample["sample_id"])
+        captures = self._captures(sample)
+        capture_ids = [
+            cairn_store.add_capture(conn, brain, "conversation", text, ref,
+                                    captured_at=stamp)
+            for text, stamp, ref in captures
+        ]
+        client = LLMClient()
+        summary = cairn_compile.compile_all(conn, brain, capture_ids, client)
+        n_pages = conn.execute(
+            "SELECT COUNT(*) AS n FROM pages WHERE brain_id = ?", (brain,)).fetchone()["n"]
+        conn.close()
+        tmp_path.replace(db_path)
+        print(f"  compiled {sample['sample_id']}: {len(captures)} captures, "
+              f"{summary['facts_accepted']} facts, {n_pages} pages, "
+              f"{len(summary['failed_captures'])} failed captures", flush=True)
+
+    def ingest(self, sample: dict) -> None:
+        db_path = self.db_dir / f"{sample['sample_id']}.db"
+        if not db_path.exists() or self.recompile:
+            self._compile(sample, db_path)
+        self.conn = cairn_store.init_db(str(db_path))
+        self.brain_id = self.conn.execute(
+            "SELECT id FROM brains ORDER BY id").fetchone()["id"]
+
+    # ------------------------------------------------------------------ asking
+    def ask(self, question: str) -> dict:
+        stable, _ = retrieve.build_brief(self.conn, self.brain_id, question,
+                                         budget_tokens=self.brief_budget)
+        out = _chat(ANSWER_URL, ANSWER_MODEL, [
+            {"role": "system", "content": stable},
+            {"role": "user", "content": (
+                f"### Question\n{question}\n\n"
+                "Reply with a single short answer only — a date, name, number, place or "
+                "short phrase. Do not restate the supporting fact. Do not use markdown "
+                "or bold. If the records do not answer it, reply exactly: Not recorded.\n\n"
+                "Answer:")},
+        ], 128)
+
+        # Hybrid retrieval for the evidence appendix (does not touch the stable prefix).
+        hits = retrieve.search(self.conn, self.brain_id, question, k=8)
+        fact_ids = [h["id"] for h in hits if h["kind"] == "fact"]
+        evidence = retrieve.render_citations(self.conn, fact_ids)
+
+        facts = retrieve.eligible_facts(self.conn, self.brain_id,
+                                        include_superseded=retrieve.is_history_question(question))
+        facts_in_brief = [f for f in facts if f["text"] in stable]
+        citations_used = stable.count("[capture ")
+
+        result = self._result(out, stable, [e["source_ref"].rsplit(":", 2)[0]
+                                            for e in evidence])
+        result.update({
+            "brief_tokens": len(stable) // 4,
+            "facts_used": len(facts_in_brief),
+            "citations_used": citations_used,
+            # A superseded fact in the brief is a defect per P10; flag it.
+            "superseded_used": any(f["status"] == "superseded" for f in facts_in_brief),
+        })
+        if result["superseded_used"]:
+            result["flags"] = result["flags"] + ["superseded_fact_in_brief"]
+        return result
+
+
+BACKENDS["cairn"] = CairnBackend()
+
+
 # --------------------------------------------------------------------- judge
 JUDGE_PROMPT = """You grade a question-answering system. Decide whether the PREDICTED
 answer conveys the same fact as the GOLD answer. Accept paraphrases and different formats
@@ -288,7 +403,7 @@ def run_backend(backend: Backend, samples: list[dict], judge_model: str,
             result = backend.ask(qa["question"])
             correct, ambiguous = judge(qa["question"], str(qa["answer"]),
                                        result["answer"], judge_model)
-            rows.append({
+            row = {
                 "sample_id": sample["sample_id"],
                 "question": qa["question"],
                 "gold": str(qa["answer"]),
@@ -303,7 +418,12 @@ def run_backend(backend: Backend, samples: list[dict], judge_model: str,
                 "sources": result["sources"],
                 "flags": result["flags"],
                 "engine": result["engine"],
-            })
+            }
+            # Backend-specific metrics (cairn: brief_tokens, facts_used,
+            # citations_used, superseded_used) ride along without affecting the
+            # other backends' rows.
+            row.update(result)
+            rows.append(row)
         if max_questions is not None and asked >= max_questions:
             break
     return rows
@@ -376,10 +496,19 @@ def main() -> None:
     ap.add_argument("--max-questions", type=int, default=25,
                     help="max questions per run (default 25; use 0 for all)")
     ap.add_argument("--judge-model", default=JUDGE_MODEL)
+    ap.add_argument("--recompile", action="store_true",
+                    help="cairn backend: rebuild the per-sample compiled DBs")
+    ap.add_argument("--brief-budget", type=int, default=4000,
+                    help="cairn backend: brief token budget. Lower it to force retrieval "
+                         "to select facts instead of fitting the whole brain")
     args = ap.parse_args()
 
     if not args.baseline and not args.backend:
         ap.error("specify --backend or --baseline")
+
+    if args.recompile or args.brief_budget != 4000:
+        BACKENDS["cairn"] = CairnBackend(recompile=args.recompile,
+                                         brief_budget=args.brief_budget)
 
     samples = load_locomo()
     if args.limit:
@@ -393,7 +522,9 @@ def main() -> None:
               f"{'all' if max_q is None else max_q} question(s) ===", flush=True)
         t0 = time.perf_counter()
         rows = run_backend(BACKENDS[name], samples, args.judge_model, max_q)
-        path = save_results(name, rows, args.judge_model, ANSWER_MODEL)
+        label = (f"cairn-b{args.brief_budget}"
+                 if name == "cairn" and args.brief_budget != 4000 else name)
+        path = save_results(label, rows, args.judge_model, ANSWER_MODEL)
         saved[name] = json.loads(path.read_text())
         print(f"wrote {path} in {time.perf_counter() - t0:.1f}s", flush=True)
 
