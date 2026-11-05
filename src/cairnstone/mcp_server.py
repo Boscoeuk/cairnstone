@@ -1,12 +1,12 @@
-"""Phase 10 MCP server: exposes cairn over stdio using the `mcp` package.
+"""Phase 10 MCP server: exposes cairnstone over stdio using the `mcp` package.
 
 Tools: capture, compile, search, brief, get_page, fact_history, export_markdown.
 
-Run with: python -m cairn.mcp_server  (or `cairn-mcp`, if installed)
+Run with: python -m cairnstone.mcp_server  (or `cairnstone-mcp`, if installed)
 
 If the `mcp` package is not installed, importing this module raises a clear
 error instead of a confusing traceback; use `install_cairn_mcp_hint()`-style
-message via `require_mcp()`. Install the extra with: pip install "cairn[mcp]".
+message via `require_mcp()`. Install the extra with: pip install "cairnstone[mcp]".
 
 The server talks to the same local-only stack as the CLI (policy P12): the
 compile and brief tools call the local model endpoint configured by
@@ -23,10 +23,10 @@ from .llm import DEFAULT_BASE_URL, DEFAULT_MODEL, LLMClient
 
 MCP_INSTALL_HINT = (
     "The `mcp` package is not installed. Install it with: "
-    'pip install "cairn[mcp]"  (or: pip install mcp)'
+    'pip install "cairnstone[mcp]"  (or: pip install mcp)'
 )
 
-DEFAULT_DB = os.environ.get("CAIRN_DB", "cairn.db")
+DEFAULT_DB = os.environ.get("CAIRN_DB", "cairnstone.db")
 DEFAULT_BRAIN = ("default", "default")
 
 
@@ -71,7 +71,7 @@ def _brain_id(conn):
         "SELECT b.id FROM brains b JOIN workspaces w ON w.id = b.workspace_id"
         " WHERE w.name = ? AND b.slug = ?", (ws, slug)).fetchone()
     if row is None:
-        raise ValueError("no default brain in %r; run `cairn init --db %s` first"
+        raise ValueError("no default brain in %r; run `cairnstone init --db %s` first"
                          % (db_path(), DEFAULT_DB))
     return row["id"]
 
@@ -203,8 +203,8 @@ def build_server():
     """Build the MCP server object. Requires the `mcp` package."""
     server_cls = _mcp_server_class()
 
-    mcp = server_cls("cairn", instructions=(
-        "Cairn: a local-first memory compiler. Capture text, compile it into "
+    mcp = server_cls("cairnstone", instructions=(
+        "Cairnstone: a local-first memory compiler. Capture text, compile it into "
         "cited facts, and ask questions that are answered from citation-bearing "
         "briefs. Local endpoints only; no cloud."))
 
@@ -248,7 +248,7 @@ def build_server():
 
 def main(argv=None):
     parser = argparse.ArgumentParser(
-        prog="cairn-mcp", description="Cairn MCP server (stdio).")
+        prog="cairnstone-mcp", description="Cairnstone MCP server (stdio).")
     parser.parse_args(argv)
     server = build_server()
     server.run()  # stdio transport is FastMCP's default

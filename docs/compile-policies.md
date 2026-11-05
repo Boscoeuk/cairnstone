@@ -1,6 +1,6 @@
 # Compile policies
 
-This is the design document for Cairn's behaviour: what enters a brain, where it goes, what it
+This is the design document for Cairnstone's behaviour: what enters a brain, where it goes, what it
 links to, when it comes back, and when it is retired. Code implements these rules; the eval
 harness scores them. Thresholds live in `config/policies.yml` and are tuned by measurement, not
 by taste.

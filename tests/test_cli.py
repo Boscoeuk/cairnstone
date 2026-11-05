@@ -12,7 +12,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from cairn import cli, store  # noqa: E402
+from cairnstone import cli, store  # noqa: E402
 
 LIVE_URL = "http://127.0.0.1:8460/v1"
 
@@ -101,7 +101,7 @@ def test_brief_fails_loudly_when_endpoint_unreachable(db, tmp_path, monkeypatch,
 def test_search_degrades_to_fts_when_embeddings_down(db, tmp_path, monkeypatch,
                                                      capsys):
     _ingest(db, tmp_path)
-    from cairn import retrieve
+    from cairnstone import retrieve
     monkeypatch.setattr(retrieve, "cached_embeddings",
                         lambda *a, **k: (_ for _ in ()).throw(
                             urllib.error.URLError("connection refused")))

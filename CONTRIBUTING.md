@@ -1,13 +1,13 @@
-# Contributing to Cairn
+# Contributing to Cairnstone
 
-Thanks for looking at cairn. This document covers the two things you must know before
+Thanks for looking at cairnstone. This document covers the two things you must know before
 writing code: how to run the tests offline, and the project's hard constraints.
 
 ## Setup
 
 ```bash
-git clone https://github.com/Boscoeuk/cairn
-cd cairn
+git clone https://github.com/Boscoeuk/cairnstone
+cd cairnstone
 python3 -m venv .venv && source .venv/bin/activate
 pip install -e .
 python3 -m pytest -q

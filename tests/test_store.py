@@ -6,7 +6,7 @@ import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from cairn import store  # noqa: E402
+from cairnstone import store  # noqa: E402
 
 
 @pytest.fixture()

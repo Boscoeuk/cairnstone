@@ -2,11 +2,11 @@
 
 import pytest
 
-from cairn import store
-from cairn.compile import (ExtractError, compile_all, dedupe, extract, locate,
+from cairnstone import store
+from cairnstone.compile import (ExtractError, compile_all, dedupe, extract, locate,
                            supersede_contradictions, uncited_facts, upsert_page,
                            write_facts)
-from cairn.llm import LLMError
+from cairnstone.llm import LLMError
 
 
 class FakeClient:
@@ -206,7 +206,7 @@ def test_extraction_receives_capture_timestamp():
 
 
 def test_relative_date_instruction_present():
-    from cairn.compile import EXTRACTION_SYSTEM
+    from cairnstone.compile import EXTRACTION_SYSTEM
     assert "absolute date" in EXTRACTION_SYSTEM
     assert "YYYY-MM-DD" in EXTRACTION_SYSTEM
 
@@ -214,7 +214,7 @@ def test_relative_date_instruction_present():
 def test_atomic_attribute_rule_forbids_third_party_attribution():
     """Phase 6: the extractor attributed 'You'll be an awesome mom' (spoken TO the
     interlocutor) to Melanie. The rule must restrict attributes to the page subject."""
-    from cairn.compile import EXTRACTION_SYSTEM
+    from cairnstone.compile import EXTRACTION_SYSTEM
     assert "the subject of the page" in EXTRACTION_SYSTEM
     assert "LISTENER" in EXTRACTION_SYSTEM
     # The over-inference example must not be the only guidance: the restriction
@@ -261,7 +261,7 @@ def test_different_slots_are_not_contradictions(db):
 
 
 def test_month_day_contradiction_detected(db):
-    from cairn.compile import _split_subject_slot
+    from cairnstone.compile import _split_subject_slot
     k1, v1 = _split_subject_slot("Billing v2 ships Mar 31")
     k2, v2 = _split_subject_slot("Billing v2 ships Apr 30")
     assert k1 == k2, "same slot despite different dates"
@@ -300,7 +300,7 @@ ATOMIC_JSON = ('{"facts": ['
 
 
 def test_atomic_attribute_instruction_present():
-    from cairn.compile import EXTRACTION_SYSTEM
+    from cairnstone.compile import EXTRACTION_SYSTEM
     for attr in ("relationship status", "location", "occupation", "age",
                  "family role"):
         assert attr in EXTRACTION_SYSTEM, "missing atomic attribute rule: " + attr

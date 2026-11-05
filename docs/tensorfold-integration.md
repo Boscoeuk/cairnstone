@@ -1,17 +1,17 @@
 # TensorFold integration
 
-Cairn targets **TensorFold** (Ash Hart, `github.com/ashhart/TensorFold`, Apache-2.0) as its
+Cairnstone targets **TensorFold** (Ash Hart, `github.com/ashhart/TensorFold`, Apache-2.0) as its
 inference substrate. This is not incidental — it is a design dependency, and the pairing is
 genuinely complementary:
 
-| | TensorFold | Cairn |
+| | TensorFold | Cairnstone |
 |---|---|---|
 | Makes | inference fast | context small and true |
 | Serves | tokens | cited facts |
 | Memory kind | weights (`--slide` / Living Weights, experimental) | compiled Markdown pages with sources |
 
-TensorFold compacts history to survive a context window; Cairn compiles it to preserve truth.
-Both reduce what has to be re-sent. Cairn's briefs are the *better* half of that trade when the
+TensorFold compacts history to survive a context window; Cairnstone compiles it to preserve truth.
+Both reduce what has to be re-sent. Cairnstone's briefs are the *better* half of that trade when the
 content must stay auditable.
 
 ## Measured on this machine (2026-11-05)
@@ -29,7 +29,7 @@ Engine: `tensorfold-native 1.0.7`, `GLM-5.3-Flash-MLX-4bit-MTP`, `--context 2621
 | Prefix cache | **active and reported** via `usage.prompt_tokens_details.cached_tokens` |
 
 Prefix reuse is real, measurable, and exposed per request. This is the single most important
-performance fact for Cairn: a **stable prefix** turns a 31 s cold start into 0.11 s.
+performance fact for Cairnstone: a **stable prefix** turns a 31 s cold start into 0.11 s.
 
 ## Prefix reuse is per message boundary (measured 2026-11-05)
 
@@ -51,7 +51,7 @@ for an agent that asks several questions of the same memory.
 
 1. **No structured output.** `response_format` (`json_object` and `json_schema`) and the
    `guided_*` fields return HTTP 400: *"structured output (response_format and the guided_*
-   fields) is not supported by this engine yet"*. Cairn must therefore validate model output
+   fields) is not supported by this engine yet"*. Cairnstone must therefore validate model output
    client-side and repair/retry rather than relying on grammars.
 2. **Thinking is controlled by `chat_template_kwargs.enable_thinking`**, not by a top-level
    `enable_thinking` field (which is silently ignored). With thinking off, `reasoning_content`
@@ -81,15 +81,15 @@ for an agent that asks several questions of the same memory.
 - **R5 — engine ledger.** Every compile and eval call records engine, tokens/s, prefill, TTFT
   and cached tokens. Results are reported against named hardware, matching TensorFold's own
   "inference, measured" practice. No abstract token claims.
-- **R6 — complementary to Living Weights.** Cairn is the cited, editable, auditable half.
-  `--slide` / `--learn` is the parametric half. Cairn is the natural selector for what is
+- **R6 — complementary to Living Weights.** Cairnstone is the cited, editable, auditable half.
+  `--slide` / `--learn` is the parametric half. Cairnstone is the natural selector for what is
   worth sliding into weights once that path is stable.
 
 ## Upstream opportunities (do not act without Ged's approval)
 
-- Structured output / grammars in the engine would remove Cairn's repair loop and are exactly
+- Structured output / grammars in the engine would remove Cairnstone's repair loop and are exactly
   what a memory compiler needs.
-- A memory-shaped endpoint or a documented prefix-stability convention would make Cairn-style
+- A memory-shaped endpoint or a documented prefix-stability convention would make Cairnstone-style
   briefs first-class.
-- If Cairn ever contributes to TensorFold, use **Agent Traffic Control** (`atc`) and the
+- If Cairnstone ever contributes to TensorFold, use **Agent Traffic Control** (`atc`) and the
   contributor skill at `docs/recipes/SKILL.md`, per their CONTRIBUTING rules.

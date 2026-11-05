@@ -9,11 +9,11 @@ from pathlib import Path
 sys.path.insert(0, "src")
 sys.path.insert(0, "eval")
 
-from cairn import store
-from cairn.llm import LLMClient
+from cairnstone import store
+from cairnstone.llm import LLMClient
 from harness import CairnBackend, RESULTS_DIR
 
-DB_DIR = RESULTS_DIR / "cairn-db"  # gitignored
+DB_DIR = RESULTS_DIR / "cairnstone-db"  # gitignored
 
 
 def main() -> None:

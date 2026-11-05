@@ -1,4 +1,4 @@
-# Cairn
+# Cairnstone
 
 A **local-first memory compiler for AI agents**. It reads what a team or a single operator
 produces — conversations, notes, documents, agent session logs — and compiles it into
@@ -28,20 +28,20 @@ pip install .            # runtime: stdlib + requests only
 pip install ".[mcp]"     # adds the `mcp` package for the MCP server
 ```
 
-Requires Python 3.10+. After install, the `cairn` console script is on your PATH
-(equivalently: `python3 -m cairn.cli`).
+Requires Python 3.10+. After install, the `cairnstone` console script is on your PATH
+(equivalently: `python3 -m cairnstone.cli`).
 
 ## CLI
 
 ```bash
-cairn init --db brain.db
-cairn ingest --db brain.db --kind note --source "chat-log-1" --file notes.txt
-cairn compile --db brain.db                       # calls the local model endpoint
-cairn search --db brain.db "Caroline" --limit 5
-cairn brief --db brain.db "Where does Caroline live?" --budget 4000
-cairn page --db brain.db people/caroline
-cairn history --db brain.db 42                    # one fact's citation + change events
-cairn export --db brain.db --out ./export         # one Markdown file per page
+cairnstone init --db brain.db
+cairnstone ingest --db brain.db --kind note --source "chat-log-1" --file notes.txt
+cairnstone compile --db brain.db                       # calls the local model endpoint
+cairnstone search --db brain.db "Caroline" --limit 5
+cairnstone brief --db brain.db "Where does Caroline live?" --budget 4000
+cairnstone page --db brain.db people/caroline
+cairnstone history --db brain.db 42                    # one fact's citation + change events
+cairnstone export --db brain.db --out ./export         # one Markdown file per page
 ```
 
 `init`, `ingest`, `search`, `page`, `history` and `export` need no model. `compile` and
@@ -52,7 +52,7 @@ Every command prints a machine-greppable `ok:` / `error:` line and exits non-zer
 
 ## MCP server
 
-`src/cairn/mcp_server.py` is a stdio MCP server exposing `capture`, `compile`, `search`,
+`src/cairnstone/mcp_server.py` is a stdio MCP server exposing `capture`, `compile`, `search`,
 `brief`, `get_page`, `fact_history` and `export_markdown`. If the `mcp` package is not
 installed it degrades gracefully: a clear one-line error instead of a traceback. Configure it
 in an MCP client (e.g. Claude Desktop) with:
@@ -60,9 +60,9 @@ in an MCP client (e.g. Claude Desktop) with:
 ```json
 {
   "mcpServers": {
-    "cairn": {
+    "cairnstone": {
       "command": "python3",
-      "args": ["-m", "cairn.mcp_server"],
+      "args": ["-m", "cairnstone.mcp_server"],
       "env": {
         "CAIRN_DB": "/path/to/brain.db",
         "CAIRN_BASE_URL": "http://127.0.0.1:8460/v1",
@@ -81,7 +81,7 @@ Every answer traces to evidence through one chain:
 
 A fact (the claim) cites a capture by id and character span; the verbatim quote is copied
 from that span at write time and a fact whose quote cannot be located in its capture is
-rejected, not guessed at. `cairn history` shows the chain for any fact; `cairn brief` and
+rejected, not guessed at. `cairnstone history` shows the chain for any fact; `cairnstone brief` and
 the Markdown export print it under every claim.
 
 ## Measured results
@@ -90,11 +90,11 @@ Phase 9 (150 LoCoMo questions, 2 conversations, 1,276 mean context tokens):
 
 | backend | accuracy | mean context tokens | median latency |
 |---|---|---|---|
-| **cairn (compiled memory)** | **77.3%** | **1,276** | 2.83 s |
+| **cairnstone (compiled memory)** | **77.3%** | **1,276** | 2.83 s |
 | full context | 53.3% | 13,278 | 2.73 s |
 | naive chunk-RAG | 45.3% | 932 | 2.71 s |
 
-By category, cairn wins temporal questions decisively (88.5% vs 32.8% full context) and multi-hop
+By category, cairnstone wins temporal questions decisively (88.5% vs 32.8% full context) and multi-hop
 (67.5% vs 57.3%), loses single-hop narrowly (73.7% vs 76.3%) and commonsense (63.6% vs 90.9% for
 naive chunk-RAG).
 

@@ -27,6 +27,7 @@ import json
 import math
 import re
 import struct
+import urllib.error
 import urllib.request
 
 from . import store
@@ -106,7 +107,15 @@ def cached_embeddings(conn, kind, items):
         else:
             missing.append((subject_id, text))
     if missing:
-        vecs = _request_embeddings([t for _, t in missing])
+        try:
+            vecs = _request_embeddings([t for _, t in missing])
+        except (urllib.error.URLError, OSError, RuntimeError):
+            # Embeddings are an optional accelerator, not a requirement: lexical and FTS
+            # scoring still rank without them. Failing the whole brief because an embedding
+            # sidecar is down made cairnstone unusable offline and broke CI on a machine with no
+            # local endpoints. Misses are deliberately NOT cached, so a later run with the
+            # endpoint up embeds properly instead of inheriting zero vectors.
+            return out
         for (subject_id, _), vec in zip(missing, vecs):
             conn.execute(
                 "INSERT OR REPLACE INTO embeddings(subject_kind, subject_id, vector)"
@@ -246,7 +255,7 @@ def search(conn, brain_id, query, k=10):
                   for p in pages]
     fact_vecs = cached_embeddings(conn, "fact", fact_items)
     page_vecs = cached_embeddings(conn, "page", page_items)
-    q_vec = cached_embeddings(conn, "query", [(_query_key(query), query)])[_query_key(query)]
+    q_vec = cached_embeddings(conn, "query", [(_query_key(query), query)]).get(_query_key(query))
 
     fts_ranks = _fts_page_ranks(conn, query, limit=max(k, 10))
     fts_bonus = {pid: 1.0 / (i + 1) for i, pid in enumerate(fts_ranks)}
@@ -254,17 +263,15 @@ def search(conn, brain_id, query, k=10):
     results = []
     for f in facts:
         vec = fact_vecs.get(str(f["id"]))
-        if vec is None:
-            continue
-        score = _cosine(q_vec, vec) + 0.25 * fts_bonus.get(f["page_id"], 0.0)
+        sim = _cosine(q_vec, vec) if (q_vec is not None and vec is not None) else 0.0
+        score = sim + 0.25 * fts_bonus.get(f["page_id"], 0.0)
         results.append({"kind": "fact", "id": f["id"], "score": round(score, 6),
                         "text": f["text"], "page_id": f["page_id"],
                         "status": f["status"]})
     for p in pages:
         vec = page_vecs.get(str(p["id"]))
-        if vec is None:
-            continue
-        score = _cosine(q_vec, vec) + fts_bonus.get(p["id"], 0.0)
+        sim = _cosine(q_vec, vec) if (q_vec is not None and vec is not None) else 0.0
+        score = sim + fts_bonus.get(p["id"], 0.0)
         results.append({"kind": "page", "id": p["id"], "score": round(score, 6),
                         "text": p["title"], "page_id": p["id"], "status": "page"})
     results.sort(key=lambda r: r["score"], reverse=True)
@@ -492,7 +499,7 @@ def select_facts(conn, brain_id, question, budget_tokens):
     q_tokens = set(_content_tokens(question))
     q_type = _question_type(question)
     q_key = _query_key(question)
-    q_vec = cached_embeddings(conn, "query", [(q_key, question)])[q_key]
+    q_vec = cached_embeddings(conn, "query", [(q_key, question)]).get(q_key)
     fact_vecs = cached_embeddings(conn, "fact",
                                   [(str(f["id"]), f["text"]) for f in facts])
     fts_ranks = _fact_fts_ranks(conn, question)
@@ -504,7 +511,7 @@ def select_facts(conn, brain_id, question, budget_tokens):
         ftoks = set(_content_tokens(f["text"]))
         lex = (len(ftoks & q_tokens) / len(q_tokens)) if q_tokens else 0.0
         vec = fact_vecs.get(str(f["id"]))
-        sim = _cosine(q_vec, vec) if vec is not None else 0.0
+        sim = _cosine(q_vec, vec) if (q_vec is not None and vec is not None) else 0.0
         ent = 0.0
         if page:
             ent = 0.15 * len(set(_content_tokens(page["title"])) & q_tokens)

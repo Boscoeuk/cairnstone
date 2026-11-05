@@ -13,12 +13,12 @@ from pathlib import Path
 sys.path.insert(0, "src")
 sys.path.insert(0, "eval")
 
-from cairn import compile as C
-from cairn import store
+from cairnstone import compile as C
+from cairnstone import store
 from harness import CairnBackend, RESULTS_DIR
 
 OUT_PATH = RESULTS_DIR / "phase8-weak-quote-audit.json"
-DB_DIR = RESULTS_DIR / "cairn-db"  # gitignored
+DB_DIR = RESULTS_DIR / "cairnstone-db"  # gitignored
 
 
 def main() -> None:

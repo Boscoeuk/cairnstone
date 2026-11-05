@@ -608,7 +608,7 @@ def _load_smoke_captures(path, limit=10):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog="cairn.compile",
+    parser = argparse.ArgumentParser(prog="cairnstone.compile",
                                      description="Compile captures into cited pages")
     parser.add_argument("--smoke", action="store_true",
                         help="compile ~10 LoCoMo captures into a temp DB")

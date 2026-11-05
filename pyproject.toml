@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "cairn"
+name = "cairnstone"
 version = "0.1.0"
 description = "Local-first memory compiler for AI agents: compiles captures into cited Markdown pages."
 readme = "README.md"
@@ -29,10 +29,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/Boscoeuk/cairn"
-Repository = "https://github.com/Boscoeuk/cairn"
-Issues = "https://github.com/Boscoeuk/cairn/issues"
-Changelog = "https://github.com/Boscoeuk/cairn/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/Boscoeuk/cairnstone"
+Repository = "https://github.com/Boscoeuk/cairnstone"
+Issues = "https://github.com/Boscoeuk/cairnstone/issues"
+Changelog = "https://github.com/Boscoeuk/cairnstone/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 mcp = [
@@ -43,7 +43,7 @@ dev = [
 ]
 
 [project.scripts]
-cairn = "cairn.cli:main"
+cairnstone = "cairnstone.cli:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }

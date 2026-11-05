@@ -2,7 +2,7 @@
 
 import pytest
 
-from cairn import retrieve, store
+from cairnstone import retrieve, store
 
 
 @pytest.fixture
@@ -256,7 +256,7 @@ def test_gold_support_in_brief():
 # ---- A list-like gold must be scored per item, not as one token bag.
 
 def test_gold_support_list_gold_scored_per_item():
-    from cairn.retrieve import gold_support_in_brief
+    from cairnstone.retrieve import gold_support_in_brief
     facts = ["Melanie paints and uses painting as an outlet for self-expression.",
              "Melanie enjoys camping with her family in the mountains."]
     # 2 of 4 items covered -> supported
@@ -266,7 +266,7 @@ def test_gold_support_list_gold_scored_per_item():
 
 
 def test_gold_support_single_item_unchanged():
-    from cairn.retrieve import gold_support_in_brief
+    from cairnstone.retrieve import gold_support_in_brief
     assert gold_support_in_brief("7 May 2023", ["Caroline went on 2023-05-07."]) is False or True
     assert gold_support_in_brief("2022", ["Melanie painted a lake sunrise in 2022."]) is True
     assert gold_support_in_brief("Sweden", ["Caroline moved from Sweden."]) is True
@@ -360,3 +360,47 @@ def test_dialogue_context_window_char_cap(brain, monkeypatch):
                        if l.startswith("- ") and "xxx" in l)
     # "- " prefix + hard 600-char cap on the window itself.
     assert len(window_line) <= len("- ") + retrieve._CONTEXT_WINDOW_CHARS
+
+
+# ---- the maintainer: embeddings are an optional accelerator. A dead embedding sidecar must not
+# ---- break search or briefs; lexical/FTS scoring has to carry the run. This is what CI
+# ---- caught: four tests crashed instead of degrading on a machine with no local endpoints.
+
+def _dead_embed_endpoint(monkeypatch):
+    import cairnstone.retrieve as r
+    monkeypatch.setattr(r, "EMBED_URL", "http://127.0.0.1:59999/v1/embeddings")
+
+
+def test_build_brief_works_without_embeddings(tmp_path, monkeypatch):
+    import cairnstone.store as store
+    import cairnstone.retrieve as r
+    conn = store.init_db(str(tmp_path / "b.db"))
+    ws = store.create_workspace(conn, "w")
+    brain = store.create_brain(conn, ws, "b", "b")
+    cap = store.add_capture(conn, brain, "note", "Caroline: I live in Berlin now.",
+                            "n1", captured_at="2023-05-01")
+    page = store.create_page(conn, brain, "people/caroline", "people", "Caroline",
+                             "# Caroline")
+    ver = store.get_page(conn, "people/caroline")["page"]["current_version_id"]
+    store.add_fact(conn, page, ver, "Caroline lives in Berlin", cap, 10, 31)
+    _dead_embed_endpoint(monkeypatch)
+    brief = r.build_brief(conn, brain, "Where does Caroline live?", budget_tokens=600)
+    text = brief[0] + brief[1] if isinstance(brief, tuple) else brief
+    assert "Berlin" in text
+
+
+def test_search_works_without_embeddings(tmp_path, monkeypatch):
+    import cairnstone.store as store
+    import cairnstone.retrieve as r
+    conn = store.init_db(str(tmp_path / "b.db"))
+    ws = store.create_workspace(conn, "w")
+    brain = store.create_brain(conn, ws, "b", "b")
+    cap = store.add_capture(conn, brain, "note", "Caroline: I live in Berlin now.",
+                            "n1", captured_at="2023-05-01")
+    page = store.create_page(conn, brain, "people/caroline", "people", "Caroline",
+                             "# Caroline")
+    ver = store.get_page(conn, "people/caroline")["page"]["current_version_id"]
+    store.add_fact(conn, page, ver, "Caroline lives in Berlin", cap, 10, 31)
+    _dead_embed_endpoint(monkeypatch)
+    hits = r.search(conn, brain, "Berlin", k=5)
+    assert any("Berlin" in str(h.get("text", "")) for h in hits)

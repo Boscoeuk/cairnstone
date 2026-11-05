@@ -12,7 +12,7 @@
 
 Email the maintainer privately and we will respond within 7 days:
 
-- GitHub: use [Private vulnerability reporting](https://github.com/Boscoeuk/cairn/security/advisories/new) on this repository.
+- GitHub: use [Private vulnerability reporting](https://github.com/Boscoeuk/cairnstone/security/advisories/new) on this repository.
 
 Include: a description of the issue, steps to reproduce or a proof of concept, affected
 versions/commits, and your assessment of impact. If you can, include a suggested fix.
@@ -26,7 +26,7 @@ versions/commits, and your assessment of impact. If you can, include a suggested
 
 ## Scope notes
 
-Cairn is a **local-first** tool: model inference and data stay on the local network by
+Cairnstone is a **local-first** tool: model inference and data stay on the local network by
 design. Reports that a cloud endpoint is reachable would be a design violation, not a
 vulnerability — but if you find a code path that *does* call a cloud service, that is
 in scope and we want to know.

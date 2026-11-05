@@ -1,4 +1,4 @@
-"""Phase 10 CLI: the `cairn` console script.
+"""Phase 10 CLI: the `cairnstone` console script.
 
 Subcommands: init, ingest, compile, search, brief, page, history, export.
 
@@ -34,7 +34,7 @@ class CliError(Exception):
 
 def _open_db(path):
     if not os.path.exists(path):
-        raise CliError("database %r does not exist; run `cairn init --db %s` first"
+        raise CliError("database %r does not exist; run `cairnstone init --db %s` first"
                        % (path, path))
     return store.init_db(path)
 
@@ -45,7 +45,7 @@ def _brain_id(conn):
         "SELECT b.id FROM brains b JOIN workspaces w ON w.id = b.workspace_id"
         " WHERE w.name = ? AND b.slug = ?", (ws, slug)).fetchone()
     if row is None:
-        raise CliError("no default brain in this database; run `cairn init` first")
+        raise CliError("no default brain in this database; run `cairnstone init` first")
     return row["id"]
 
 
@@ -108,7 +108,7 @@ def cmd_compile(args):
     capture_ids = [r["id"] for r in conn.execute(
         "SELECT id FROM captures WHERE brain_id = ? ORDER BY id", (brain_id,))]
     if not capture_ids:
-        raise CliError("no captures to compile; run `cairn ingest` first")
+        raise CliError("no captures to compile; run `cairnstone ingest` first")
     client = _client()
     _require_endpoint(client)
     accepted = 0
@@ -250,7 +250,7 @@ def cmd_export(args):
 
 def build_parser():
     parser = argparse.ArgumentParser(
-        prog="cairn", description="Local-first memory compiler for AI agents.")
+        prog="cairnstone", description="Local-first memory compiler for AI agents.")
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("init", help="create a new store database")

@@ -55,7 +55,7 @@ Importers (Markdown folder, Obsidian vault, ChatGPT/Claude export), document ext
 - Judge bias: local judging inflates agreement. Mitigate with a hand-checked subset.
 
 ### Phase 6 — TensorFold depth (ongoing, feeds every phase)
-Cairn is TensorFold-native. `docs/tensorfold-integration.md` holds the measured engine facts and
+Cairnstone is TensorFold-native. `docs/tensorfold-integration.md` holds the measured engine facts and
 the design rules (prefix-stable briefs, no constrained decoding, thinking budget, admission
 control, engine ledger). Acceptance: the eval ledger reports engine, tok/s, prefill, TTFT and
 cached tokens per call; brief assembly is byte-identical for the cacheable prefix across two

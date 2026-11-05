@@ -1,4 +1,4 @@
-"""Cairn core store: SQLite-backed storage layer (Phase 1).
+"""Cairnstone core store: SQLite-backed storage layer (Phase 1).
 
 Stdlib sqlite3 only. Every fact carries a citation (capture id + span);
 there is no uncited-fact state.

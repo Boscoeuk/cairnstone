@@ -25,10 +25,10 @@ from pathlib import Path
 
 import requests
 
-from cairn import compile as cairn_compile
-from cairn import retrieve
-from cairn import store as cairn_store
-from cairn.llm import LLMClient
+from cairnstone import compile as cairn_compile
+from cairnstone import retrieve
+from cairnstone import store as cairn_store
+from cairnstone.llm import LLMClient
 
 DATASET = Path(__file__).parent / "datasets" / "locomo10.json"
 RESULTS_DIR = Path(__file__).parent / "results"
@@ -248,18 +248,18 @@ BACKENDS = {b.name: b for b in (FullContextBackend(), NaiveRagBackend())}
 
 
 class CairnBackend(FullContextBackend):
-    """Compile each conversation into a per-sample Cairn brain, answer from the
+    """Compile each conversation into a per-sample Cairnstone brain, answer from the
     prefix-stable brief (P9): stable compiled content in its own leading system
     message, the question as the user message — mandatory for TensorFold prefix reuse.
 
-    The compiled SQLite DB is cached per sample under eval/results/cairn-db/<sample>.db;
+    The compiled SQLite DB is cached per sample under eval/results/cairnstone-db/<sample>.db;
     compiling (419 LLM extraction calls for sample 0) is the expensive part and happens
     once. `--recompile` forces a rebuild.
     """
 
-    name = "cairn"
+    name = "cairnstone"
 
-    def __init__(self, db_dir: Path = RESULTS_DIR / "cairn-db", recompile: bool = False,
+    def __init__(self, db_dir: Path = RESULTS_DIR / "cairnstone-db", recompile: bool = False,
                  brief_budget: int = 4000):
         self.db_dir = db_dir
         self.recompile = recompile
@@ -369,7 +369,7 @@ class CairnBackend(FullContextBackend):
         return result
 
 
-BACKENDS["cairn"] = CairnBackend()
+BACKENDS["cairnstone"] = CairnBackend()
 
 
 # --------------------------------------------------------------------- judge
@@ -447,7 +447,7 @@ def run_backend(backend: Backend, samples: list[dict], judge_model: str,
                 "flags": result["flags"],
                 "engine": result["engine"],
             }
-            # Backend-specific metrics (cairn: brief_tokens, facts_used,
+            # Backend-specific metrics (cairnstone: brief_tokens, facts_used,
             # citations_used, superseded_used) ride along without affecting the
             # other backends' rows.
             row.update(result)
@@ -566,9 +566,9 @@ def main() -> None:
                          "conversations instead of spending the whole budget on the first")
     ap.add_argument("--judge-model", default=JUDGE_MODEL)
     ap.add_argument("--recompile", action="store_true",
-                    help="cairn backend: rebuild the per-sample compiled DBs")
+                    help="cairnstone backend: rebuild the per-sample compiled DBs")
     ap.add_argument("--brief-budget", type=int, default=4000,
-                    help="cairn backend: brief token budget. Lower it to force retrieval "
+                    help="cairnstone backend: brief token budget. Lower it to force retrieval "
                          "to select facts instead of fitting the whole brain")
     args = ap.parse_args()
 
@@ -576,7 +576,7 @@ def main() -> None:
         ap.error("specify --backend or --baseline")
 
     if args.recompile or args.brief_budget != 4000:
-        BACKENDS["cairn"] = CairnBackend(recompile=args.recompile,
+        BACKENDS["cairnstone"] = CairnBackend(recompile=args.recompile,
                                          brief_budget=args.brief_budget)
 
     samples = load_locomo()
@@ -592,8 +592,8 @@ def main() -> None:
         t0 = time.perf_counter()
         rows = run_backend(BACKENDS[name], samples, args.judge_model, max_q,
                            args.questions_per_sample)
-        label = (f"cairn-b{args.brief_budget}"
-                 if name == "cairn" and args.brief_budget != 4000 else name)
+        label = (f"cairnstone-b{args.brief_budget}"
+                 if name == "cairnstone" and args.brief_budget != 4000 else name)
         if args.questions_per_sample:
             label = f"{label}-ps{args.questions_per_sample}"
         path = save_results(label, rows, args.judge_model, ANSWER_MODEL,
