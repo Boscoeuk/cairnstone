@@ -1,0 +1,4 @@
+eval/datasets/*.json
+__pycache__/
+*.pyc
+eval/results/*.json
