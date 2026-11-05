@@ -8,7 +8,7 @@ data = json.load(open("eval/datasets/locomo10.json"))
 conv = data[0]["conversation"]
 stamp = conv.get("session_1_date_time")
 turns = conv["session_1"][:10]
-tmp = "~/.hermes/cache/scratch/cairn-smoke"
+tmp = os.path.join(tempfile.gettempdir(), "cairn-smoke")
 os.makedirs(tmp, exist_ok=True)
 db = os.path.join(tmp, "inspect.db")
 if os.path.exists(db): os.remove(db)
