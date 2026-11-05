@@ -73,7 +73,8 @@ CREATE TABLE IF NOT EXISTS facts (
     span_end INTEGER NOT NULL,
     quote TEXT NOT NULL,
     status TEXT NOT NULL CHECK (status IN ('active','superseded','retracted')),
-    superseded_by INTEGER REFERENCES facts(id)
+    superseded_by INTEGER REFERENCES facts(id),
+    duplicate_of INTEGER REFERENCES facts(id)
 );
 
 CREATE TABLE IF NOT EXISTS links (
@@ -327,13 +328,19 @@ def supersede_fact(conn, fact_id, by_fact_id):
     conn.commit()
 
 
-def facts_for_page(conn, page_id, status=None):
-    """Facts on a page, newest last. Optionally filtered by status."""
+def facts_for_page(conn, page_id, status=None, include_duplicates=False):
+    """Facts on a page, newest last. Optionally filtered by status.
+
+    Duplicates are corroboration, not deletions: they stay active and carry `duplicate_of`.
+    Canonical reads exclude them by default so a brief never repeats the same claim.
+    """
     sql = "SELECT * FROM facts WHERE page_id = ?"
     params = [page_id]
     if status is not None:
         sql += " AND status = ?"
         params.append(status)
+    if not include_duplicates:
+        sql += " AND duplicate_of IS NULL"
     return conn.execute(sql + " ORDER BY id", params).fetchall()
 
 
@@ -389,7 +396,8 @@ def export_markdown(conn, brain_id, out_dir):
         os.makedirs(os.path.dirname(out_path) or out_dir, exist_ok=True)
         facts = conn.execute(
             "SELECT text, capture_id, span_start, span_end, quote FROM facts"
-            " WHERE page_id = ? AND status = 'active' ORDER BY id",
+            " WHERE page_id = ? AND status = 'active' AND duplicate_of IS NULL"
+            " ORDER BY id",
             (page["id"],),
         ).fetchall()
         lines = ["# %s" % page["title"], ""]
