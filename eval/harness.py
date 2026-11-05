@@ -316,12 +316,12 @@ class CairnBackend(FullContextBackend):
 
     # ------------------------------------------------------------------ asking
     def ask(self, question: str) -> dict:
-        stable, _ = retrieve.build_brief(self.conn, self.brain_id, question,
-                                         budget_tokens=self.brief_budget)
+        stable, volatile, brief_facts = retrieve.build_brief(
+            self.conn, self.brain_id, question, budget_tokens=self.brief_budget)
         out = _chat(ANSWER_URL, ANSWER_MODEL, [
             {"role": "system", "content": stable},
             {"role": "user", "content": (
-                f"### Question\n{question}\n\n"
+                volatile + "\n\n"
                 "Reply with a single short answer only — a date, name, number, place or "
                 "short phrase. Do not restate the supporting fact. Do not use markdown "
                 "or bold. If the records do not answer it, reply exactly: Not recorded.\n\n"
@@ -333,19 +333,19 @@ class CairnBackend(FullContextBackend):
         fact_ids = [h["id"] for h in hits if h["kind"] == "fact"]
         evidence = retrieve.render_citations(self.conn, fact_ids)
 
-        facts = retrieve.eligible_facts(self.conn, self.brain_id,
-                                        include_superseded=retrieve.is_history_question(question))
-        facts_in_brief = [f for f in facts if f["text"] in stable]
-        citations_used = stable.count("[capture ")
+        # Phase-4 diagnostic input: the fact texts the answerer actually saw, so
+        # gold_support_in_brief can be computed in run_backend where the gold lives.
+        brief_fact_texts = [f["text"] for f in brief_facts]
 
         result = self._result(out, stable, [e["source_ref"].rsplit(":", 2)[0]
                                             for e in evidence])
         result.update({
-            "brief_tokens": len(stable) // 4,
-            "facts_used": len(facts_in_brief),
-            "citations_used": citations_used,
+            "brief_tokens": (len(stable) + len(volatile)) // 4,
+            "facts_used": len(brief_facts),
+            "citations_used": volatile.count("[capture "),
+            "brief_fact_texts": brief_fact_texts,
             # A superseded fact in the brief is a defect per P10; flag it.
-            "superseded_used": any(f["status"] == "superseded" for f in facts_in_brief),
+            "superseded_used": any(f["status"] == "superseded" for f in brief_facts),
         })
         if result["superseded_used"]:
             result["flags"] = result["flags"] + ["superseded_fact_in_brief"]
@@ -423,6 +423,11 @@ def run_backend(backend: Backend, samples: list[dict], judge_model: str,
             # citations_used, superseded_used) ride along without affecting the
             # other backends' rows.
             row.update(result)
+            # Phase-4 diagnostic: was gold-supporting evidence in the brief? Splits
+            # failures into retrieval (support absent) vs answering (support present).
+            if "brief_fact_texts" in result:
+                row["gold_support_in_brief"] = retrieve.gold_support_in_brief(
+                    qa["answer"], result["brief_fact_texts"])
             rows.append(row)
         if max_questions is not None and asked >= max_questions:
             break
@@ -451,6 +456,13 @@ def aggregate(rows: list[dict]) -> dict:
             [e["prefill_seconds"] for e in engine if e.get("prefill_seconds") is not None]),
         "prompt_cache_hit_rate": mean(
             [1.0 if e.get("cached_tokens") else 0.0 for e in engine]),
+        # Phase-4 diagnostic split (cairn rows only; other backends lack the field).
+        "gold_support_present": sum(
+            1 for r in rows if r.get("gold_support_in_brief")),
+        "retrieval_failures": sum(
+            1 for r in rows if not r["correct"] and not r.get("gold_support_in_brief")),
+        "answering_failures": sum(
+            1 for r in rows if not r["correct"] and r.get("gold_support_in_brief")),
     }
 
 

@@ -1,13 +1,21 @@
-"""Phase 3 retrieval and brief assembly.
+"""Phase 4 retrieval and brief assembly.
 
 Policies implemented here (docs/compile-policies.md):
 
 - P8: only active, non-duplicate facts are eligible; superseded facts resurface only
   when the question asks about history.
-- P9: briefs are prefix-stable. The stable portion is the compiled canonical content,
-  byte-identical across calls for the same brain, and is question-independent by
-  construction — the question never influences which content is kept, only the volatile
-  user message. This is what makes TensorFold's per-message-boundary prefix cache hit.
+- P9: briefs are prefix-stable. The stable portion is the canonical entity directory,
+  byte-identical across calls for the same brain and question-independent by
+  construction; it occupies its own leading system message. The question-conditioned
+  fact selection lives in the volatile user message — selection may vary per
+  question, the prefix may not. This is what makes TensorFold's per-message-boundary
+  prefix cache hit.
+
+Phase 4 selection (docs/phase4-brief.md): facts — not pages — are indexed (FTS5 over
+fact text and quote, plus cached per-fact embeddings) and scored against the question
+by lexical overlap, embedding similarity, entity match and slot match; near-duplicates
+collapse; a per-page diversity cap stops one entity flooding the brief; survivors are
+ordered chronologically by capture timestamp.
 
 Embeddings come from the local endpoint only (P12): http://127.0.0.1:1234/v1,
 text-embedding-nomic-embed-text-v1.5, 768d. They are cached in an `embeddings` table
@@ -17,6 +25,7 @@ keyed by (subject_kind, subject_id); unchanged text is never re-embedded.
 import hashlib
 import json
 import math
+import re
 import struct
 import urllib.request
 
@@ -122,6 +131,58 @@ def _cosine(a, b):
     return dot / math.sqrt(na * nb)
 
 
+# ----------------------------------------------------------------- diagnostic
+
+# Phase-4 diagnostic: separates retrieval failure from answering failure. A row is
+# a retrieval failure when no fact in the brief supports the gold answer; an
+# answering failure when support was present but the answer was still wrong.
+
+_MONTHS = ("january|february|march|april|may|june|july|august|september|october|"
+           "november|december")
+_DATE_RE = re.compile(
+    r"\b\d{4}-\d{2}-\d{2}\b|\b(?:19|20)\d{2}\b|\b(?:%s)\b" % _MONTHS, re.IGNORECASE)
+_NUMBER_RE = re.compile(r"(?<![\w.-])\d+(?:[.,]\d+)?(?![\w.-])")
+
+_STOPWORDS = frozenset("""
+a an the and or of in on at to for from by with about as is are was were be been being
+do does did doing has have had what which who whom whose when where why how many much
+i me my we our you your he she it they them their his her its this that these those
+will would can could should shall may might must not no nor so than too very s t
+""".split())
+
+
+def _content_tokens(text):
+    """Lowercase word tokens minus stopwords — the tokens that carry meaning."""
+    return [w for w in re.findall(r"[a-z0-9]+", text.lower()) if w not in _STOPWORDS]
+
+
+def gold_support_in_brief(gold, fact_texts):
+    """Deterministically decide whether any fact supports the gold answer.
+
+    A fact supports the gold when (a) the gold is a date/number and every date or
+    number mention in the gold appears in the fact text, or (b) at least half of
+    the gold's content tokens overlap the fact text. Purely lexical — no model
+    call, so the retrieval/answering split is reproducible.
+    """
+    gold_text = str(gold).strip()
+    dates = [m.group(0).lower() for m in _DATE_RE.finditer(gold_text)]
+    numbers = [m.group(0) for m in _NUMBER_RE.finditer(gold_text)]
+    gold_tokens = set(_content_tokens(gold_text))
+    for text in fact_texts:
+        hay = str(text).lower()
+        if dates and all(d in hay for d in dates):
+            return True
+        if numbers and all(n in hay for n in numbers):
+            return True
+        if gold_tokens:
+            if len(gold_tokens & set(_content_tokens(str(text)))) >= max(
+                    1, len(gold_tokens) // 2):
+                return True
+        elif gold_text.lower() in hay:
+            return True
+    return False
+
+
 # ---------------------------------------------------------------------- search
 
 def eligible_facts(conn, brain_id, include_superseded=False):
@@ -140,7 +201,7 @@ def eligible_facts(conn, brain_id, include_superseded=False):
 
 def _page_texts(conn, brain_id):
     rows = conn.execute(
-        "SELECT p.id, p.path, p.title, v.body_md FROM pages p"
+        "SELECT p.id, p.path, p.title, p.bucket, v.body_md FROM pages p"
         " JOIN page_versions v ON v.id = p.current_version_id"
         " WHERE p.brain_id = ? ORDER BY p.path", (brain_id,)).fetchall()
     return rows
@@ -211,89 +272,240 @@ def _citation(fact):
                                          fact["span_end"])
 
 
-def _page_block(page, facts, quote_limit=None):
-    """Render one page: header, optional body, active claims with citations."""
-    lines = ["## %s (%s)" % (page["title"], page["path"])]
-    body = (page["body_md"] or "").strip()
-    if body:
-        lines.append(body)
-    if facts:
-        lines.append("### Claims")
-        for f in facts:
-            quote = f["quote"]
-            if quote_limit is not None and len(quote) > quote_limit:
-                quote = quote[:quote_limit].rstrip() + "…"
-            lines.append("- %s %s" % (f["text"], _citation(f)))
-    return "\n".join(lines)
+# ------------------------------------------------- question-conditioned selection
+
+FACT_FTS_SCHEMA = """
+CREATE VIRTUAL TABLE IF NOT EXISTS fact_fts USING fts5(
+    fact_id UNINDEXED, page_id UNINDEXED, text
+);
+"""
 
 
-def _render_brief(pages, facts_by_page, quote_limit=None):
-    parts = []
-    for page in pages:
-        block = _page_block(page, facts_by_page.get(page["id"], []), quote_limit)
-        if block.strip():
-            parts.append(block)
-    return "\n\n".join(parts)
+def _ensure_fact_fts(conn):
+    """Fact-level FTS5 index over fact text and quote. Rebuilt only when the facts
+    table has changed since the last build; safe to call repeatedly."""
+    conn.executescript(FACT_FTS_SCHEMA)
+    n_facts = conn.execute("SELECT COUNT(*) AS n FROM facts").fetchone()["n"]
+    n_indexed = conn.execute("SELECT COUNT(*) AS n FROM fact_fts").fetchone()["n"]
+    if n_indexed != n_facts:
+        conn.execute("DELETE FROM fact_fts")
+        conn.executemany(
+            "INSERT INTO fact_fts(fact_id, page_id, text) VALUES (?, ?, ?)",
+            [(r["id"], r["page_id"], r["text"] + "\n" + r["quote"])
+             for r in conn.execute("SELECT id, page_id, text, quote FROM facts")])
+        conn.commit()
+
+
+def _fact_fts_query(question):
+    """FTS5 MATCH expression: every word quoted, OR-ed, so arbitrary questions are
+    valid FTS syntax."""
+    return " OR ".join('"%s"' % w for w in re.findall(r"\w+", question))
+
+
+def _fact_fts_ranks(conn, question, limit=20):
+    """{fact_id: rank} in FTS5 rank order over fact text and quote, best (lowest
+    rank) first; {} when nothing matches."""
+    _ensure_fact_fts(conn)
+    try:
+        rows = conn.execute(
+            "SELECT fact_id FROM fact_fts WHERE fact_fts MATCH ?"
+            " ORDER BY rank LIMIT ?", (_fact_fts_query(question), limit)).fetchall()
+    except Exception:
+        return {}
+    return {r["fact_id"]: i for i, r in enumerate(rows)}
+
+
+def _question_type(question):
+    """Interrogative type: which value type must the answering fact carry?"""
+    q = question.lower()
+    if re.search(r"\bwhen\b|\bwhat year\b|\bwhat date\b|\bhow long\b|\bhow old\b", q):
+        return "when"
+    if re.search(r"\bwhere\b", q):
+        return "where"
+    if re.search(r"\bwho\b|\bwhom\b|\bwhose\b", q):
+        return "who"
+    if re.search(r"\bhow (?:many|much)\b", q):
+        return "number"
+    return "general"
+
+
+def _fact_slot_type(text, page_bucket):
+    """The value type a fact carries: when (date), number, where (place phrase) or
+    who (a claim on a people page). None when no specific type is detectable."""
+    if _DATE_RE.search(text):
+        return "when"
+    if _NUMBER_RE.search(text):
+        return "number"
+    if re.search(r"\b(?:in|at|near|from)\s+[A-Z][a-z]", text):
+        return "where"
+    if page_bucket == "people":
+        return "who"
+    return None
+
+
+def _slot_bonus(q_type, fact_text, page_bucket):
+    """Slot match: the question's interrogative should match the value type the fact
+    carries. Match earns a bonus; a detectable mismatch on a typed question earns a
+    small penalty (a 'when' question answered from a dateless fact is the phase-3
+    interference pattern)."""
+    if q_type == "general":
+        return 0.0
+    if _fact_slot_type(fact_text, page_bucket) == q_type:
+        return 0.15
+    return -0.05
+
+
+def _time_frame_tokens(question):
+    """Date/year/month mentions in the question, for near-duplicate time-frame
+    preference."""
+    return {m.group(0).lower() for m in _DATE_RE.finditer(question)}
+
+
+def _jaccard(a, b):
+    sa, sb = set(a), set(b)
+    if not sa or not sb:
+        return 0.0
+    return len(sa & sb) / len(sa | sb)
+
+
+def select_facts(conn, brain_id, question, budget_tokens):
+    """Question-conditioned fact selection (phase 4).
+
+    Scores every eligible fact (P8) by:
+    - lexical overlap between the fact and the question's content tokens;
+    - embedding similarity (cached per-fact vectors, local endpoint, P12);
+    - entity match: the question's subject tokens against the page title;
+    - slot match: the question's interrogative vs the fact's value type;
+    - an FTS5 rank bonus over the fact-level text+quote index.
+
+    Then, deterministically:
+    - collapses near-duplicates within a page (same slot rephrased — the twelve
+      camping facts), keeping the fact that best matches the question's time
+      frame, then the best-scoring, then the earliest capture (canonical, P7);
+    - applies a diversity cap of 3 facts per page, lifted when the question names
+      that page's entity, so one entity cannot flood the brief;
+    - packs facts in score order until the token budget is reached;
+    - orders the survivors chronologically by capture timestamp, so the brief
+      carries the chronology that disambiguates dates (phase-3 diagnosis).
+
+    Returns the selected fact rows in render order.
+    """
+    history = is_history_question(question)
+    facts = eligible_facts(conn, brain_id, include_superseded=history)
+    pages = {p["id"]: p for p in _page_texts(conn, brain_id)}
+    q_tokens = set(_content_tokens(question))
+    q_type = _question_type(question)
+    q_key = _query_key(question)
+    q_vec = cached_embeddings(conn, "query", [(q_key, question)])[q_key]
+    fact_vecs = cached_embeddings(conn, "fact",
+                                  [(str(f["id"]), f["text"]) for f in facts])
+    fts_ranks = _fact_fts_ranks(conn, question)
+
+    scored = []
+    for f in facts:
+        page = pages.get(f["page_id"])
+        bucket = page["bucket"] if page else None
+        ftoks = set(_content_tokens(f["text"]))
+        lex = (len(ftoks & q_tokens) / len(q_tokens)) if q_tokens else 0.0
+        vec = fact_vecs.get(str(f["id"]))
+        sim = _cosine(q_vec, vec) if vec is not None else 0.0
+        ent = 0.0
+        if page:
+            ent = 0.15 * len(set(_content_tokens(page["title"])) & q_tokens)
+        fts_bonus = 0.25 / (fts_ranks[f["id"]] + 1) if f["id"] in fts_ranks else 0.0
+        score = lex + sim + ent + _slot_bonus(q_type, f["text"], bucket) + fts_bonus
+        scored.append((score, f))
+    scored.sort(key=lambda t: (-t[0], t[1]["id"]))
+
+    # Near-duplicate collapse within each page: greedily group facts whose content
+    # tokens overlap heavily, keep one per group.
+    by_page = {}
+    for score, f in scored:
+        by_page.setdefault(f["page_id"], []).append((score, f))
+    q_time = _time_frame_tokens(question)
+    winners = []
+    for page_id in sorted(by_page):
+        items = by_page[page_id]
+        used = [False] * len(items)
+        for i, (si, fi) in enumerate(items):
+            if used[i]:
+                continue
+            cluster = [(si, fi)]
+            used[i] = True
+            ti = set(_content_tokens(fi["text"]))
+            for j in range(i + 1, len(items)):
+                if used[j]:
+                    continue
+                sj, fj = items[j]
+                if _jaccard(ti, set(_content_tokens(fj["text"]))) >= 0.5:
+                    cluster.append((sj, fj))
+                    used[j] = True
+
+            def _keep(t):
+                s, f = t
+                frame = len(q_time & {m.group(0).lower()
+                                      for m in _DATE_RE.finditer(f["text"])})
+                return (-frame, -s, f["id"])
+
+            winners.append(sorted(cluster, key=_keep)[0])
+    winners.sort(key=lambda t: (-t[0], t[1]["id"]))
+
+    # Diversity cap + budget packing, in score order. The "### Records" header is
+    # part of the rendered block, so it counts against the budget too.
+    selected = []
+    per_page = {}
+    est = _token_estimate("### Records\n")
+    for score, f in winners:
+        page = pages.get(f["page_id"])
+        named = bool(page and set(_content_tokens(page["title"])) & q_tokens)
+        if not named and per_page.get(f["page_id"], 0) >= 3:
+            continue
+        cost = _token_estimate("- %s %s\n" % (f["text"], _citation(f)))
+        if selected and est + cost > budget_tokens:
+            continue
+        selected.append(f)
+        est += cost
+        per_page[f["page_id"]] = per_page.get(f["page_id"], 0) + 1
+
+    # Chronological order: capture timestamp, then capture id, then span.
+    stamps = {r["id"]: r["captured_at"] for r in
+              conn.execute("SELECT id, captured_at FROM captures")}
+    selected.sort(key=lambda f: (stamps.get(f["capture_id"], ""), f["capture_id"],
+                                 f["span_start"]))
+    return selected
 
 
 def build_brief(conn, brain_id, question, budget_tokens=4000):
-    """Assemble the prefix-stable brief. Returns (stable_text, question_text).
+    """Assemble the brief. Returns (stable_text, question_text, selected_facts).
 
-    The stable text is the compiled canonical content — page headers, active claims,
-    each with a compact `[capture N, span a:b]` citation — and is byte-identical
-    across calls for the same brain. The question is deliberately NOT used to select
-    or order stable content: question-dependent trimming would change the cached
-    prefix per question and defeat TensorFold's per-message-boundary reuse (P9).
+    stable_text — the canonical entity directory (page headers), byte-identical for
+    the same brain and question-independent by construction, so TensorFold's
+    per-message-boundary prefix cache keeps hitting (P9). It occupies its own
+    leading system message.
 
-    Trimming order when over budget: drop low-ranked pages (fewest eligible facts
-    first), then low-ranked facts (newest id first, keeping the earliest canonical
-    citation), then shorten quotes. Citations are never dropped.
+    question_text — the volatile user message: the question-conditioned selected
+    records followed by the question. Selection varies per question; the prefix
+    may not.
+
+    selected_facts — the facts selected for this question, in render order, as
+    plain dicts ({id, text, quote, status, capture_id, page_id}).
     """
     pages = _page_texts(conn, brain_id)
-    facts = eligible_facts(conn, brain_id)
-    facts_by_page = {}
-    for f in facts:
-        facts_by_page.setdefault(f["page_id"], []).append(f)
+    stable = "\n".join("## %s (%s)" % (p["title"], p["path"]) for p in pages)
 
-    def render(pages_list, facts_map, quote_limit=None):
-        return _render_brief(pages_list, facts_map, quote_limit)
+    selected = select_facts(conn, brain_id, question, budget_tokens)
+    if selected:
+        lines = ["### Records"]
+        for f in selected:
+            lines.append("- %s %s" % (f["text"], _citation(f)))
+        volatile = "\n".join(lines) + "\n\n### Question\n" + question
+    else:
+        volatile = "### Question\n" + question
 
-    stable = render(pages, facts_by_page)
-    if _token_estimate(stable) <= budget_tokens:
-        return stable, question
-
-    # 1. Drop low-ranked pages: fewest eligible facts first, deterministic tiebreak
-    #    on path so the result is reproducible.
-    ranked = sorted(pages, key=lambda p: (len(facts_by_page.get(p["id"], [])), p["path"]))
-    kept = list(pages)
-    for page in ranked:
-        if _token_estimate(render(kept, facts_by_page)) <= budget_tokens:
-            break
-        if len(kept) > 1:
-            kept = [p for p in kept if p["id"] != page["id"]]
-    stable = render(kept, facts_by_page)
-
-    # 2. Drop low-ranked facts: newest id first (earliest capture stays canonical).
-    if _token_estimate(stable) > budget_tokens:
-        for page in kept:
-            flist = facts_by_page.get(page["id"], [])
-            if len(flist) > 1:
-                flist_sorted = sorted(flist, key=lambda f: f["id"], reverse=True)
-                for f in flist_sorted:
-                    if _token_estimate(render(kept, facts_by_page)) <= budget_tokens:
-                        break
-                    if len(facts_by_page[page["id"]]) > 1:
-                        facts_by_page[page["id"]] = [
-                            x for x in facts_by_page[page["id"]] if x["id"] != f["id"]]
-        stable = render(kept, facts_by_page)
-
-    # 3. Shorten quotes; citations stay.
-    for limit in (200, 120, 80, 40):
-        if _token_estimate(stable) <= budget_tokens:
-            break
-        stable = render(kept, facts_by_page, quote_limit=limit)
-
-    return stable, question
+    dicts = [{"id": f["id"], "text": f["text"], "quote": f["quote"],
+              "status": f["status"], "capture_id": f["capture_id"],
+              "page_id": f["page_id"]} for f in selected]
+    return stable, volatile, dicts
 
 
 # ------------------------------------------------------------------- citations

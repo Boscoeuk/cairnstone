@@ -84,27 +84,45 @@ def test_search_excludes_duplicates(brain, monkeypatch):
     assert len(fact_hits) == 1 and fact_hits[0]["id"] == canon
 
 
-def test_build_brief_is_question_independent_and_cited(brain):
+def test_build_brief_prefix_is_question_independent(brain):
     conn, brain_id = brain
     _add_page_fact(conn, brain_id, "Alice", "people/alice", "Alice has 2 cats",
                    "Alice has 2 cats")
     _add_page_fact(conn, brain_id, "Bob", "people/bob", "Bob has a dog", "Bob has a dog")
-    a, qa = retrieve.build_brief(conn, brain_id, "question one")
-    b, qb = retrieve.build_brief(conn, brain_id, "a completely different question")
+    a, va, fa = retrieve.build_brief(conn, brain_id, "question one")
+    b, vb, fb = retrieve.build_brief(conn, brain_id, "a completely different question")
     assert a == b  # byte-identical stable prefix across questions (P9)
-    assert qa == "question one" and qb == "a completely different question"
-    assert "[capture 1, span 0:16]" in a
-    assert "superseded" not in a
+    assert va.endswith("### Question\nquestion one")
+    assert vb.endswith("### Question\na completely different question")
+    assert "[capture 1, span 0:16]" in va  # citations ride on the selected records
+    assert "superseded" not in va
 
 
-def test_build_brief_trims_pages_then_facts_then_quotes(brain):
+def test_build_brief_respects_budget_on_records(brain):
     conn, brain_id = brain
     for i in range(6):
         _add_page_fact(conn, brain_id, "P%d" % i, "people/p%d" % i,
                        "fact %d is here" % i, "fact %d is here" % i)
-    stable, _ = retrieve.build_brief(conn, brain_id, "q", budget_tokens=20)
-    assert _token_est(stable) <= 20
-    assert "[capture" in stable  # citations never dropped
+    stable, volatile, facts = retrieve.build_brief(conn, brain_id, "fact",
+                                                   budget_tokens=20)
+    records = volatile.split("### Question")[0]
+    assert _token_est(records) <= 20
+    assert "[capture" in records  # citations never dropped
+    assert len(facts) >= 1
+
+
+def test_build_brief_admits_superseded_only_for_history(brain):
+    conn, brain_id = brain
+    _add_page_fact(conn, brain_id, "Alice", "people/alice", "Alice has 2 cats",
+                   "Alice has 2 cats", status="superseded")
+    _add_page_fact(conn, brain_id, "Bob", "people/bob", "Bob has a dog", "Bob has a dog")
+    _, volatile_now, facts_now = retrieve.build_brief(
+        conn, brain_id, "how many cats does Alice have")
+    assert all(f["status"] != "superseded" for f in facts_now)
+    _, volatile_hist, facts_hist = retrieve.build_brief(
+        conn, brain_id, "what did Alice used to have?")
+    assert any(f["status"] == "superseded" for f in facts_hist)
+    assert "Alice has 2 cats" in volatile_hist
 
 
 def _token_est(text):
@@ -123,20 +141,112 @@ def test_render_citations_expands_source_ref_and_quote(brain):
     assert out[0]["span"] == (0, 16)
 
 
-def test_superseded_fact_flagged_in_brief_metrics(brain):
+# ------------------------------------------------------------------ phase 4
+
+def _add_fact_on_page(conn, brain_id, page_id, claim, quote_body, captured_at=None,
+                      status="active"):
+    cap = store.add_capture(conn, brain_id, "conversation", quote_body, "src",
+                            captured_at=captured_at)
+    version_id = conn.execute(
+        "SELECT current_version_id FROM pages WHERE id = ?", (page_id,)).fetchone()[0]
+    fact_id = store.add_fact(conn, page_id, version_id, claim, cap, 0, len(quote_body))
+    if status != "active":
+        conn.execute("UPDATE facts SET status = ? WHERE id = ?", (status, fact_id))
+        conn.commit()
+    return fact_id
+
+
+def _flat_embeddings(monkeypatch, dim=8):
+    """Constant unit vector for every text: embedding similarity carries no signal,
+    so score differences come only from lexical, entity, slot and FTS terms."""
+    monkeypatch.setattr(retrieve, "_request_embeddings",
+                        lambda texts: [[1.0 / dim] * dim for _ in texts])
+
+
+def test_select_facts_diversity_cap(brain, monkeypatch):
     conn, brain_id = brain
-    _add_page_fact(conn, brain_id, "Alice", "people/alice", "Alice has 2 cats",
-                   "Alice has 2 cats", status="superseded")
-    _add_page_fact(conn, brain_id, "Bob", "people/bob", "Bob has a dog", "Bob has a dog")
-    import hashlib
+    page, _ = _add_page_fact(conn, brain_id, "Melanie", "people/melanie",
+                             "Camping in the forest", "Camping in the forest")
+    for place in ("beach", "mountains", "lake", "desert"):
+        _add_fact_on_page(conn, brain_id, page, "Camping in the %s" % place,
+                          "Camping in the %s" % place)
+    other, _ = _add_page_fact(conn, brain_id, "Bob", "people/bob",
+                              "Bob went camping in May", "Bob went camping in May")
+    _fake_embeddings(monkeypatch)
+    selected = retrieve.select_facts(conn, brain_id, "camping", budget_tokens=4000)
+    melanie = [f for f in selected if f["page_id"] == page]
+    assert len(melanie) <= 3  # cap: one entity cannot flood the brief
+    assert any(f["page_id"] == other for f in selected)
 
-    def fake(texts):
-        return [[(int(hashlib.sha256(t.encode()).hexdigest()[i % 60], 16) % 7) + 0.1
-                 for _ in range(8)] for i, t in enumerate(texts)]
 
-    # history question admits the superseded fact; build_brief still renders it
-    stable, _ = retrieve.build_brief(conn, brain_id, "what did Alice used to have?")
-    # The default brief carries only active facts (P8); history admission is a
-    # search-level concern, not a brief-level one.
-    assert "Alice has 2 cats" not in stable
-    assert "Bob has a dog" in stable
+def test_select_facts_cap_lifted_when_entity_named(brain, monkeypatch):
+    conn, brain_id = brain
+    page, _ = _add_page_fact(conn, brain_id, "Melanie", "people/melanie",
+                             "Camping in the forest", "Camping in the forest")
+    for place in ("beach", "mountains", "lake", "desert"):
+        _add_fact_on_page(conn, brain_id, page, "Camping in the %s" % place,
+                          "Camping in the %s" % place)
+    _fake_embeddings(monkeypatch)
+    selected = retrieve.select_facts(conn, brain_id, "when is Melanie going camping",
+                                     budget_tokens=4000)
+    assert len([f for f in selected if f["page_id"] == page]) == 5
+
+
+def test_select_facts_collapses_near_duplicates(brain, monkeypatch):
+    conn, brain_id = brain
+    page, _ = _add_page_fact(conn, brain_id, "Melanie", "people/melanie",
+                             "Melanie is thinking about going camping in June 2023",
+                             "Melanie is thinking about going camping in June 2023")
+    for extra in ("by the beach", "in the forest", "in the mountains", "at the lake",
+                  "with her sisters", "for a whole week"):
+        _add_fact_on_page(conn, brain_id, page,
+                          "Melanie is thinking about going camping in June 2023 " + extra,
+                          "Melanie is thinking about going camping in June 2023 " + extra)
+    _fake_embeddings(monkeypatch)
+    selected = retrieve.select_facts(conn, brain_id, "When is Melanie going camping?",
+                                     budget_tokens=4000)
+    assert len(selected) == 1  # twelve camping facts collapse to one slot keeper
+    assert "camping" in selected[0]["text"]
+
+
+def test_select_facts_chronological_order(brain, monkeypatch):
+    conn, brain_id = brain
+    page = store.create_page(conn, brain_id, "people/alice", "people", "Alice")
+    _add_fact_on_page(conn, brain_id, page, "Alice has 2 cats", "Alice has 2 cats",
+                      captured_at="2023-01-01T00:00:00+00:00")
+    _add_fact_on_page(conn, brain_id, page, "Alice works at a hospital",
+                      "Alice works at a hospital",
+                      captured_at="2022-01-01T00:00:00+00:00")
+    _add_fact_on_page(conn, brain_id, page, "Alice drives a blue car",
+                      "Alice drives a blue car",
+                      captured_at="2024-01-01T00:00:00+00:00")
+    _fake_embeddings(monkeypatch)
+    selected = retrieve.select_facts(conn, brain_id, "Alice", budget_tokens=4000)
+    assert [f["text"] for f in selected] == [
+        "Alice works at a hospital", "Alice has 2 cats", "Alice drives a blue car"]
+
+
+def test_select_facts_slot_match_prefers_dated_fact(brain, monkeypatch):
+    conn, brain_id = brain
+    _add_page_fact(conn, brain_id, "Melanie", "people/melanie",
+                   "Melanie painted a lake sunrise in 2022",
+                   "Melanie painted a lake sunrise in 2022")
+    _add_fact_on_page(conn, brain_id, 1, "Melanie paints every weekend",
+                      "Melanie paints every weekend")
+    _flat_embeddings(monkeypatch)
+    selected = retrieve.select_facts(conn, brain_id, "When did Melanie paint a sunrise?",
+                                     budget_tokens=25)
+    assert len(selected) == 1
+    assert selected[0]["text"] == "Melanie painted a lake sunrise in 2022"
+
+
+def test_gold_support_in_brief():
+    assert retrieve.gold_support_in_brief(
+        "2022", ["Melanie painted a lake sunrise in 2022"])
+    assert retrieve.gold_support_in_brief(
+        "Sweden", ["Caroline moved from Sweden to Denmark"])
+    assert retrieve.gold_support_in_brief(
+        "June 2023", ["Melanie is going camping in June 2023 by the lake"])
+    assert not retrieve.gold_support_in_brief("Sweden", ["Alice has 2 cats"])
+    assert not retrieve.gold_support_in_brief(
+        "7 May 2023", ["Melanie painted a sunrise in 2022"])
