@@ -31,6 +31,22 @@ Engine: `tensorfold-native 1.0.7`, `GLM-5.3-Flash-MLX-4bit-MTP`, `--context 2621
 Prefix reuse is real, measurable, and exposed per request. This is the single most important
 performance fact for Cairn: a **stable prefix** turns a 31 s cold start into 0.11 s.
 
+## Prefix reuse is per message boundary (measured 2026-11-05)
+
+This is the single most important integration fact. Reuse is keyed at a **message boundary**,
+not on arbitrary text prefixes:
+
+| Shape | Result |
+|---|---|
+| Stable text in its own leading `system` message, volatile question in a later message | cached 11,152 tokens, TTFT **26.1 s → 0.12 s** across *different* questions |
+| Whole context plus question concatenated into one `user` message | cached 0 on a changed question; only an exact repeat hits |
+| Exact prompt repeated | cached (e.g. 45,531 of 45,534 tokens), TTFT 90 s → 0.04 s |
+
+Consequence: a brief that is merely "prefix-compatible" is worthless. The stable compiled
+content must occupy a distinct leading message, byte-identical across calls. Measured effect
+is roughly a 200x reduction in time to first token, which changes what is economically possible
+for an agent that asks several questions of the same memory.
+
 ## API constraints discovered (engine 1.0.7)
 
 1. **No structured output.** `response_format` (`json_object` and `json_schema`) and the

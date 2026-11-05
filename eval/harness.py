@@ -1,15 +1,23 @@
 """Phase 0 evaluation harness: full-context baseline vs naive RAG over LoCoMo.
 
+the maintainer owns this file. It was first drafted by an coding-agent worker and then corrected on
+independent review for four defects: a judge that substring-matched "correct" inside
+"INCORRECT", thinking left on (which empties `content` on TensorFold), no cap on the
+number of questions (a 3-sample run was ~600 questions), and no engine telemetry.
+
 Usage:
-    python -m eval.harness --backend full_context --limit 10
-    python -m eval.harness --backend naive_rag --limit 10
-    python -m eval.harness --baseline --limit 3
+    python -m eval.harness --baseline --limit 1 --max-questions 12
+    python -m eval.harness --backend naive_rag --limit 2 --max-questions 40
+
+Numbers produced here are LOCAL-JUDGED (local-judge), not GPT-judged. They are
+comparable in shape to published LoCoMo figures, not identical in judge.
 """
 from __future__ import annotations
 
 import argparse
 import datetime as dt
 import json
+import re
 import time
 from pathlib import Path
 
@@ -24,14 +32,16 @@ EMBED_URL = "http://127.0.0.1:1234/v1/embeddings"
 ANSWER_MODEL = "glm-5.3-flash"
 JUDGE_MODEL = "local-judge"
 EMBED_MODEL = "text-embedding-nomic-embed-text-v1.5"
-TIMEOUT = 120
+TIMEOUT = 180
 HEADERS = {"Authorization": "Bearer local", "Content-Type": "application/json"}
 
+# Category numbers are NOT documented in the LoCoMo README. This mapping is inferred from
+# the question content and the per-category counts (1:282, 2:321, 3:96, 4:841, 5:446).
 CATEGORY_NAMES = {
-    1: "single-hop",
+    1: "multi-hop",
     2: "temporal",
-    3: "multi-hop",
-    4: "open-domain",
+    3: "commonsense",
+    4: "single-hop",
     5: "adversarial",
 }
 
@@ -39,7 +49,7 @@ CATEGORY_NAMES = {
 # ---------------------------------------------------------------- http helper
 def _post(url: str, payload: dict) -> dict:
     last_err: Exception | None = None
-    for attempt in range(3):  # initial try + 2 retries
+    for attempt in range(3):
         try:
             r = requests.post(url, headers=HEADERS, json=payload, timeout=TIMEOUT)
             r.raise_for_status()
@@ -51,29 +61,63 @@ def _post(url: str, payload: dict) -> dict:
     raise RuntimeError(f"POST {url} failed after 3 attempts: {last_err}")
 
 
-def _chat(url: str, model: str, messages: list[dict], max_tokens: int = 256) -> tuple[str, dict]:
+def _chat(url: str, model: str, messages: list[dict], max_tokens: int = 256,
+          think: bool = False) -> dict:
+    """One completion. Returns text, usage and TensorFold engine telemetry.
+
+    TensorFold ignores a top-level `enable_thinking`; the supported switch is
+    chat_template_kwargs.enable_thinking. With thinking on, the answer can land in
+    reasoning_content with `content` empty, so both are inspected.
+    """
+    t0 = time.perf_counter()
     data = _post(url, {
         "model": model,
         "messages": messages,
         "max_tokens": max_tokens,
         "temperature": 0.0,
+        "chat_template_kwargs": {"enable_thinking": think},
     })
-    text = data["choices"][0]["message"]["content"]
-    return text, data.get("usage", {})
+    wall = time.perf_counter() - t0
+    msg = data["choices"][0]["message"]
+    content = (msg.get("content") or "").strip()
+    reasoning = (msg.get("reasoning_content") or "").strip()
+    flags = []
+    if not content and reasoning:
+        content = reasoning
+        flags.append("content_empty_used_reasoning")
+    tf = data.get("tensorfold", {}) or {}
+    usage = data.get("usage", {}) or {}
+    cached = (usage.get("prompt_tokens_details") or {}).get("cached_tokens", 0)
+    return {
+        "text": content,
+        "usage": usage,
+        "flags": flags,
+        "engine": {
+            "engine": tf.get("engine"),
+            "tokens_per_second": tf.get("tokens_per_second"),
+            "prefill_seconds": tf.get("prefill_seconds"),
+            "time_to_first_token": tf.get("time_to_first_token"),
+            "cached_tokens": cached,
+            "wall_seconds": round(wall, 3),
+        },
+    }
 
 
 # ------------------------------------------------------------------- dataset
 def load_locomo(path: Path = DATASET) -> list[dict]:
-    """Load LoCoMo samples: {sample_id, conversation, qa:[{question,answer,evidence,category}]}."""
     with open(path) as f:
         return json.load(f)
 
 
+def _session_sort_key(key: str) -> tuple:
+    m = re.search(r"(\d+)$", key)
+    return (int(m.group(1)) if m else 0, key)
+
+
 def conversation_text(sample: dict) -> str:
-    """Flatten a sample's conversation into one transcript string."""
     conv = sample["conversation"]
     lines: list[str] = []
-    for key in sorted(conv):
+    for key in sorted(conv, key=_session_sort_key):
         if key.endswith("_date_time"):
             lines.append(f"[{key.replace('_date_time', '')} date: {conv[key]}]")
             continue
@@ -83,7 +127,7 @@ def conversation_text(sample: dict) -> str:
         for turn in session:
             if "speaker" in turn and "text" in turn:
                 lines.append(f"{turn['speaker']}: {turn['text']}")
-            elif "text" in turn:  # image/blind turns carry text but no speaker
+            elif "text" in turn:
                 lines.append(turn["text"])
     return "\n".join(lines)
 
@@ -97,7 +141,7 @@ class Backend:
 
 
 class FullContextBackend(Backend):
-    """Stuff the whole conversation into the prompt."""
+    """Stuff the whole conversation into the prompt. The reference baseline."""
 
     name = "full_context"
 
@@ -105,34 +149,36 @@ class FullContextBackend(Backend):
         self.transcript = conversation_text(sample)
 
     def ask(self, question: str) -> dict:
-        prompt = (
-            "You are answering questions about a conversation. Use only the "
-            "conversation below. Answer concisely.\n\n"
-            f"### Conversation\n{self.transcript}\n\n"
-            f"### Question\n{question}\n\nAnswer:"
+        # TensorFold reuses a cached prompt only at a message boundary: the stable
+        # context must be its own leading message, with the volatile question after it.
+        # Measured: 26s TTFT cold vs 0.12s cached across different questions. Putting
+        # the transcript and the question in one user message defeats reuse entirely.
+        stable = (
+            "You are answering questions about a conversation. Use only the conversation "
+            "below. Answer with a short phrase, not a sentence.\n\n"
+            f"### Conversation\n{self.transcript}"
         )
-        t0 = time.perf_counter()
-        answer, usage = _chat(ANSWER_URL, ANSWER_MODEL, [
-            {"role": "user", "content": prompt},
-        ])
-        latency = time.perf_counter() - t0
-        if usage.get("prompt_tokens") is not None:
-            ctx_tokens = usage["prompt_tokens"]
-            estimated = False
-        else:
-            ctx_tokens = len(prompt) // 4
-            estimated = True
+        out = _chat(ANSWER_URL, ANSWER_MODEL, [
+            {"role": "system", "content": stable},
+            {"role": "user", "content": f"### Question\n{question}\n\nAnswer:"},
+        ], 128)
+        return self._result(out, stable, ["full_conversation"])
+
+    def _result(self, out: dict, prompt: str, sources: list[str]) -> dict:
+        pt = out["usage"].get("prompt_tokens")
         return {
-            "answer": answer.strip(),
-            "context_tokens": ctx_tokens,
-            "tokens_estimated": estimated,
-            "latency_s": latency,
-            "sources": ["full_conversation"],
+            "answer": out["text"],
+            "context_tokens": pt if pt is not None else len(prompt) // 4,
+            "tokens_estimated": pt is None,
+            "latency_s": out["engine"]["wall_seconds"],
+            "sources": sources,
+            "flags": out["flags"],
+            "engine": out["engine"],
         }
 
 
-class NaiveRagBackend(Backend):
-    """Chunk the conversation, embed locally, retrieve top-k, answer from chunks."""
+class NaiveRagBackend(FullContextBackend):
+    """Chunk, embed locally, retrieve top-k, answer from those chunks."""
 
     name = "naive_rag"
 
@@ -143,9 +189,7 @@ class NaiveRagBackend(Backend):
     def ingest(self, sample: dict) -> None:
         self.chunks: list[dict] = []
         conv = sample["conversation"]
-        for key in sorted(conv):
-            if key.endswith("_date_time"):
-                continue
+        for key in sorted(conv, key=_session_sort_key):
             session = conv[key]
             if not isinstance(session, list):
                 continue
@@ -163,91 +207,105 @@ class NaiveRagBackend(Backend):
                 self.chunks.append({"session": key, "text": "\n".join(buf)})
         if not self.chunks:
             self.chunks = [{"session": "none", "text": "(empty)"}]
-        resp = _post(EMBED_URL, {
-            "model": EMBED_MODEL,
-            "input": [c["text"] for c in self.chunks],
-        })
+        resp = _post(EMBED_URL, {"model": EMBED_MODEL,
+                                 "input": [c["text"] for c in self.chunks]})
         self.embeddings = [d["embedding"] for d in resp["data"]]
 
     def _retrieve(self, question: str) -> list[dict]:
         resp = _post(EMBED_URL, {"model": EMBED_MODEL, "input": [question]})
         q = resp["data"][0]["embedding"]
+
         def dot(e: list[float]) -> float:
             return sum(a * b for a, b in zip(q, e))
-        scored = sorted(zip(self.embeddings, self.chunks), key=lambda p: dot(p[0]), reverse=True)
-        return [c for _, c in scored[: self.top_k]]
+
+        ranked = sorted(zip(self.embeddings, self.chunks), key=lambda p: dot(p[0]),
+                        reverse=True)
+        return [c for _, c in ranked[: self.top_k]]
 
     def ask(self, question: str) -> dict:
         chunks = self._retrieve(question)
         context = "\n\n".join(f"[{c['session']}]\n{c['text']}" for c in chunks)
-        prompt = (
-            "Answer the question using only the context below. Answer concisely.\n\n"
-            f"### Context\n{context}\n\n### Question\n{question}\n\nAnswer:"
+        stable = (
+            "Answer the question using only the context below. Answer with a short "
+            "phrase, not a sentence.\n\n"
+            f"### Context\n{context}"
         )
-        t0 = time.perf_counter()
-        answer, usage = _chat(ANSWER_URL, ANSWER_MODEL, [
-            {"role": "user", "content": prompt},
-        ])
-        latency = time.perf_counter() - t0
-        if usage.get("prompt_tokens") is not None:
-            ctx_tokens = usage["prompt_tokens"]
-            estimated = False
-        else:
-            ctx_tokens = len(prompt) // 4
-            estimated = True
-        return {
-            "answer": answer.strip(),
-            "context_tokens": ctx_tokens,
-            "tokens_estimated": estimated,
-            "latency_s": latency,
-            "sources": [c["session"] for c in chunks],
-        }
+        out = _chat(ANSWER_URL, ANSWER_MODEL, [
+            {"role": "system", "content": stable},
+            {"role": "user", "content": f"### Question\n{question}\n\nAnswer:"},
+        ], 128)
+        return self._result(out, stable, [c["session"] for c in chunks])
 
 
 BACKENDS = {b.name: b for b in (FullContextBackend(), NaiveRagBackend())}
 
 
 # --------------------------------------------------------------------- judge
-JUDGE_PROMPT = """You are grading a QA system. Decide whether the PREDICTED answer is
-correct given the GOLD answer. Accept paraphrases and different formats that convey the
-same fact. Answer with exactly one word: CORRECT or INCORRECT.
+JUDGE_PROMPT = """You grade a question-answering system. Decide whether the PREDICTED
+answer conveys the same fact as the GOLD answer. Accept paraphrases and different formats
+that mean the same thing. Ignore extra detail that does not contradict the gold answer.
 
 Question: {question}
 Gold answer: {gold}
 Predicted answer: {predicted}
 
-Verdict (CORRECT or INCORRECT):"""
+Reply with exactly one word: CORRECT or INCORRECT."""
 
 
-def judge(question: str, gold: str, predicted: str, model: str = JUDGE_MODEL) -> bool:
-    text, _ = _chat(JUDGE_URL, model, [
-        {"role": "user", "content": JUDGE_PROMPT.format(
-            question=question, gold=gold, predicted=predicted)},
-    ], max_tokens=8)
-    return "correct" in text.strip().lower()
+def judge(question: str, gold: str, predicted: str, model: str = JUDGE_MODEL) -> tuple[bool, bool]:
+    """Returns (correct, ambiguous).
+
+    Parsed strictly: 'INCORRECT' is tested before 'CORRECT' because it contains it.
+    An empty prediction is incorrect without asking the model.
+    """
+    if not predicted.strip():
+        return False, False
+    out = _chat(JUDGE_URL, model, [{"role": "user", "content": JUDGE_PROMPT.format(
+        question=question, gold=gold, predicted=predicted)}], max_tokens=12)
+    text = out["text"].strip().upper()
+    if text.startswith("INCORRECT"):
+        return False, False
+    if text.startswith("CORRECT"):
+        return True, False
+    if re.search(r"\bINCORRECT\b", text):
+        return False, False
+    if re.search(r"\bCORRECT\b", text):
+        return True, False
+    return False, True
 
 
 # -------------------------------------------------------------------- runner
-def run_backend(backend: Backend, samples: list[dict], judge_model: str) -> list[dict]:
+def run_backend(backend: Backend, samples: list[dict], judge_model: str,
+                max_questions: int | None) -> list[dict]:
     rows = []
+    asked = 0
     for sample in samples:
         backend.ingest(sample)
         for qa in sample["qa"]:
+            if max_questions is not None and asked >= max_questions:
+                break
+            asked += 1
             result = backend.ask(qa["question"])
-            correct = judge(qa["question"], qa["answer"], result["answer"], judge_model)
+            correct, ambiguous = judge(qa["question"], str(qa["answer"]),
+                                       result["answer"], judge_model)
             rows.append({
                 "sample_id": sample["sample_id"],
                 "question": qa["question"],
-                "gold": qa["answer"],
+                "gold": str(qa["answer"]),
                 "predicted": result["answer"],
                 "correct": correct,
+                "judge_ambiguous": ambiguous,
                 "category": qa["category"],
                 "category_name": CATEGORY_NAMES.get(qa["category"], str(qa["category"])),
                 "context_tokens": result["context_tokens"],
                 "tokens_estimated": result["tokens_estimated"],
-                "latency_s": round(result["latency_s"], 3),
+                "latency_s": result["latency_s"],
                 "sources": result["sources"],
+                "flags": result["flags"],
+                "engine": result["engine"],
             })
+        if max_questions is not None and asked >= max_questions:
+            break
     return rows
 
 
@@ -255,25 +313,43 @@ def aggregate(rows: list[dict]) -> dict:
     by_cat: dict[str, list[bool]] = {}
     for r in rows:
         by_cat.setdefault(r["category_name"], []).append(r["correct"])
+    engine = [r["engine"] for r in rows if r["engine"]]
+    mean = lambda xs: round(sum(xs) / len(xs), 3) if xs else None  # noqa: E731
     return {
-        cat: {"n": len(v), "accuracy": round(sum(v) / len(v), 3)}
-        for cat, v in sorted(by_cat.items())
+        "accuracy_by_category": {
+            cat: {"n": len(v), "accuracy": round(sum(v) / len(v), 3)}
+            for cat, v in sorted(by_cat.items())
+        },
+        "n_questions": len(rows),
+        "accuracy_overall": round(sum(r["correct"] for r in rows) / max(len(rows), 1), 3),
+        "judge_ambiguous_count": sum(r["judge_ambiguous"] for r in rows),
+        "mean_context_tokens": mean([r["context_tokens"] for r in rows]),
+        "mean_latency_s": mean([r["latency_s"] for r in rows]),
+        "mean_engine_tokens_per_second": mean(
+            [e["tokens_per_second"] for e in engine if e.get("tokens_per_second")]),
+        "mean_engine_prefill_seconds": mean(
+            [e["prefill_seconds"] for e in engine if e.get("prefill_seconds") is not None]),
+        "prompt_cache_hit_rate": mean(
+            [1.0 if e.get("cached_tokens") else 0.0 for e in engine]),
     }
 
 
-def save_results(backend_name: str, rows: list[dict], judge_model: str) -> Path:
+def save_results(backend_name: str, rows: list[dict], judge_model: str,
+                 answer_model: str) -> Path:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     date = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
     path = RESULTS_DIR / f"{date}-{backend_name}.json"
     doc = {
         "dataset": DATASET.name,
+        "dataset_license": "LoCoMo, Snap Research, ACL 2024 (research use)",
         "backend": backend_name,
+        "answer_model": answer_model,
         "judge_model": judge_model,
+        "judge_note": "local-judged; not GPT-judged, so not directly comparable to "
+                      "published LoCoMo figures",
+        "engine": "TensorFold (tensorfold-native)",
         "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
-        "aggregate_accuracy_by_category": aggregate(rows),
-        "mean_context_tokens": round(
-            sum(r["context_tokens"] for r in rows) / max(len(rows), 1), 1),
-        "mean_latency_s": round(sum(r["latency_s"] for r in rows) / max(len(rows), 1), 3),
+        "aggregate": aggregate(rows),
         "rows": rows,
     }
     path.write_text(json.dumps(doc, indent=2))
@@ -281,22 +357,24 @@ def save_results(backend_name: str, rows: list[dict], judge_model: str) -> Path:
 
 
 def comparison_table(results: dict[str, dict]) -> str:
-    lines = [
-        "| backend | accuracy | mean context tokens | mean latency (s) |",
-        "|---|---|---|---|",
-    ]
+    lines = ["| backend | accuracy | questions | mean context tokens | mean latency (s) | "
+             "cache hit |", "|---|---|---|---|---|---|"]
     for name, doc in results.items():
-        acc = sum(r["correct"] for r in doc["rows"]) / max(len(doc["rows"]), 1)
+        a = doc["aggregate"]
         lines.append(
-            f"| {name} | {acc:.1%} | {doc['mean_context_tokens']} | {doc['mean_latency_s']} |")
+            f"| {name} | {a['accuracy_overall']:.1%} | {a['n_questions']} | "
+            f"{a['mean_context_tokens']} | {a['mean_latency_s']} | "
+            f"{a['prompt_cache_hit_rate']} |")
     return "\n".join(lines)
 
 
 def main() -> None:
     ap = argparse.ArgumentParser(description="Phase 0 memory-quality harness")
-    ap.add_argument("--backend", choices=sorted(BACKENDS), help="backend to run")
+    ap.add_argument("--backend", choices=sorted(BACKENDS))
     ap.add_argument("--baseline", action="store_true", help="run both backends + table")
-    ap.add_argument("--limit", type=int, default=None, help="max samples to evaluate")
+    ap.add_argument("--limit", type=int, default=None, help="max samples (conversations)")
+    ap.add_argument("--max-questions", type=int, default=25,
+                    help="max questions per run (default 25; use 0 for all)")
     ap.add_argument("--judge-model", default=JUDGE_MODEL)
     args = ap.parse_args()
 
@@ -306,15 +384,18 @@ def main() -> None:
     samples = load_locomo()
     if args.limit:
         samples = samples[: args.limit]
+    max_q = None if args.max_questions == 0 else args.max_questions
 
     names = sorted(BACKENDS) if args.baseline else [args.backend]
     saved: dict[str, dict] = {}
     for name in names:
-        print(f"=== running backend: {name} ({len(samples)} samples) ===", flush=True)
-        rows = run_backend(BACKENDS[name], samples, args.judge_model)
-        path = save_results(name, rows, args.judge_model)
+        print(f"=== {name}: {len(samples)} sample(s), "
+              f"{'all' if max_q is None else max_q} question(s) ===", flush=True)
+        t0 = time.perf_counter()
+        rows = run_backend(BACKENDS[name], samples, args.judge_model, max_q)
+        path = save_results(name, rows, args.judge_model, ANSWER_MODEL)
         saved[name] = json.loads(path.read_text())
-        print(f"wrote {path}", flush=True)
+        print(f"wrote {path} in {time.perf_counter() - t0:.1f}s", flush=True)
 
     if args.baseline:
         print()
