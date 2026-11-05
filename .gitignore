@@ -5,3 +5,7 @@ eval/results/cairn-db/
 *.tmp*
 __pycache__/
 *.pyc
+build/
+*.egg-info/
+.pytest_cache/
+.venv/

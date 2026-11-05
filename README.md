@@ -88,11 +88,15 @@ the Markdown export print it under every claim.
 
 Phase 9 (150 LoCoMo questions, 2 conversations, 1,276 mean context tokens):
 
-| backend | accuracy | mean context tokens |
-|---|---|---|
-| **cairn (compiled memory)** | **77.3%** | **1,276** |
-| full context | 53.3% | ~15,000 |
-| naive chunk-RAG | 45.3% | — |
+| backend | accuracy | mean context tokens | median latency |
+|---|---|---|---|
+| **cairn (compiled memory)** | **77.3%** | **1,276** | 2.83 s |
+| full context | 53.3% | 13,278 | 2.73 s |
+| naive chunk-RAG | 45.3% | 932 | 2.71 s |
+
+By category, cairn wins temporal questions decisively (88.5% vs 32.8% full context) and multi-hop
+(67.5% vs 57.3%), loses single-hop narrowly (73.7% vs 76.3%) and commonsense (63.6% vs 90.9% for
+naive chunk-RAG).
 
 **Read this with care.** The numbers are **local-judged** (a local model as judge, not
 GPT-4o), so they are comparable in shape to published LoCoMo figures, not identical to them.
@@ -109,3 +113,12 @@ python3 -m pytest -q        # full suite; the live smoke test skips when the end
 
 The design policies (capture immutability, no uncited facts, contradiction supersession,
 prefix-stable briefs, local-only endpoints) are documented in `docs/compile-policies.md`.
+
+The MCP server is verified over a real stdio session against `mcp` 2.x (where `FastMCP` was renamed
+to `MCPServer`); it also resolves the 1.x class. Structured output is unavailable on the reference
+engine (TensorFold 1.2.3 rejects `response_format`), so the compiler validates JSON and rejects
+facts rather than repairing them silently.
+
+## Licence
+
+Apache-2.0. See `LICENSE`.
