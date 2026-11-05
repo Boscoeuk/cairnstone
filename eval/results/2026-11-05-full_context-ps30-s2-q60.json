@@ -6,7 +6,7 @@
   "judge_model": "local-judge",
   "judge_note": "local-judged; not GPT-judged, so not directly comparable to published LoCoMo figures",
   "engine": "TensorFold (tensorfold-native)",
-  "timestamp": "2026-11-05T17:50:30.878772+00:00",
+  "timestamp": "2026-11-05T18:38:15.290156+00:00",
   "aggregate": {
     "accuracy_by_category": {
       "commonsense": {
@@ -30,11 +30,11 @@
     "accuracy_overall": 0.5,
     "judge_ambiguous_count": 0,
     "mean_context_tokens": 13277.233,
-    "mean_latency_s": 1.254,
-    "median_latency_s": 0.322,
-    "latency_outlier_count": 3,
-    "mean_engine_tokens_per_second": 46.431,
-    "mean_engine_prefill_seconds": 1.141,
+    "mean_latency_s": 1.235,
+    "median_latency_s": 0.32,
+    "latency_outlier_count": 2,
+    "mean_engine_tokens_per_second": 45.847,
+    "mean_engine_prefill_seconds": 1.092,
     "prompt_cache_hit_rate": 0.967,
     "diagnostic_rows": 0,
     "gold_support_present": null,
@@ -53,18 +53,18 @@
       "category_name": "temporal",
       "context_tokens": 15044,
       "tokens_estimated": false,
-      "latency_s": 30.158,
+      "latency_s": 30.181,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.060965223649925,
-        "prefill_seconds": 30.01314325,
-        "time_to_first_token": 30.051606417,
+        "tokens_per_second": 9.934848159903687,
+        "prefill_seconds": 30.0530225,
+        "time_to_first_token": 30.073590041,
         "cached_tokens": 0,
-        "wall_seconds": 30.158
+        "wall_seconds": 30.181
       },
       "answer": "Yesterday",
       "latency_outlier": true
@@ -80,18 +80,18 @@
       "category_name": "temporal",
       "context_tokens": 15041,
       "tokens_estimated": false,
-      "latency_s": 0.216,
+      "latency_s": 0.21,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.25220324503602,
-        "prefill_seconds": 0.131507416,
-        "time_to_first_token": 0.173880583,
+        "tokens_per_second": 48.67033733483812,
+        "prefill_seconds": 0.128099041,
+        "time_to_first_token": 0.163544084,
         "cached_tokens": 15025,
-        "wall_seconds": 0.216
+        "wall_seconds": 0.21
       },
       "answer": "Last year",
       "latency_outlier": false
@@ -107,18 +107,18 @@
       "category_name": "commonsense",
       "context_tokens": 15047,
       "tokens_estimated": false,
-      "latency_s": 0.417,
+      "latency_s": 0.361,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 79.87698943626815,
-        "prefill_seconds": 0.29281175,
-        "time_to_first_token": 0.333979209,
+        "tokens_per_second": 79.97227627755711,
+        "prefill_seconds": 0.247030125,
+        "time_to_first_token": 0.282995125,
         "cached_tokens": 15025,
-        "wall_seconds": 0.417
+        "wall_seconds": 0.361
       },
       "answer": "Counseling or mental health",
       "latency_outlier": false
@@ -134,18 +134,18 @@
       "category_name": "multi-hop",
       "context_tokens": 15039,
       "tokens_estimated": false,
-      "latency_s": 0.236,
+      "latency_s": 0.235,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 38.392403586884534,
-        "prefill_seconds": 0.113141667,
-        "time_to_first_token": 0.152457042,
+        "tokens_per_second": 38.308529773408495,
+        "prefill_seconds": 0.113566167,
+        "time_to_first_token": 0.150524542,
         "cached_tokens": 15025,
-        "wall_seconds": 0.236
+        "wall_seconds": 0.235
       },
       "answer": "adoption agencies",
       "latency_outlier": false
@@ -161,18 +161,18 @@
       "category_name": "multi-hop",
       "context_tokens": 15040,
       "tokens_estimated": false,
-      "latency_s": 0.204,
+      "latency_s": 0.198,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 77.31211545275907,
-        "prefill_seconds": 0.120852458,
-        "time_to_first_token": 0.159300041,
+        "tokens_per_second": 79.88265982842695,
+        "prefill_seconds": 0.120164333,
+        "time_to_first_token": 0.156653875,
         "cached_tokens": 15025,
-        "wall_seconds": 0.204
+        "wall_seconds": 0.198
       },
       "answer": "Transgender woman",
       "latency_outlier": false
@@ -188,18 +188,18 @@
       "category_name": "temporal",
       "context_tokens": 15042,
       "tokens_estimated": false,
-      "latency_s": 0.336,
+      "latency_s": 0.329,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.966018840149495,
-        "prefill_seconds": 0.252161583,
-        "time_to_first_token": 0.290832459,
+        "tokens_per_second": 50.33894850041154,
+        "prefill_seconds": 0.248396625,
+        "time_to_first_token": 0.284018792,
         "cached_tokens": 15025,
-        "wall_seconds": 0.336
+        "wall_seconds": 0.329
       },
       "answer": "Last Saturday",
       "latency_outlier": false
@@ -215,18 +215,18 @@
       "category_name": "temporal",
       "context_tokens": 15042,
       "tokens_estimated": false,
-      "latency_s": 0.302,
+      "latency_s": 0.289,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 49.697106077876555,
-        "prefill_seconds": 0.21589175,
-        "time_to_first_token": 0.256352084,
+        "tokens_per_second": 50.72848128261081,
+        "prefill_seconds": 0.213324333,
+        "time_to_first_token": 0.247587333,
         "cached_tokens": 15025,
-        "wall_seconds": 0.302
+        "wall_seconds": 0.289
       },
       "answer": "Next month",
       "latency_outlier": false
@@ -242,18 +242,18 @@
       "category_name": "multi-hop",
       "context_tokens": 15041,
       "tokens_estimated": false,
-      "latency_s": 0.214,
+      "latency_s": 0.206,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 24.39140874093451,
-        "prefill_seconds": 0.127767584,
-        "time_to_first_token": 0.167507333,
+        "tokens_per_second": 23.943373538487503,
+        "prefill_seconds": 0.127604125,
+        "time_to_first_token": 0.162449958,
         "cached_tokens": 15025,
-        "wall_seconds": 0.214
+        "wall_seconds": 0.206
       },
       "answer": "Single",
       "latency_outlier": false
@@ -269,18 +269,18 @@
       "category_name": "temporal",
       "context_tokens": 15044,
       "tokens_estimated": false,
-      "latency_s": 0.321,
+      "latency_s": 0.31,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 51.3216400055879,
-        "prefill_seconds": 0.231668333,
-        "time_to_first_token": 0.276614417,
+        "tokens_per_second": 49.48397492399571,
+        "prefill_seconds": 0.230288042,
+        "time_to_first_token": 0.266637417,
         "cached_tokens": 15025,
-        "wall_seconds": 0.321
+        "wall_seconds": 0.31
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -296,18 +296,18 @@
       "category_name": "temporal",
       "context_tokens": 15048,
       "tokens_estimated": false,
-      "latency_s": 0.322,
+      "latency_s": 0.329,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.39925661096499,
-        "prefill_seconds": 0.246864833,
-        "time_to_first_token": 0.280195125,
+        "tokens_per_second": 49.94339789857659,
+        "prefill_seconds": 0.246798,
+        "time_to_first_token": 0.285648,
         "cached_tokens": 15025,
-        "wall_seconds": 0.322
+        "wall_seconds": 0.329
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -323,18 +323,18 @@
       "category_name": "temporal",
       "context_tokens": 15046,
       "tokens_estimated": false,
-      "latency_s": 0.334,
+      "latency_s": 0.322,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 48.310053926097694,
-        "prefill_seconds": 0.242487084,
-        "time_to_first_token": 0.284065666,
+        "tokens_per_second": 49.26472399438382,
+        "prefill_seconds": 0.243323334,
+        "time_to_first_token": 0.27760125,
         "cached_tokens": 15025,
-        "wall_seconds": 0.334
+        "wall_seconds": 0.322
       },
       "answer": "4 years",
       "latency_outlier": false
@@ -350,18 +350,18 @@
       "category_name": "multi-hop",
       "context_tokens": 15044,
       "tokens_estimated": false,
-      "latency_s": 0.316,
+      "latency_s": 0.309,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 25.297776330520104,
-        "prefill_seconds": 0.230679958,
-        "time_to_first_token": 0.270049458,
+        "tokens_per_second": 24.915081305509396,
+        "prefill_seconds": 0.228035292,
+        "time_to_first_token": 0.2636655,
         "cached_tokens": 15025,
-        "wall_seconds": 0.316
+        "wall_seconds": 0.309
       },
       "answer": "Sweden",
       "latency_outlier": false
@@ -377,18 +377,18 @@
       "category_name": "temporal",
       "context_tokens": 15045,
       "tokens_estimated": false,
-      "latency_s": 0.317,
+      "latency_s": 0.31,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 78.57697105420829,
-        "prefill_seconds": 0.234087625,
-        "time_to_first_token": 0.27470175,
+        "tokens_per_second": 78.33937856556786,
+        "prefill_seconds": 0.231518375,
+        "time_to_first_token": 0.2666695,
         "cached_tokens": 15025,
-        "wall_seconds": 0.317
+        "wall_seconds": 0.31
       },
       "answer": "Ten years ago",
       "latency_outlier": false
@@ -404,18 +404,18 @@
       "category_name": "multi-hop",
       "context_tokens": 15044,
       "tokens_estimated": false,
-      "latency_s": 0.355,
+      "latency_s": 0.346,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 78.95650244170352,
-        "prefill_seconds": 0.233367459,
-        "time_to_first_token": 0.274153208,
+        "tokens_per_second": 80.80608487057707,
+        "prefill_seconds": 0.230438791,
+        "time_to_first_token": 0.268243208,
         "cached_tokens": 15025,
-        "wall_seconds": 0.355
+        "wall_seconds": 0.346
       },
       "answer": "Counseling or mental health",
       "latency_outlier": false
@@ -431,18 +431,18 @@
       "category_name": "commonsense",
       "context_tokens": 15053,
       "tokens_estimated": false,
-      "latency_s": 0.366,
+      "latency_s": 0.362,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 25.263929109414917,
-        "prefill_seconds": 0.276075875,
-        "time_to_first_token": 0.320255708,
+        "tokens_per_second": 24.8503542728631,
+        "prefill_seconds": 0.277022042,
+        "time_to_first_token": 0.314437042,
         "cached_tokens": 15025,
-        "wall_seconds": 0.366
+        "wall_seconds": 0.362
       },
       "answer": "No",
       "latency_outlier": false
@@ -458,18 +458,18 @@
       "category_name": "multi-hop",
       "context_tokens": 15042,
       "tokens_estimated": false,
-      "latency_s": 0.607,
+      "latency_s": 0.606,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 58.55372315517463,
-        "prefill_seconds": 0.216808458,
-        "time_to_first_token": 0.257280292,
+        "tokens_per_second": 56.77610378955654,
+        "prefill_seconds": 0.214367875,
+        "time_to_first_token": 0.247278541,
         "cached_tokens": 15025,
-        "wall_seconds": 0.607
+        "wall_seconds": 0.606
       },
       "answer": "Running, pottery, painting, playing clarinet, camping, hiking, and spending time with her family",
       "latency_outlier": false
@@ -485,18 +485,18 @@
       "category_name": "temporal",
       "context_tokens": 15044,
       "tokens_estimated": false,
-      "latency_s": 0.312,
+      "latency_s": 0.315,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 24.02486612083292,
-        "prefill_seconds": 0.231742375,
-        "time_to_first_token": 0.26705575,
+        "tokens_per_second": 24.919038666349,
+        "prefill_seconds": 0.230874334,
+        "time_to_first_token": 0.27008575,
         "cached_tokens": 15025,
-        "wall_seconds": 0.312
+        "wall_seconds": 0.315
       },
       "answer": "Yesterday",
       "latency_outlier": false
@@ -512,18 +512,18 @@
       "category_name": "temporal",
       "context_tokens": 15043,
       "tokens_estimated": false,
-      "latency_s": 0.308,
+      "latency_s": 0.305,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.689054332330116,
-        "prefill_seconds": 0.223128167,
-        "time_to_first_token": 0.262864625,
+        "tokens_per_second": 50.081852527725,
+        "prefill_seconds": 0.223935375,
+        "time_to_first_token": 0.261189459,
         "cached_tokens": 15025,
-        "wall_seconds": 0.308
+        "wall_seconds": 0.305
       },
       "answer": "This month",
       "latency_outlier": false
@@ -539,18 +539,18 @@
       "category_name": "multi-hop",
       "context_tokens": 15040,
       "tokens_estimated": false,
-      "latency_s": 0.207,
+      "latency_s": 0.199,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 49.84190769901718,
-        "prefill_seconds": 0.121501042,
-        "time_to_first_token": 0.162558458,
+        "tokens_per_second": 49.3845963221612,
+        "prefill_seconds": 0.120189083,
+        "time_to_first_token": 0.152816542,
         "cached_tokens": 15025,
-        "wall_seconds": 0.207
+        "wall_seconds": 0.199
       },
       "answer": "mountains",
       "latency_outlier": false
@@ -566,18 +566,18 @@
       "category_name": "multi-hop",
       "context_tokens": 15041,
       "tokens_estimated": false,
-      "latency_s": 0.252,
+      "latency_s": 0.247,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 37.978869873403255,
-        "prefill_seconds": 0.128862125,
-        "time_to_first_token": 0.1685285,
+        "tokens_per_second": 38.293778328141634,
+        "prefill_seconds": 0.128501833,
+        "time_to_first_token": 0.164771875,
         "cached_tokens": 15025,
-        "wall_seconds": 0.252
+        "wall_seconds": 0.247
       },
       "answer": "Dinosaur exhibit",
       "latency_outlier": false
@@ -593,18 +593,18 @@
       "category_name": "temporal",
       "context_tokens": 15042,
       "tokens_estimated": false,
-      "latency_s": 0.336,
+      "latency_s": 0.329,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 24.73563787026158,
-        "prefill_seconds": 0.25387475,
-        "time_to_first_token": 0.291633166,
+        "tokens_per_second": 24.547432488301062,
+        "prefill_seconds": 0.248520333,
+        "time_to_first_token": 0.282883042,
         "cached_tokens": 15025,
-        "wall_seconds": 0.336
+        "wall_seconds": 0.329
       },
       "answer": "Yesterday",
       "latency_outlier": false
@@ -620,18 +620,18 @@
       "category_name": "temporal",
       "context_tokens": 15041,
       "tokens_estimated": false,
-      "latency_s": 0.216,
+      "latency_s": 0.207,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.208260097263945,
-        "prefill_seconds": 0.129629875,
-        "time_to_first_token": 0.169560333,
+        "tokens_per_second": 48.89153718048616,
+        "prefill_seconds": 0.128793792,
+        "time_to_first_token": 0.161694334,
         "cached_tokens": 15025,
-        "wall_seconds": 0.216
+        "wall_seconds": 0.207
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -647,18 +647,18 @@
       "category_name": "commonsense",
       "context_tokens": 15048,
       "tokens_estimated": false,
-      "latency_s": 0.379,
+      "latency_s": 0.333,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 24.71233299868716,
-        "prefill_seconds": 0.293371667,
-        "time_to_first_token": 0.333926917,
+        "tokens_per_second": 24.89388979474988,
+        "prefill_seconds": 0.252152292,
+        "time_to_first_token": 0.287015958,
         "cached_tokens": 15025,
-        "wall_seconds": 0.379
+        "wall_seconds": 0.333
       },
       "answer": "No",
       "latency_outlier": false
@@ -681,9 +681,9 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 64.19147917683621,
-        "prefill_seconds": 0.120724541,
-        "time_to_first_token": 0.161435917,
+        "tokens_per_second": 63.93746036596754,
+        "prefill_seconds": 0.121333459,
+        "time_to_first_token": 0.1615665,
         "cached_tokens": 15025,
         "wall_seconds": 0.246
       },
@@ -701,18 +701,18 @@
       "category_name": "multi-hop",
       "context_tokens": 15042,
       "tokens_estimated": false,
-      "latency_s": 0.295,
+      "latency_s": 0.298,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 25.18418516782955,
-        "prefill_seconds": 0.217004292,
-        "time_to_first_token": 0.252533166,
+        "tokens_per_second": 25.0860501692907,
+        "prefill_seconds": 0.218411,
+        "time_to_first_token": 0.253976459,
         "cached_tokens": 15025,
-        "wall_seconds": 0.295
+        "wall_seconds": 0.298
       },
       "answer": "Running",
       "latency_outlier": false
@@ -728,18 +728,18 @@
       "category_name": "temporal",
       "context_tokens": 15043,
       "tokens_estimated": false,
-      "latency_s": 0.392,
+      "latency_s": 0.399,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 39.49647273985443,
-        "prefill_seconds": 0.222506833,
-        "time_to_first_token": 0.25985575,
+        "tokens_per_second": 39.12911640358845,
+        "prefill_seconds": 0.223990458,
+        "time_to_first_token": 0.264283958,
         "cached_tokens": 15025,
-        "wall_seconds": 0.392
+        "wall_seconds": 0.399
       },
       "answer": "Two days before that chat",
       "latency_outlier": false
@@ -755,18 +755,18 @@
       "category_name": "temporal",
       "context_tokens": 15045,
       "tokens_estimated": false,
-      "latency_s": 0.448,
+      "latency_s": 0.437,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 76.74378278470418,
-        "prefill_seconds": 0.24347625,
-        "time_to_first_token": 0.286534333,
+        "tokens_per_second": 76.47895139607769,
+        "prefill_seconds": 0.241413291,
+        "time_to_first_token": 0.275782708,
         "cached_tokens": 15025,
-        "wall_seconds": 0.448
+        "wall_seconds": 0.437
       },
       "answer": "8:52 pm on 5 December, 2023",
       "latency_outlier": false
@@ -782,18 +782,18 @@
       "category_name": "commonsense",
       "context_tokens": 15043,
       "tokens_estimated": false,
-      "latency_s": 0.305,
+      "latency_s": 0.302,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 25.570379272650563,
-        "prefill_seconds": 0.223765084,
-        "time_to_first_token": 0.262651333,
+        "tokens_per_second": 25.46719051658872,
+        "prefill_seconds": 0.223790542,
+        "time_to_first_token": 0.258757625,
         "cached_tokens": 15025,
-        "wall_seconds": 0.305
+        "wall_seconds": 0.302
       },
       "answer": "No",
       "latency_outlier": false
@@ -809,18 +809,18 @@
       "category_name": "temporal",
       "context_tokens": 15043,
       "tokens_estimated": false,
-      "latency_s": 0.306,
+      "latency_s": 0.313,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.26856988834245,
-        "prefill_seconds": 0.222785458,
-        "time_to_first_token": 0.259997625,
+        "tokens_per_second": 50.40068544932211,
+        "prefill_seconds": 0.223629208,
+        "time_to_first_token": 0.258749375,
         "cached_tokens": 15025,
-        "wall_seconds": 0.306
+        "wall_seconds": 0.313
       },
       "answer": "Last Friday",
       "latency_outlier": false
@@ -836,18 +836,18 @@
       "category_name": "temporal",
       "context_tokens": 15043,
       "tokens_estimated": false,
-      "latency_s": 0.308,
+      "latency_s": 0.301,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 51.6917748693975,
-        "prefill_seconds": 0.223112667,
-        "time_to_first_token": 0.2648515,
+        "tokens_per_second": 50.3106683772294,
+        "prefill_seconds": 0.222899667,
+        "time_to_first_token": 0.256172917,
         "cached_tokens": 15025,
-        "wall_seconds": 0.308
+        "wall_seconds": 0.301
       },
       "answer": "Last Friday",
       "latency_outlier": false
@@ -863,18 +863,18 @@
       "category_name": "temporal",
       "context_tokens": 11511,
       "tokens_estimated": false,
-      "latency_s": 23.141,
+      "latency_s": 24.263,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.789932522890087,
-        "prefill_seconds": 22.995190583,
-        "time_to_first_token": 23.034544334,
+        "tokens_per_second": 0.8595479336575118,
+        "prefill_seconds": 23.057213125,
+        "time_to_first_token": 23.094370167,
         "cached_tokens": 0,
-        "wall_seconds": 23.141
+        "wall_seconds": 24.263
       },
       "answer": "Yesterday",
       "latency_outlier": true
@@ -890,18 +890,18 @@
       "category_name": "temporal",
       "context_tokens": 11511,
       "tokens_estimated": false,
-      "latency_s": 0.311,
+      "latency_s": 1.301,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.12028869286287,
-        "prefill_seconds": 0.237884292,
-        "time_to_first_token": 0.267588334,
+        "tokens_per_second": 30.29232104959015,
+        "prefill_seconds": 0.304876166,
+        "time_to_first_token": 1.229332625,
         "cached_tokens": 11492,
-        "wall_seconds": 0.311
+        "wall_seconds": 1.301
       },
       "answer": "This month",
       "latency_outlier": false
@@ -917,18 +917,18 @@
       "category_name": "single-hop",
       "context_tokens": 11512,
       "tokens_estimated": false,
-      "latency_s": 0.353,
+      "latency_s": 0.404,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 25.3214504324315,
-        "prefill_seconds": 0.237125458,
-        "time_to_first_token": 0.268354333,
+        "tokens_per_second": 14.293192688317282,
+        "prefill_seconds": 0.236341125,
+        "time_to_first_token": 0.258502833,
         "cached_tokens": 11492,
-        "wall_seconds": 0.353
+        "wall_seconds": 0.404
       },
       "answer": "Dancing",
       "latency_outlier": false
@@ -944,21 +944,21 @@
       "category_name": "multi-hop",
       "context_tokens": 11511,
       "tokens_estimated": false,
-      "latency_s": 3.394,
+      "latency_s": 0.405,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 47.409879744840026,
-        "prefill_seconds": 3.150805708,
-        "time_to_first_token": 3.180893666,
+        "tokens_per_second": 69.55090417809879,
+        "prefill_seconds": 0.226714875,
+        "time_to_first_token": 0.25740525,
         "cached_tokens": 11492,
-        "wall_seconds": 3.394
+        "wall_seconds": 0.405
       },
       "answer": "They both lost their jobs and started their own businesses",
-      "latency_outlier": true
+      "latency_outlier": false
     },
     {
       "sample_id": "conv-30",
@@ -971,18 +971,18 @@
       "category_name": "single-hop",
       "context_tokens": 11511,
       "tokens_estimated": false,
-      "latency_s": 0.383,
+      "latency_s": 0.385,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 60.462255711325135,
-        "prefill_seconds": 0.236985583,
-        "time_to_first_token": 0.265662417,
+        "tokens_per_second": 59.38869922306515,
+        "prefill_seconds": 0.233687458,
+        "time_to_first_token": 0.261737417,
         "cached_tokens": 11492,
-        "wall_seconds": 0.383
+        "wall_seconds": 0.385
       },
       "answer": "He lost his job as a banker",
       "latency_outlier": false
@@ -998,18 +998,18 @@
       "category_name": "multi-hop",
       "context_tokens": 11512,
       "tokens_estimated": false,
-      "latency_s": 0.316,
+      "latency_s": 0.318,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 77.60493778489743,
-        "prefill_seconds": 0.242020084,
-        "time_to_first_token": 0.274517958,
+        "tokens_per_second": 75.88604930599931,
+        "prefill_seconds": 0.243368333,
+        "time_to_first_token": 0.273990208,
         "cached_tokens": 11492,
-        "wall_seconds": 0.316
+        "wall_seconds": 0.318
       },
       "answer": "By the water",
       "latency_outlier": false
@@ -1025,18 +1025,18 @@
       "category_name": "temporal",
       "context_tokens": 11511,
       "tokens_estimated": false,
-      "latency_s": 0.306,
+      "latency_s": 0.307,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.66540523318411,
-        "prefill_seconds": 0.233549417,
-        "time_to_first_token": 0.261982542,
+        "tokens_per_second": 51.610184867424145,
+        "prefill_seconds": 0.231206667,
+        "time_to_first_token": 0.261973375,
         "cached_tokens": 11492,
-        "wall_seconds": 0.306
+        "wall_seconds": 0.307
       },
       "answer": "Next month",
       "latency_outlier": false
@@ -1052,18 +1052,18 @@
       "category_name": "temporal",
       "context_tokens": 11512,
       "tokens_estimated": false,
-      "latency_s": 0.387,
+      "latency_s": 0.39,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 52.19426108962984,
-        "prefill_seconds": 0.23790125,
-        "time_to_first_token": 0.2686965,
+        "tokens_per_second": 52.64104510021539,
+        "prefill_seconds": 0.239539958,
+        "time_to_first_token": 0.269092667,
         "cached_tokens": 11492,
-        "wall_seconds": 0.387
+        "wall_seconds": 0.39
       },
       "answer": "11 May, 2023",
       "latency_outlier": false
@@ -1079,18 +1079,18 @@
       "category_name": "temporal",
       "context_tokens": 11507,
       "tokens_estimated": false,
-      "latency_s": 0.197,
+      "latency_s": 0.194,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 25.128653049667363,
-        "prefill_seconds": 0.122934208,
-        "time_to_first_token": 0.153338917,
+        "tokens_per_second": 25.099587633854846,
+        "prefill_seconds": 0.1215335,
+        "time_to_first_token": 0.147842417,
         "cached_tokens": 11492,
-        "wall_seconds": 0.197
+        "wall_seconds": 0.194
       },
       "answer": "Yesterday",
       "latency_outlier": false
@@ -1106,18 +1106,18 @@
       "category_name": "multi-hop",
       "context_tokens": 11510,
       "tokens_estimated": false,
-      "latency_s": 0.326,
+      "latency_s": 0.306,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 48.95346667033818,
-        "prefill_seconds": 0.258216666,
-        "time_to_first_token": 0.280879917,
+        "tokens_per_second": 48.43758514419264,
+        "prefill_seconds": 0.223542875,
+        "time_to_first_token": 0.258300333,
         "cached_tokens": 11492,
-        "wall_seconds": 0.326
+        "wall_seconds": 0.306
       },
       "answer": "Rome",
       "latency_outlier": false
@@ -1133,18 +1133,18 @@
       "category_name": "temporal",
       "context_tokens": 11515,
       "tokens_estimated": false,
-      "latency_s": 0.412,
+      "latency_s": 0.407,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 52.57696485572526,
-        "prefill_seconds": 0.258412375,
-        "time_to_first_token": 0.289307292,
+        "tokens_per_second": 52.47671876931389,
+        "prefill_seconds": 0.256269292,
+        "time_to_first_token": 0.287512583,
         "cached_tokens": 11492,
-        "wall_seconds": 0.412
+        "wall_seconds": 0.407
       },
       "answer": "11 May, 2023",
       "latency_outlier": false
@@ -1160,18 +1160,18 @@
       "category_name": "temporal",
       "context_tokens": 11508,
       "tokens_estimated": false,
-      "latency_s": 0.241,
+      "latency_s": 0.236,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 52.52080703682176,
-        "prefill_seconds": 0.132333125,
-        "time_to_first_token": 0.161317708,
+        "tokens_per_second": 52.55913724176218,
+        "prefill_seconds": 0.128761458,
+        "time_to_first_token": 0.155478083,
         "cached_tokens": 11492,
-        "wall_seconds": 0.241
+        "wall_seconds": 0.236
       },
       "answer": "A few years ago",
       "latency_outlier": false
@@ -1187,18 +1187,18 @@
       "category_name": "temporal",
       "context_tokens": 11511,
       "tokens_estimated": false,
-      "latency_s": 0.348,
+      "latency_s": 0.336,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 51.28073639137458,
-        "prefill_seconds": 0.274880459,
-        "time_to_first_token": 0.303724584,
+        "tokens_per_second": 49.8855227025023,
+        "prefill_seconds": 0.265000458,
+        "time_to_first_token": 0.290636458,
         "cached_tokens": 11492,
-        "wall_seconds": 0.348
+        "wall_seconds": 0.336
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -1214,18 +1214,18 @@
       "category_name": "temporal",
       "context_tokens": 11510,
       "tokens_estimated": false,
-      "latency_s": 0.338,
+      "latency_s": 0.335,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 38.55836692463285,
-        "prefill_seconds": 0.222276958,
-        "time_to_first_token": 0.254722958,
+        "tokens_per_second": 39.001644738360255,
+        "prefill_seconds": 0.22221025,
+        "time_to_first_token": 0.251614375,
         "cached_tokens": 11492,
-        "wall_seconds": 0.338
+        "wall_seconds": 0.335
       },
       "answer": "Session 5",
       "latency_outlier": false
@@ -1241,18 +1241,18 @@
       "category_name": "temporal",
       "context_tokens": 11513,
       "tokens_estimated": false,
-      "latency_s": 0.402,
+      "latency_s": 0.403,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 52.906864968180535,
-        "prefill_seconds": 0.247021666,
-        "time_to_first_token": 0.284544375,
+        "tokens_per_second": 52.38550493078565,
+        "prefill_seconds": 0.246291292,
+        "time_to_first_token": 0.28316225,
         "cached_tokens": 11492,
-        "wall_seconds": 0.402
+        "wall_seconds": 0.403
       },
       "answer": "21 July, 2023",
       "latency_outlier": false
@@ -1268,18 +1268,18 @@
       "category_name": "temporal",
       "context_tokens": 11509,
       "tokens_estimated": false,
-      "latency_s": 0.291,
+      "latency_s": 0.289,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 51.75771262378892,
-        "prefill_seconds": 0.218445917,
-        "time_to_first_token": 0.250284125,
+        "tokens_per_second": 51.8205196302606,
+        "prefill_seconds": 0.217895833,
+        "time_to_first_token": 0.245561875,
         "cached_tokens": 11492,
-        "wall_seconds": 0.291
+        "wall_seconds": 0.289
       },
       "answer": "Next month",
       "latency_outlier": false
@@ -1302,9 +1302,9 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 24.536615586585704,
-        "prefill_seconds": 0.267635375,
-        "time_to_first_token": 0.297950792,
+        "tokens_per_second": 24.565573191589976,
+        "prefill_seconds": 0.267156333,
+        "time_to_first_token": 0.294171375,
         "cached_tokens": 11492,
         "wall_seconds": 0.341
       },
@@ -1322,18 +1322,18 @@
       "category_name": "multi-hop",
       "context_tokens": 11512,
       "tokens_estimated": false,
-      "latency_s": 0.39,
+      "latency_s": 0.386,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 60.095960371006704,
-        "prefill_seconds": 0.238658375,
-        "time_to_first_token": 0.270961667,
+        "tokens_per_second": 59.162449708114444,
+        "prefill_seconds": 0.236235333,
+        "time_to_first_token": 0.259357792,
         "cached_tokens": 11492,
-        "wall_seconds": 0.39
+        "wall_seconds": 0.386
       },
       "answer": "After losing her job at Door Dash",
       "latency_outlier": false
@@ -1349,18 +1349,18 @@
       "category_name": "multi-hop",
       "context_tokens": 11513,
       "tokens_estimated": false,
-      "latency_s": 0.327,
+      "latency_s": 0.32,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 24.707219449523148,
-        "prefill_seconds": 0.248621792,
-        "time_to_first_token": 0.279609208,
+        "tokens_per_second": 24.44982813360061,
+        "prefill_seconds": 0.247920292,
+        "time_to_first_token": 0.273544542,
         "cached_tokens": 11492,
-        "wall_seconds": 0.327
+        "wall_seconds": 0.32
       },
       "answer": "Yes",
       "latency_outlier": false
@@ -1376,18 +1376,18 @@
       "category_name": "temporal",
       "context_tokens": 11510,
       "tokens_estimated": false,
-      "latency_s": 0.304,
+      "latency_s": 0.305,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 25.7858502158237,
-        "prefill_seconds": 0.226446917,
-        "time_to_first_token": 0.259154833,
+        "tokens_per_second": 24.98516505824667,
+        "prefill_seconds": 0.223132958,
+        "time_to_first_token": 0.258440708,
         "cached_tokens": 11492,
-        "wall_seconds": 0.304
+        "wall_seconds": 0.305
       },
       "answer": "Yesterday",
       "latency_outlier": false
@@ -1410,9 +1410,9 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 24.76596166229135,
-        "prefill_seconds": 0.234268208,
-        "time_to_first_token": 0.26818925,
+        "tokens_per_second": 24.931076170097054,
+        "prefill_seconds": 0.234646958,
+        "time_to_first_token": 0.265528334,
         "cached_tokens": 11492,
         "wall_seconds": 0.311
       },
@@ -1430,18 +1430,18 @@
       "category_name": "temporal",
       "context_tokens": 11511,
       "tokens_estimated": false,
-      "latency_s": 0.385,
+      "latency_s": 0.373,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 53.537250772944056,
-        "prefill_seconds": 0.232315,
-        "time_to_first_token": 0.265251833,
+        "tokens_per_second": 52.17062402587663,
+        "prefill_seconds": 0.230845708,
+        "time_to_first_token": 0.253849375,
         "cached_tokens": 11492,
-        "wall_seconds": 0.385
+        "wall_seconds": 0.373
       },
       "answer": "11 May, 2023",
       "latency_outlier": false
@@ -1457,18 +1457,18 @@
       "category_name": "temporal",
       "context_tokens": 11518,
       "tokens_estimated": false,
-      "latency_s": 0.465,
+      "latency_s": 0.463,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 76.45710517471245,
-        "prefill_seconds": 0.269268625,
-        "time_to_first_token": 0.302789416,
+        "tokens_per_second": 75.90424873842552,
+        "prefill_seconds": 0.26957175,
+        "time_to_first_token": 0.299194,
         "cached_tokens": 11492,
-        "wall_seconds": 0.465
+        "wall_seconds": 0.463
       },
       "answer": "2:15 pm on 21 June, 2023",
       "latency_outlier": false
@@ -1484,18 +1484,18 @@
       "category_name": "multi-hop",
       "context_tokens": 11509,
       "tokens_estimated": false,
-      "latency_s": 0.336,
+      "latency_s": 0.324,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 64.70422379337882,
-        "prefill_seconds": 0.222841667,
-        "time_to_first_token": 0.253014292,
+        "tokens_per_second": 63.212990380778116,
+        "prefill_seconds": 0.218720333,
+        "time_to_first_token": 0.24107175,
         "cached_tokens": 11492,
-        "wall_seconds": 0.336
+        "wall_seconds": 0.324
       },
       "answer": "Launched an ad campaign",
       "latency_outlier": false
@@ -1511,18 +1511,18 @@
       "category_name": "multi-hop",
       "context_tokens": 11513,
       "tokens_estimated": false,
-      "latency_s": 0.322,
+      "latency_s": 0.319,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.58334227815436,
-        "prefill_seconds": 0.247600333,
-        "time_to_first_token": 0.276574333,
+        "tokens_per_second": 49.937889749623906,
+        "prefill_seconds": 0.245118166,
+        "time_to_first_token": 0.270896958,
         "cached_tokens": 11492,
-        "wall_seconds": 0.322
+        "wall_seconds": 0.319
       },
       "answer": "Networking events",
       "latency_outlier": false
@@ -1538,18 +1538,18 @@
       "category_name": "multi-hop",
       "context_tokens": 11509,
       "tokens_estimated": false,
-      "latency_s": 0.436,
+      "latency_s": 0.433,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 73.20520545322469,
-        "prefill_seconds": 0.219552416,
-        "time_to_first_token": 0.252453417,
+        "tokens_per_second": 71.26012814719807,
+        "prefill_seconds": 0.219100042,
+        "time_to_first_token": 0.247814,
         "cached_tokens": 11492,
-        "wall_seconds": 0.436
+        "wall_seconds": 0.433
       },
       "answer": "Dance classes, workshops, and one-on-one mentoring and training",
       "latency_outlier": false
@@ -1565,18 +1565,18 @@
       "category_name": "temporal",
       "context_tokens": 11512,
       "tokens_estimated": false,
-      "latency_s": 0.386,
+      "latency_s": 0.391,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 52.70354563893839,
-        "prefill_seconds": 0.241227875,
-        "time_to_first_token": 0.268561833,
+        "tokens_per_second": 51.35690990403371,
+        "prefill_seconds": 0.241380166,
+        "time_to_first_token": 0.271827084,
         "cached_tokens": 11492,
-        "wall_seconds": 0.386
+        "wall_seconds": 0.391
       },
       "answer": "23 July, 2023",
       "latency_outlier": false
@@ -1592,18 +1592,18 @@
       "category_name": "multi-hop",
       "context_tokens": 11511,
       "tokens_estimated": false,
-      "latency_s": 0.303,
+      "latency_s": 0.302,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 25.202777134336877,
-        "prefill_seconds": 0.232112209,
-        "time_to_first_token": 0.261153584,
+        "tokens_per_second": 25.741599389924097,
+        "prefill_seconds": 0.231936625,
+        "time_to_first_token": 0.260398375,
         "cached_tokens": 11492,
-        "wall_seconds": 0.303
+        "wall_seconds": 0.302
       },
       "answer": "Yes",
       "latency_outlier": false
@@ -1619,18 +1619,18 @@
       "category_name": "temporal",
       "context_tokens": 11507,
       "tokens_estimated": false,
-      "latency_s": 0.198,
+      "latency_s": 0.184,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 50.915957712871474,
-        "prefill_seconds": 0.12008725,
-        "time_to_first_token": 0.152959667,
+        "tokens_per_second": 50.43479076597485,
+        "prefill_seconds": 0.121853042,
+        "time_to_first_token": 0.142330625,
         "cached_tokens": 11492,
-        "wall_seconds": 0.198
+        "wall_seconds": 0.184
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -1646,18 +1646,18 @@
       "category_name": "multi-hop",
       "context_tokens": 11507,
       "tokens_estimated": false,
-      "latency_s": 0.24,
+      "latency_s": 0.23,
       "sources": [
         "full_conversation"
       ],
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 38.43944415897463,
-        "prefill_seconds": 0.122907125,
-        "time_to_first_token": 0.155958042,
+        "tokens_per_second": 38.53003646880795,
+        "prefill_seconds": 0.122567167,
+        "time_to_first_token": 0.149940208,
         "cached_tokens": 11492,
-        "wall_seconds": 0.24
+        "wall_seconds": 0.23
       },
       "answer": "Paris and Rome",
       "latency_outlier": false

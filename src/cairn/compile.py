@@ -33,7 +33,13 @@ occupation, age, and family role. Emit each as its own fact, e.g. "Caroline \
 is single". A direct inference is allowed only when a quote in the capture \
 supports it — "I'm single" or "I plan to become a single parent" supports \
 "Caroline is single" — but never invent an attribute without a supporting \
-quote. The quote rule still governs: no quote, no fact.
+quote. The quote rule still governs: no quote, no fact.\
+ The attribute must be about the subject of the page the fact is placed on: \
+first-person statements ("I'm single") and third-person statements naming the \
+subject ("Caroline is single") qualify. A quote that addresses someone else \
+("You'll be an awesome mom", "You're so brave") describes the LISTENER, not \
+the speaker — never attribute it to the subject. When the quote is about a \
+third party, either omit the fact or place it on that third party's page.
 - Resolve every relative time reference (yesterday, last week, next Tuesday) to an \
 absolute date, using the capture's timestamp. Write dates as YYYY-MM-DD. Never leave a \
 relative expression in "text".

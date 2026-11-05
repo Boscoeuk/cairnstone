@@ -284,6 +284,21 @@ def _citation(fact):
                                          fact["span_end"])
 
 
+# Phase 6: questions that need facts combined rather than a single lookup. Two
+# signals: multiple entity-like capitalised names, or an interrogative asking
+# what/which + does/has/did + a named person (cross-fact aggregation).
+_MULTI_HOP_RE = re.compile(
+    r"\b(?:what|which)\b[^?.]*\b(?:does|did|has|is|was)\b", re.IGNORECASE)
+
+
+def _looks_multi_hop(question):
+    """Heuristic: does the question likely need several facts combined?"""
+    words = re.findall(r"[A-Z][a-z]+", question)
+    if len(set(words)) >= 2:
+        return True
+    return bool(_MULTI_HOP_RE.search(question))
+
+
 # ------------------------------------------------- question-conditioned selection
 
 FACT_FTS_SCHEMA = """
@@ -510,6 +525,18 @@ def build_brief(conn, brain_id, question, budget_tokens=4000):
         lines = ["### Records"]
         for f in selected:
             lines.append("- %s %s" % (f["text"], _citation(f)))
+        if _looks_multi_hop(question):
+            # Phase 6: quotes carry the surrounding detail the compiled claim
+            # abstracts away; multi-hop questions need it to combine facts.
+            lines.append("\n### Supporting quotes")
+            for f in selected[:8]:
+                lines.append('- "%s" %s' % (f["quote"], _citation(f)))
+            lines.append(
+                "\n### Answering rules\n"
+                "- When several records together answer the question, combine them "
+                "into one answer.\n"
+                "- When the question asks for a list, list every item the records "
+                "support.")
         volatile = "\n".join(lines) + "\n\n### Question\n" + question
     else:
         volatile = "### Question\n" + question

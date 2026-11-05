@@ -206,6 +206,17 @@ def test_relative_date_instruction_present():
     assert "YYYY-MM-DD" in EXTRACTION_SYSTEM
 
 
+def test_atomic_attribute_rule_forbids_third_party_attribution():
+    """Phase 6: the extractor attributed 'You'll be an awesome mom' (spoken TO the
+    interlocutor) to Melanie. The rule must restrict attributes to the page subject."""
+    from cairn.compile import EXTRACTION_SYSTEM
+    assert "the subject of the page" in EXTRACTION_SYSTEM
+    assert "LISTENER" in EXTRACTION_SYSTEM
+    # The over-inference example must not be the only guidance: the restriction
+    # against second-person address must be stated explicitly.
+    assert "never attribute it to the subject" in EXTRACTION_SYSTEM
+
+
 def test_code_fenced_json_is_parsed():
     client = FakeClient(["```json\n" + FACT_JSON + "\n```"])
     facts = extract(CAPTURE, client)

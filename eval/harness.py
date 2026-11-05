@@ -324,8 +324,9 @@ class CairnBackend(FullContextBackend):
             {"role": "system", "content": stable},
             {"role": "user", "content": (
                 volatile + "\n\n"
-                "Reply with a single short answer only — a date, name, number, place or "
-                "short phrase. Do not restate the supporting fact. Do not use markdown "
+                "Reply with a short answer only — a date, name, number, place, "
+                "short phrase, or a short list when the question asks for one. "
+                "Do not restate the supporting fact. Do not use markdown "
                 "or bold. If the records do not answer it, reply exactly: Not recorded.\n\n"
                 "Answer:")},
         ], 128)
