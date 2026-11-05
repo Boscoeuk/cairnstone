@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: pytest (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install package
+        run: pip install -e .
+      - name: Run tests
+        run: python3 -m pytest -q
+
+  mcp-import:
+    name: mcp extra import check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install package with mcp extra
+        run: pip install ".[mcp]"
+      - name: Import mcp_server
+        run: python3 -c "import cairn.mcp_server; print('mcp_server import ok')"
