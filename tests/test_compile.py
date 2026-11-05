@@ -512,3 +512,34 @@ def test_weak_quote_rejected(db):
     result = compile_all(conn, brain, [cid], FakeClient([fact]))
     assert result["facts_accepted"] == 0
     assert result["facts_rejected"][0][2].startswith("weak_quote")
+
+
+def test_weak_quote_relaxed_when_quote_names_subject(db):
+    """Phase 8B: the audit found 8 of 10 weak_quote rejections were valid facts, so a
+    quote that names the subject now anchors the attribution. 'Mel supports Caroline'
+    from "Thanks, Mel! Your backing really means a lot." (speaker Caroline) is a
+    paraphrase with no content-token overlap, but the quote names the subject."""
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation",
+                            "Caroline: Thanks, Mel! Your backing really means a lot.",
+                            "test:p8b")
+    fact = ('{"facts": [{"text": "Mel supports Caroline", "subject": "Mel",'
+            ' "quote": "Thanks, Mel! Your backing really means a lot.",'
+            ' "bucket": "people", "page_title": "Mel", "page_path": "people/mel"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([fact]))
+    assert result["facts_accepted"] == 1
+    assert result["facts_rejected"] == []
+
+
+def test_weak_quote_still_rejected_without_name_or_overlap(db):
+    """Phase 8B: the relaxation only covers quotes that name the subject. A paraphrase
+    that names nobody ("kids" vs "children") is still rejected."""
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation",
+                            "Melanie: I'm swamped with the kids & work.", "test:p8b2")
+    fact = ('{"facts": [{"text": "Melanie has children", "subject": "Melanie",'
+            ' "quote": "I\'m swamped with the kids & work", "bucket": "people",'
+            ' "page_title": "Melanie", "page_path": "people/melanie"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([fact]))
+    assert result["facts_accepted"] == 0
+    assert result["facts_rejected"][0][2].startswith("weak_quote")

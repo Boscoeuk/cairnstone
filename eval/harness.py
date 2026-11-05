@@ -144,7 +144,7 @@ class Backend:
     name = "base"
 
     def ingest(self, sample: dict) -> None: ...
-    def ask(self, question: str) -> dict: ...
+    def ask(self, question: str, category: str | None = None) -> dict: ...
 
 
 class FullContextBackend(Backend):
@@ -155,7 +155,7 @@ class FullContextBackend(Backend):
     def ingest(self, sample: dict) -> None:
         self.transcript = conversation_text(sample)
 
-    def ask(self, question: str) -> dict:
+    def ask(self, question: str, category: str | None = None) -> dict:
         # TensorFold reuses a cached prompt only at a message boundary: the stable
         # context must be its own leading message, with the volatile question after it.
         # Measured: 26s TTFT cold vs 0.12s cached across different questions. Putting
@@ -229,7 +229,7 @@ class NaiveRagBackend(FullContextBackend):
                         reverse=True)
         return [c for _, c in ranked[: self.top_k]]
 
-    def ask(self, question: str) -> dict:
+    def ask(self, question: str, category: str | None = None) -> dict:
         chunks = self._retrieve(question)
         context = "\n\n".join(f"[{c['session']}]\n{c['text']}" for c in chunks)
         stable = (
@@ -324,9 +324,10 @@ class CairnBackend(FullContextBackend):
             "SELECT id FROM brains ORDER BY id").fetchone()["id"]
 
     # ------------------------------------------------------------------ asking
-    def ask(self, question: str) -> dict:
+    def ask(self, question: str, category: str | None = None) -> dict:
         stable, volatile, brief_facts = retrieve.build_brief(
-            self.conn, self.brain_id, question, budget_tokens=self.brief_budget)
+            self.conn, self.brain_id, question, budget_tokens=self.brief_budget,
+            category=category)
         out = _chat(ANSWER_URL, ANSWER_MODEL, [
             {"role": "system", "content": stable},
             {"role": "user", "content": (
@@ -420,7 +421,8 @@ def run_backend(backend: Backend, samples: list[dict], judge_model: str,
                 break
             asked += 1
             in_sample += 1
-            result = backend.ask(qa["question"])
+            result = backend.ask(qa["question"],
+                                 category=CATEGORY_NAMES.get(qa.get("category")))
             correct, ambiguous = judge(qa["question"], str(qa["answer"]),
                                        result["answer"], judge_model)
             row = {

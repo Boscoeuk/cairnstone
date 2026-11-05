@@ -270,3 +270,93 @@ def test_gold_support_single_item_unchanged():
     assert gold_support_in_brief("7 May 2023", ["Caroline went on 2023-05-07."]) is False or True
     assert gold_support_in_brief("2022", ["Melanie painted a lake sunrise in 2022."]) is True
     assert gold_support_in_brief("Sweden", ["Caroline moved from Sweden."]) is True
+
+
+# ---- Phase 8A: bounded dialogue context for inference questions ----
+
+def _add_turn_fact(conn, brain_id, title, path, claim, quote_body, session, idx,
+                   turn_text=None):
+    """A fact citing a capture whose source_ref looks like a LoCoMo turn."""
+    turn_text = turn_text or quote_body
+    cap = store.add_capture(conn, brain_id, "conversation", turn_text,
+                            "locomo:s1:%s:%d" % (session, idx))
+    page_id = store.create_page(conn, brain_id, path, "people", title, body_md="")
+    version_id = conn.execute(
+        "SELECT current_version_id FROM pages WHERE id = ?", (page_id,)).fetchone()[0]
+    fact_id = store.add_fact(conn, page_id, version_id, claim, cap, 0,
+                             len(quote_body))
+    return page_id, fact_id
+
+
+def test_dialogue_context_added_for_inference_categories(brain, monkeypatch):
+    _fake_embeddings(monkeypatch)
+    conn, brain_id = brain
+    _add_turn_fact(conn, brain_id, "Melanie", "people/melanie",
+                   "Melanie paints.", "Melanie paints.", "session_1", 1,
+                   turn_text="prev turn here\nMelanie paints.\nnext turn here")
+    question = "What does Melanie do in the evening?"
+    stable, volatile, _ = retrieve.build_brief(
+        conn, brain_id, question, category="multi-hop")
+    assert "### Dialogue context" in volatile
+    # The cited turn plus its neighbours from the same conversation.
+    assert "prev turn here" in volatile
+    assert "next turn here" in volatile
+    # The stable system message is untouched by the new section.
+    stable_plain, volatile_plain, _ = retrieve.build_brief(
+        conn, brain_id, question, category="single-hop")
+    assert stable_plain == stable
+    assert "### Dialogue context" not in volatile_plain
+
+
+def test_dialogue_context_commonsense_category(brain, monkeypatch):
+    _fake_embeddings(monkeypatch)
+    conn, brain_id = brain
+    _add_turn_fact(conn, brain_id, "Melanie", "people/melanie",
+                   "Melanie paints.", "Melanie paints.", "session_1", 0)
+    _, volatile, _ = retrieve.build_brief(
+        conn, brain_id, "What does Melanie do?", category="commonsense")
+    assert "### Dialogue context" in volatile
+
+
+def test_dialogue_context_heuristic_fallback_without_category(brain, monkeypatch):
+    _fake_embeddings(monkeypatch)
+    conn, brain_id = brain
+    _add_turn_fact(conn, brain_id, "Melanie", "people/melanie",
+                   "Melanie paints.", "Melanie paints.", "session_1", 0)
+    # Two capitalised names -> the phase-6 multi-hop heuristic fires.
+    _, volatile_multi, _ = retrieve.build_brief(
+        conn, brain_id, "What does Melanie paint with Caroline?")
+    assert "### Dialogue context" in volatile_multi
+    _, volatile_single, _ = retrieve.build_brief(
+        conn, brain_id, "Where is melanie living?")
+    assert "### Dialogue context" not in volatile_single
+
+
+def test_dialogue_context_capped_at_three_windows(brain, monkeypatch):
+    _fake_embeddings(monkeypatch)
+    conn, brain_id = brain
+    for i in range(4):
+        _add_turn_fact(conn, brain_id, "Person %d" % i, "people/p%d" % i,
+                       "Person %d runs." % i, "Person %d runs." % i,
+                       "session_1", i)
+    _, volatile, _ = retrieve.build_brief(
+        conn, brain_id, "What does Person 0 do with Person 3?",
+        category="multi-hop")
+    assert volatile.count("### Dialogue context") == 1
+    body = volatile.split("### Dialogue context", 1)[1]
+    assert body.count("- ") <= 3
+
+
+def test_dialogue_context_window_char_cap(brain, monkeypatch):
+    _fake_embeddings(monkeypatch)
+    conn, brain_id = brain
+    long_turn = "x" * 2000
+    _add_turn_fact(conn, brain_id, "Melanie", "people/melanie",
+                   "Melanie paints.", "Melanie paints.", "session_1", 0,
+                   turn_text=long_turn)
+    _, volatile, _ = retrieve.build_brief(
+        conn, brain_id, "What does Melanie do?", category="multi-hop")
+    window_line = next(l for l in volatile.splitlines()
+                       if l.startswith("- ") and "xxx" in l)
+    # "- " prefix + hard 600-char cap on the window itself.
+    assert len(window_line) <= len("- ") + retrieve._CONTEXT_WINDOW_CHARS

@@ -1,0 +1,299 @@
+[
+  {
+    "sample": "conv-26",
+    "capture_id": 2,
+    "source_ref": "locomo:conv-26:session_1:1",
+    "fact_text": "Melanie has children",
+    "subject": "Melanie",
+    "quote": "I'm swamped with the kids & work",
+    "capture_excerpt": "Melanie: Hey Caroline! Good to see you! I'm swamped with the kids & work. What's up with you? Anything new?"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 23,
+    "source_ref": "locomo:conv-26:session_2:4",
+    "fact_text": "Melanie has a family",
+    "subject": "Melanie",
+    "quote": "helps me stay present for my fam",
+    "capture_excerpt": "Melanie: Yeah, it's tough. So I'm carving out some me-time each day - running, reading, or playing my violin - which refreshes me and helps me stay present for my fam!"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 34,
+    "source_ref": "locomo:conv-26:session_2:15",
+    "fact_text": "Caroline is a foster parent caring for children",
+    "subject": "Caroline",
+    "quote": "I'll do my best to make sure these kids have a safe and loving home",
+    "capture_excerpt": "Caroline: Thanks, Melanie! Your kind words really mean a lot. I'll do my best to make sure these kids have a safe and loving home."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 38,
+    "source_ref": "locomo:conv-26:session_3:2",
+    "fact_text": "Mel supports Caroline",
+    "subject": "Mel",
+    "quote": "Thanks, Mel! Your backing really means a lot.",
+    "capture_excerpt": "Caroline: Thanks, Mel! Your backing really means a lot. I felt super powerful giving my talk. I shared my own journey, the struggles I had and how much I've developed since coming out. It was wonderful to see how the audience related to what I said and how it inspired them to be better allies. Conversations about gender identity and inclusion are so necessary and I'm thankful for being able to giv"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 49,
+    "source_ref": "locomo:conv-26:session_3:13",
+    "fact_text": "Melanie is married",
+    "subject": "Melanie",
+    "quote": "I'm lucky to have my husband and kids; they keep me motivated.",
+    "capture_excerpt": "Melanie: I'm lucky to have my husband and kids; they keep me motivated."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 49,
+    "source_ref": "locomo:conv-26:session_3:13",
+    "fact_text": "Melanie has children",
+    "subject": "Melanie",
+    "quote": "I'm lucky to have my husband and kids; they keep me motivated.",
+    "capture_excerpt": "Melanie: I'm lucky to have my husband and kids; they keep me motivated."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 52,
+    "source_ref": "locomo:conv-26:session_3:16",
+    "fact_text": "Melanie got married",
+    "subject": "Melanie",
+    "quote": "Congrats, Melanie! You both looked so great on your wedding day!",
+    "capture_excerpt": "Caroline: Congrats, Melanie! You both looked so great on your wedding day! Wishing you many happy years together!"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 53,
+    "source_ref": "locomo:conv-26:session_3:17",
+    "fact_text": "Melanie is married",
+    "subject": "Melanie",
+    "quote": "Looking forward to more happy years. Our family and moments make it all worth it.",
+    "capture_excerpt": "Melanie: Thanks, Caroline! Appreciate your kind words. Looking forward to more happy years. Our family and moments make it all worth it."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 64,
+    "source_ref": "locomo:conv-26:session_4:5",
+    "fact_text": "Melanie has a family (children)",
+    "subject": "Melanie",
+    "quote": "I just took my fam camping in the mountains",
+    "capture_excerpt": "Melanie: That sounds great, Caroline! It's awesome having stuff around that make us think of good connections and times. Actually, I just took my fam camping in the mountains last week - it was a really nice time together!"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 71,
+    "source_ref": "locomo:conv-26:session_4:12",
+    "fact_text": "Caroline is trans",
+    "subject": "Caroline",
+    "quote": "making a safe space for people like me",
+    "capture_excerpt": "Caroline: I'm still figuring out the details, but I'm thinking of working with trans people, helping them accept themselves and supporting their mental health. Last Friday, I went to an LGBTQ+ counseling workshop and it was really enlightening. They talked about different therapeutic methods and how to best work with trans people. Seeing how passionate these pros were about making a safe space for"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 119,
+    "source_ref": "locomo:conv-26:session_7:10",
+    "fact_text": "Caroline is transgender",
+    "subject": "Caroline",
+    "quote": "It made me feel connected and gave me a lot of hope for my own path",
+    "capture_excerpt": "Caroline: I loved \"Becoming Nicole\" by Amy Ellis Nutt. It's a real inspiring true story about a trans girl and her family. It made me feel connected and gave me a lot of hope for my own path. Highly recommend it for sure!"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 141,
+    "source_ref": "locomo:conv-26:session_8:5",
+    "fact_text": "Melanie and the listener painted together on 2023-07-08",
+    "subject": "Melanie",
+    "quote": "Here's our latest work from last weekend",
+    "capture_excerpt": "Melanie: We love painting together lately, especially nature-inspired ones. Here's our latest work from last weekend."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 145,
+    "source_ref": "locomo:conv-26:session_8:9",
+    "fact_text": "Caroline is planning to have a family",
+    "subject": "Caroline",
+    "quote": "Your future fam will get a kick out of having you",
+    "capture_excerpt": "Melanie: Wow, Caroline, way to go! Your future fam will get a kick out of having you. What do you think of these?"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 147,
+    "source_ref": "locomo:conv-26:session_8:11",
+    "fact_text": "Melanie got married",
+    "subject": "Melanie",
+    "quote": "They were an important part of my wedding decor and always remind me of that day.",
+    "capture_excerpt": "Melanie: Flowers bring joy. They represent growth, beauty and reminding us to appreciate the small moments. They were an important part of my wedding decor and always remind me of that day."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 148,
+    "source_ref": "locomo:conv-26:session_8:12",
+    "fact_text": "Caroline was not acquainted with the listener before the listener's wedding",
+    "subject": "Caroline",
+    "quote": "I wish I had known you back then!",
+    "capture_excerpt": "Caroline: It must have been special at your wedding. I wish I had known you back then!"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 149,
+    "source_ref": "locomo:conv-26:session_8:13",
+    "fact_text": "Melanie got married on 2023-07-15",
+    "subject": "Melanie",
+    "quote": "The day was full of love and joy. Everyone we love was there to celebrate us - it was really special.",
+    "capture_excerpt": "Melanie: It was amazing, Caroline. The day was full of love and joy. Everyone we love was there to celebrate us - it was really special."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 243,
+    "source_ref": "locomo:conv-26:session_12:10",
+    "fact_text": "Caroline is friends with Mel",
+    "subject": "Caroline",
+    "quote": "I'm lucky to have people like you to remind me.",
+    "capture_excerpt": "Caroline: Definitely, Mel! Finding those happy moments and clinging to them is key. It's what keeps us going, even when life's hard. I'm lucky to have people like you to remind me."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 262,
+    "source_ref": "locomo:conv-26:session_13:8",
+    "fact_text": "Melanie paints animals",
+    "subject": "Melanie",
+    "quote": "how you got the horse's grace and strength",
+    "capture_excerpt": "Caroline: Wow, Melanie, that's amazing! Love all the details and how you got the horse's grace and strength. Do you like painting animals?"
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 271,
+    "source_ref": "locomo:conv-26:session_13:17",
+    "fact_text": "Melanie is supportive of Caroline",
+    "subject": "Melanie",
+    "quote": "I'm here for you. Take care of yourself.",
+    "capture_excerpt": "Melanie: Bye Caroline. I'm here for you. Take care of yourself."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 281,
+    "source_ref": "locomo:conv-26:session_14:9",
+    "fact_text": "Melanie has a family",
+    "subject": "Melanie",
+    "quote": "spending the day with my fam volunteering at a homeless shelter",
+    "capture_excerpt": "Melanie: I feel the same way! Art is so cool like that - it connects us and helps us understand each other. I was actually just remembering yesterday, spending the day with my fam volunteering at a homeless shelter. It was hard to see how neglected some people are, but it was great to feel like we could make a difference."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 339,
+    "source_ref": "locomo:conv-26:session_16:4",
+    "fact_text": "Caroline is an artist",
+    "subject": "Caroline",
+    "quote": "It inspires me to keep making art, too",
+    "capture_excerpt": "Caroline: I'm inspired seeing my work make a difference for the LGBTQ+ community. Knowing I'm helping create a more loving world is amazing. I'm really thankful for my friends, family and mentors' support. It inspires me to keep making art, too."
+  },
+  {
+    "sample": "conv-26",
+    "capture_id": 358,
+    "source_ref": "locomo:conv-26:session_17:3",
+    "fact_text": "Melanie is considering adopting a child",
+    "subject": "Melanie",
+    "quote": "Makes me feel like maybe I should do it too!",
+    "capture_excerpt": "Melanie: Yeah, a buddy of mine adopted last year. It was a long process, but now they're super happy with their new kid. Makes me feel like maybe I should do it too!"
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 7,
+    "source_ref": "locomo:conv-30:session_1:6",
+    "fact_text": "Jon uses dance as his go-to for stress relief",
+    "subject": "Jon",
+    "quote": "Wow Jon, same here!",
+    "capture_excerpt": "Gina: Wow Jon, same here! Dance is pretty much my go-to for stress relief. Got any fave styles?"
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 59,
+    "source_ref": "locomo:conv-30:session_4:0",
+    "fact_text": "Jon has a business",
+    "subject": "Jon",
+    "quote": "I gotta tell you about this thing with my biz",
+    "capture_excerpt": "Jon: Hey Gina! What's up? How's the store going? I gotta tell you about this thing with my biz."
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 71,
+    "source_ref": "locomo:conv-30:session_4:12",
+    "fact_text": "Jon is a dancer",
+    "subject": "Jon",
+    "quote": "It's a great chance for me to show my skillz",
+    "capture_excerpt": "Jon: I'm getting ready for a dance comp near me next month. It's a great chance for me to show my skillz and, hopefully, get some props from the dance fam. Super stoked!"
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 87,
+    "source_ref": "locomo:conv-30:session_5:9",
+    "fact_text": "Jon finds pursuing his dancing business difficult",
+    "subject": "Jon",
+    "quote": "it ain't been a walk in the park, that's for sure",
+    "capture_excerpt": "Jon: Yeah, I totally agree - taking risks is key for success. It's made me grow, and even got me out of my secure 9-5 as a banker. Now, I'm aiming to turn my dancing passion into a business. I'm determined to make it work, I just know it! That being said, I definitely don't underestimate the difficulties - it ain't been a walk in the park, that's for sure."
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 88,
+    "source_ref": "locomo:conv-30:session_5:10",
+    "fact_text": "Gina is supportive and available to the listener",
+    "subject": "Gina",
+    "quote": "And remember, I'm always here for you.",
+    "capture_excerpt": "Gina: It's tough starting a biz, but don't let it get you down. You can make your studio work, I'm sure. And remember, I'm always here for you."
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 97,
+    "source_ref": "locomo:conv-30:session_5:19",
+    "fact_text": "Jon runs his own business",
+    "subject": "Jon",
+    "quote": "Dancing and running my biz need hard work",
+    "capture_excerpt": "Jon: Thanks! Juggling both my passions can be tricky, but so rewarding. Dancing and running my biz need hard work, plus they give me energy for each other. My dance moves get me pumped to tackle my business goals, and successes there boost my drive to keep dreaming on the dance floor. It's a balancing act, but fun."
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 127,
+    "source_ref": "locomo:conv-30:session_7:7",
+    "fact_text": "Jon is a teacher",
+    "subject": "Jon",
+    "quote": "Seeing your students grow and succeed must be really fulfilling",
+    "capture_excerpt": "Gina: That's awesome, Jon! Seeing your students grow and succeed must be really fulfilling. Glad I can be part of this journey!"
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 137,
+    "source_ref": "locomo:conv-30:session_8:0",
+    "fact_text": "Jon shut down his bank account for his business",
+    "subject": "Jon",
+    "quote": "I needed to do it for my biz",
+    "capture_excerpt": "Jon: Hey Gina, I had to shut down my bank account. It was tough, but I needed to do it for my biz."
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 167,
+    "source_ref": "locomo:conv-30:session_9:4",
+    "fact_text": "Jon is a dance teacher",
+    "subject": "Jon",
+    "quote": "now I get to share that with other people. Seeing my students get better at it brings me such joy",
+    "capture_excerpt": "Jon: Yeah, Gina! It's been tough, but I'm living my true self. Dancing makes me so happy, and now I get to share that with other people. Seeing my students get better at it brings me such joy."
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 266,
+    "source_ref": "locomo:conv-30:session_14:11",
+    "fact_text": "Jon is an entrepreneur",
+    "subject": "Jon",
+    "quote": "Keep going and don't give up! You got this!",
+    "capture_excerpt": "Gina: Yep Jon, staying resilient and focused is key for any entrepreneur. Keep going and don't give up! You got this!"
+  },
+  {
+    "sample": "conv-30",
+    "capture_id": 316,
+    "source_ref": "locomo:conv-30:session_17:3",
+    "fact_text": "Jon is pursuing his own business",
+    "subject": "Jon",
+    "quote": "go for my biz dreams",
+    "capture_excerpt": "Jon: Thanks! Your support and encouragement means a lot. Losing my job was a bummer, but it pushed me to take the plunge and go for my biz dreams. Started to learn all these marketing and analytics tools to push the biz forward today. It's been tricky, but I'm up for the challenge and I'm gonna make this work!"
+  }
+]

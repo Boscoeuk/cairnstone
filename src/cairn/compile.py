@@ -353,14 +353,21 @@ def _subject_error(subject, speaker, quote, capture_text):
 # ----------------------------------------------------- weak-quote guard (7D)
 
 def _weak_quote(text, quote, subject):
-    """True when the quote shares no content token with the fact's text, ignoring the
-    subject's name (phase 7D). Verbatim location is necessary, not sufficient."""
+    """True when the quote shares no content token with the fact's text and does not
+    mention the subject's name. Phase 7D guard, relaxed in phase 8B: the audit of 10
+    weak_quote rejections found 8 of 10 were valid facts, so a quote that names the
+    subject now anchors the attribution even when the claim is paraphrased away from
+    the quote's wording. Verbatim location is necessary, not sufficient."""
     subj_tokens = {w for w in re.findall(r"[a-z0-9]+", (subject or "").lower())}
     fact_tokens = [w for w in _content_tokens(text) if w not in subj_tokens]
     quote_tokens = [w for w in _content_tokens(quote) if w not in subj_tokens]
     if not fact_tokens or not quote_tokens:
         return False
-    return not _tokens_overlap(fact_tokens, quote_tokens)
+    if _tokens_overlap(fact_tokens, quote_tokens):
+        return False
+    # Phase 8B relaxation: overlap with the subject's name also counts.
+    return not _tokens_overlap(sorted(subj_tokens),
+                               [w for w in _content_tokens(quote)])
 
 
 def _tokens_overlap(a, b):

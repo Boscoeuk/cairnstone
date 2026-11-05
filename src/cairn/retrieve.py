@@ -299,6 +299,75 @@ def _looks_multi_hop(question):
     return bool(_MULTI_HOP_RE.search(question))
 
 
+# Phase 8A: inference support. Multi-hop and commonsense questions fail because a
+# flat fact set loses the conversational context inference needs, so the brief adds
+# bounded windows of the cited captures' surrounding dialogue. Caps are hard so the
+# brief stays inside the token budget (P9): at most 3 windows of at most
+# _CONTEXT_WINDOW_CHARS each. (config/policies.yml does not exist yet; the default
+# lives here until thresholds get a shared home.)
+_CONTEXT_WINDOW_CHARS = 600
+_MAX_DIALOGUE_WINDOWS = 3
+
+# Question categories (LoCoMo numbering, mirrored in eval/harness.CATEGORY_NAMES)
+# that earn dialogue context.
+_INFERENCE_CATEGORIES = frozenset({"multi-hop", "commonsense"})
+
+
+def _wants_dialogue_context(question, category=None):
+    """True when the question should get dialogue context windows. The caller's
+    category label is authoritative when given; otherwise the phase-6 multi-hop
+    heuristic decides (commonsense has no lexical signal)."""
+    if category is not None:
+        return category in _INFERENCE_CATEGORIES
+    return _looks_multi_hop(question)
+
+
+def _dialogue_window(conn, fact, max_chars=_CONTEXT_WINDOW_CHARS):
+    """Bounded dialogue window around a fact's cited capture: the cited turn plus
+    the immediately preceding and following turn from the same conversation
+    (captures are one turn each, ordered by the session index in `source_ref`).
+
+    The fact's own turn is always kept whole (truncated to max_chars if it alone is
+    longer); the neighbours are trimmed head/tail to fit the cap. Returns None when
+    the capture does not exist."""
+    row = conn.execute(
+        "SELECT content, source_ref FROM captures WHERE id = ?",
+        (fact["capture_id"],)).fetchone()
+    if row is None:
+        return None
+    ref = row["source_ref"]
+    prefix, sep, idx = ref.rpartition(":")
+    neighbours = []
+    if sep and idx.isdigit():
+        turn = int(idx)
+        for other in (turn - 1, turn + 1):
+            n = conn.execute(
+                "SELECT content FROM captures WHERE brain_id ="
+                " (SELECT brain_id FROM captures WHERE id = ?)"
+                " AND source_ref = ?",
+                (fact["capture_id"], "%s:%d" % (prefix, other))).fetchone()
+            if n is not None:
+                neighbours.append((other, n["content"]))
+    neighbours.sort()
+
+    current = row["content"]
+    if len(current) > max_chars:
+        return current[:max_chars]
+    turn_idx = int(idx) if idx.isdigit() else 0
+    budget = max_chars - len(current)
+    prev = next_ = ""
+    for other, text in neighbours:
+        text = text.strip()
+        if other < turn_idx and text:
+            prev = text[-(budget // 2):] if budget > 0 else ""
+            budget -= len(prev)
+        elif other > turn_idx and text:
+            next_ = text[:max(0, budget)] if budget > 0 else ""
+            budget -= len(next_)
+    parts = [p for p in (prev, current, next_) if p]
+    return "\n".join(parts)
+
+
 # ------------------------------------------------- question-conditioned selection
 
 FACT_FTS_SCHEMA = """
@@ -502,7 +571,7 @@ def select_facts(conn, brain_id, question, budget_tokens):
     return selected
 
 
-def build_brief(conn, brain_id, question, budget_tokens=4000):
+def build_brief(conn, brain_id, question, budget_tokens=4000, category=None):
     """Assemble the brief. Returns (stable_text, question_text, selected_facts).
 
     stable_text — the canonical entity directory (page headers), byte-identical for
@@ -512,7 +581,11 @@ def build_brief(conn, brain_id, question, budget_tokens=4000):
 
     question_text — the volatile user message: the question-conditioned selected
     records followed by the question. Selection varies per question; the prefix
-    may not.
+    may not. For multi-hop and commonsense questions (phase 8A) it also carries
+    bounded dialogue-context windows from the cited captures.
+
+    category — the question's category label ("multi-hop", "commonsense", ...) when
+    the caller knows it; falls back to the multi-hop heuristic otherwise.
 
     selected_facts — the facts selected for this question, in render order, as
     plain dicts ({id, text, quote, status, capture_id, page_id}).
@@ -537,6 +610,25 @@ def build_brief(conn, brain_id, question, budget_tokens=4000):
                 "into one answer.\n"
                 "- When the question asks for a list, list every item the records "
                 "support.")
+        if _wants_dialogue_context(question, category):
+            # Phase 8A: inference needs the surrounding conversation, not just the
+            # compiled claims. Bounded windows from the cited captures; the stable
+            # system message is untouched (P9).
+            windows = []
+            seen_captures = set()
+            for f in selected:
+                if f["capture_id"] in seen_captures:
+                    continue
+                seen_captures.add(f["capture_id"])
+                window = _dialogue_window(conn, f)
+                if window:
+                    windows.append(window)
+                if len(windows) >= _MAX_DIALOGUE_WINDOWS:
+                    break
+            if windows:
+                lines.append("\n### Dialogue context")
+                for window in windows:
+                    lines.append("- %s" % window.replace("\n", " "))
         volatile = "\n".join(lines) + "\n\n### Question\n" + question
     else:
         volatile = "### Question\n" + question
