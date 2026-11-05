@@ -38,6 +38,9 @@ Changelog = "https://github.com/Boscoeuk/cairn/blob/main/CHANGELOG.md"
 mcp = [
     "mcp",
 ]
+dev = [
+    "pytest",
+]
 
 [project.scripts]
 cairn = "cairn.cli:main"
