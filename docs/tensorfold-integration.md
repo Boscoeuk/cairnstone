@@ -17,7 +17,7 @@ content must stay auditable.
 ## Measured on this machine (2026-11-05)
 
 Engine: `tensorfold-native 1.0.7`, `GLM-5.3-Flash-MLX-4bit-MTP`, `--context 262144`,
-`--max-tokens 32768`, `--parallel 4`, `--temperature 0`, Apple M3 (Metal), served on
+`--max-tokens 32768`, `--parallel 4`, `--temperature 0`, Apple M3 Ultra (Mac Studio, 512 GB, Metal), served on
 `127.0.0.1:8460`.
 
 | Measurement | Value |

@@ -26,7 +26,7 @@ Bound both: a full 3-conversation run is ~600 questions and takes hours on local
 | naive_rag | 66.7% | 770 | 2.38 s | 0% |
 
 Engine: TensorFold `tensorfold-native` 1.0.7, GLM-5.3-Flash-MLX-4bit-MTP, greedy, `--parallel 4`,
-Apple M3. Answerer `glm-5.3-flash`, judge `local-judge`.
+Apple M3 Ultra (Mac Studio, 512 GB). Answerer `glm-5.3-flash`, judge `local-judge`.
 
 **Read this with care.** n=12 is a smoke test, not a result. The gap is directional, not
 statistical. The full_context latency is dominated by one cold prefill (~30 s); the other 11
