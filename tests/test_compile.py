@@ -4,7 +4,8 @@ import pytest
 
 from cairn import store
 from cairn.compile import (ExtractError, compile_all, dedupe, extract, locate,
-                           supersede_contradictions, upsert_page, write_facts)
+                           supersede_contradictions, uncited_facts, upsert_page,
+                           write_facts)
 from cairn.llm import LLMError
 
 
@@ -259,3 +260,57 @@ def test_export_excludes_duplicates(db, tmp_path):
     store.export_markdown(conn, brain, str(out))
     text = (out / "people" / "caroline.md").read_text()
     assert text.count("- Caroline is a transgender woman") == 1
+
+
+# ---- Phase 5B: atomic attribute facts for people ----
+
+ATOMIC_CAPTURE = (
+    "Caroline: I plan to become a single parent next year, and I've moved to "
+    "Austin for the new nursing job. Melanie: That's a big change!")
+
+ATOMIC_JSON = ('{"facts": ['
+               ' {"text": "Caroline is single", "quote": "I plan to become a single parent",'
+               '  "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"},'
+               ' {"text": "Caroline lives in Austin", "quote": "moved to Austin",'
+               '  "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"},'
+               ' {"text": "Caroline is a nurse", "quote": "new nursing job",'
+               '  "bucket": "people", "page_title": "Caroline", "page_path": "people/caroline"}'
+               ']}')
+
+
+def test_atomic_attribute_instruction_present():
+    from cairn.compile import EXTRACTION_SYSTEM
+    for attr in ("relationship status", "location", "occupation", "age",
+                 "family role"):
+        assert attr in EXTRACTION_SYSTEM, "missing atomic attribute rule: " + attr
+    assert "never invent" in EXTRACTION_SYSTEM
+
+
+def test_atomic_attribute_facts_compile_with_citations(db):
+    """The phase-4 gap: 'plans to become a single parent' must yield an atomic
+    'Caroline is single' fact, and every emitted fact must cite a locatable quote."""
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation", ATOMIC_CAPTURE, "test:2")
+    facts = extract(ATOMIC_CAPTURE, FakeClient([ATOMIC_JSON]))
+    kinds = [f["text"] for f in facts]
+    assert any("single" in t for t in kinds), "relationship status fact missing"
+    assert any("Austin" in t for t in kinds), "location fact missing"
+    assert any("nurse" in t for t in kinds), "occupation fact missing"
+    result = compile_all(conn, brain, [cid], FakeClient([ATOMIC_JSON]))
+    assert result["facts_accepted"] == 3
+    assert result["facts_rejected"] == []
+    assert uncited_facts(conn, brain) == []
+
+
+def test_invented_attribute_without_quote_is_rejected(db):
+    """A fact with no supporting quote in the capture is rejected, not guessed."""
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation", ATOMIC_CAPTURE, "test:3")
+    bad_json = ('{"facts": [{"text": "Caroline is married",'
+                ' "quote": "Caroline married Sam in June",'
+                ' "bucket": "people", "page_title": "Caroline",'
+                ' "page_path": "people/caroline"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([bad_json]))
+    assert result["facts_accepted"] == 0
+    assert len(result["facts_rejected"]) == 1
+    assert uncited_facts(conn, brain) == []

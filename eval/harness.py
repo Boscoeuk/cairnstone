@@ -14,6 +14,8 @@ comparable in shape to published LoCoMo figures, not identical in judge.
 """
 from __future__ import annotations
 
+import statistics
+
 import argparse
 import datetime as dt
 import json
@@ -391,15 +393,25 @@ def judge(question: str, gold: str, predicted: str, model: str = JUDGE_MODEL) ->
 
 # -------------------------------------------------------------------- runner
 def run_backend(backend: Backend, samples: list[dict], judge_model: str,
-                max_questions: int | None) -> list[dict]:
+                max_questions: int | None, questions_per_sample: int | None = None) -> list[dict]:
+    """Run a backend over samples.
+
+    `max_questions` is a global cap. `questions_per_sample` caps each conversation, which is
+    what makes multi-conversation coverage real: a global cap of 60 was satisfied entirely by
+    the first conversation, so a run labelled "2 conversations" measured one.
+    """
     rows = []
     asked = 0
     for sample in samples:
         backend.ingest(sample)
+        in_sample = 0
         for qa in sample["qa"]:
+            if questions_per_sample is not None and in_sample >= questions_per_sample:
+                break
             if max_questions is not None and asked >= max_questions:
                 break
             asked += 1
+            in_sample += 1
             result = backend.ask(qa["question"])
             correct, ambiguous = judge(qa["question"], str(qa["answer"]),
                                        result["answer"], judge_model)
@@ -431,6 +443,12 @@ def run_backend(backend: Backend, samples: list[dict], judge_model: str,
             rows.append(row)
         if max_questions is not None and asked >= max_questions:
             break
+    # Phase 5: a single stalled request must not inflate the reported cost. Flag
+    # rows slower than 5x the median; the mean is only reported alongside the median.
+    if rows:
+        med = statistics.median(r["latency_s"] for r in rows)
+        for r in rows:
+            r["latency_outlier"] = r["latency_s"] > 5 * med
     return rows
 
 
@@ -450,27 +468,42 @@ def aggregate(rows: list[dict]) -> dict:
         "judge_ambiguous_count": sum(r["judge_ambiguous"] for r in rows),
         "mean_context_tokens": mean([r["context_tokens"] for r in rows]),
         "mean_latency_s": mean([r["latency_s"] for r in rows]),
+        "median_latency_s": round(statistics.median(r["latency_s"] for r in rows), 3)
+        if rows else None,
+        "latency_outlier_count": sum(1 for r in rows if r.get("latency_outlier")),
         "mean_engine_tokens_per_second": mean(
             [e["tokens_per_second"] for e in engine if e.get("tokens_per_second")]),
         "mean_engine_prefill_seconds": mean(
             [e["prefill_seconds"] for e in engine if e.get("prefill_seconds") is not None]),
         "prompt_cache_hit_rate": mean(
             [1.0 if e.get("cached_tokens") else 0.0 for e in engine]),
-        # Phase-4 diagnostic split (cairn rows only; other backends lack the field).
-        "gold_support_present": sum(
-            1 for r in rows if r.get("gold_support_in_brief")),
-        "retrieval_failures": sum(
-            1 for r in rows if not r["correct"] and not r.get("gold_support_in_brief")),
-        "answering_failures": sum(
-            1 for r in rows if not r["correct"] and r.get("gold_support_in_brief")),
+        # Diagnostic split. Only rows that carry the field count; other backends have
+        # no brief to inspect, so reporting them as "retrieval failures" was an
+        # artefact of treating a missing field as False.
+        "diagnostic_rows": len([r for r in rows if "gold_support_in_brief" in r]),
+        "gold_support_present": (
+            sum(1 for r in rows if r.get("gold_support_in_brief") is True)
+            if any("gold_support_in_brief" in r for r in rows) else None),
+        "retrieval_failures": (
+            sum(1 for r in rows if "gold_support_in_brief" in r
+                and not r["correct"] and not r["gold_support_in_brief"])
+            if any("gold_support_in_brief" in r for r in rows) else None),
+        "answering_failures": (
+            sum(1 for r in rows if "gold_support_in_brief" in r
+                and not r["correct"] and r["gold_support_in_brief"])
+            if any("gold_support_in_brief" in r for r in rows) else None),
     }
 
 
 def save_results(backend_name: str, rows: list[dict], judge_model: str,
-                 answer_model: str) -> Path:
+                 answer_model: str, limit: int | None = None,
+                 max_questions: int | None = None) -> Path:
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     date = dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%d")
-    path = RESULTS_DIR / f"{date}-{backend_name}.json"
+    # Phase 5: the scope is part of the filename so runs never overwrite each other.
+    limit_part = "all" if limit is None else str(limit)
+    questions_part = "all" if max_questions is None else str(max_questions)
+    path = RESULTS_DIR / f"{date}-{backend_name}-s{limit_part}-q{questions_part}.json"
     doc = {
         "dataset": DATASET.name,
         "dataset_license": "LoCoMo, Snap Research, ACL 2024 (research use)",
@@ -489,13 +522,15 @@ def save_results(backend_name: str, rows: list[dict], judge_model: str,
 
 
 def comparison_table(results: dict[str, dict]) -> str:
-    lines = ["| backend | accuracy | questions | mean context tokens | mean latency (s) | "
-             "cache hit |", "|---|---|---|---|---|---|"]
+    lines = ["| backend | accuracy | questions | mean context tokens | median latency (s) | "
+             "mean latency (s) | latency outliers | cache hit |",
+             "|---|---|---|---|---|---|---|---|"]
     for name, doc in results.items():
         a = doc["aggregate"]
         lines.append(
             f"| {name} | {a['accuracy_overall']:.1%} | {a['n_questions']} | "
-            f"{a['mean_context_tokens']} | {a['mean_latency_s']} | "
+            f"{a['mean_context_tokens']} | {a['median_latency_s']} | "
+            f"{a['mean_latency_s']} | {a['latency_outlier_count']} | "
             f"{a['prompt_cache_hit_rate']} |")
     return "\n".join(lines)
 
@@ -506,7 +541,10 @@ def main() -> None:
     ap.add_argument("--baseline", action="store_true", help="run both backends + table")
     ap.add_argument("--limit", type=int, default=None, help="max samples (conversations)")
     ap.add_argument("--max-questions", type=int, default=25,
-                    help="max questions per run (default 25; use 0 for all)")
+                    help="global max questions per run (default 25; use 0 for all)")
+    ap.add_argument("--questions-per-sample", type=int, default=None,
+                    help="cap questions per conversation, so --limit N really covers N "
+                         "conversations instead of spending the whole budget on the first")
     ap.add_argument("--judge-model", default=JUDGE_MODEL)
     ap.add_argument("--recompile", action="store_true",
                     help="cairn backend: rebuild the per-sample compiled DBs")
@@ -533,10 +571,14 @@ def main() -> None:
         print(f"=== {name}: {len(samples)} sample(s), "
               f"{'all' if max_q is None else max_q} question(s) ===", flush=True)
         t0 = time.perf_counter()
-        rows = run_backend(BACKENDS[name], samples, args.judge_model, max_q)
+        rows = run_backend(BACKENDS[name], samples, args.judge_model, max_q,
+                           args.questions_per_sample)
         label = (f"cairn-b{args.brief_budget}"
                  if name == "cairn" and args.brief_budget != 4000 else name)
-        path = save_results(label, rows, args.judge_model, ANSWER_MODEL)
+        if args.questions_per_sample:
+            label = f"{label}-ps{args.questions_per_sample}"
+        path = save_results(label, rows, args.judge_model, ANSWER_MODEL,
+                            args.limit, max_q)
         saved[name] = json.loads(path.read_text())
         print(f"wrote {path} in {time.perf_counter() - t0:.1f}s", flush=True)
 

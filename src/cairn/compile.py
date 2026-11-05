@@ -27,6 +27,13 @@ object, no prose, no markdown fences, in exactly this shape:
 
 Rules:
 - "text": one self-contained fact stated in the capture.
+- Atomic attribute facts for people are REQUIRED whenever the capture implies \
+them: relationship status (single, married, divorced, dating), location, \
+occupation, age, and family role. Emit each as its own fact, e.g. "Caroline \
+is single". A direct inference is allowed only when a quote in the capture \
+supports it — "I'm single" or "I plan to become a single parent" supports \
+"Caroline is single" — but never invent an attribute without a supporting \
+quote. The quote rule still governs: no quote, no fact.
 - Resolve every relative time reference (yesterday, last week, next Tuesday) to an \
 absolute date, using the capture's timestamp. Write dates as YYYY-MM-DD. Never leave a \
 relative expression in "text".

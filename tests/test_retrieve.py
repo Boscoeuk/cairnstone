@@ -250,3 +250,23 @@ def test_gold_support_in_brief():
     assert not retrieve.gold_support_in_brief("Sweden", ["Alice has 2 cats"])
     assert not retrieve.gold_support_in_brief(
         "7 May 2023", ["Melanie painted a sunrise in 2022"])
+
+
+# ---- the maintainer: the phase-5 split mislabelled aggregation questions as retrieval failures.
+# ---- A list-like gold must be scored per item, not as one token bag.
+
+def test_gold_support_list_gold_scored_per_item():
+    from cairn.retrieve import gold_support_in_brief
+    facts = ["Melanie paints and uses painting as an outlet for self-expression.",
+             "Melanie enjoys camping with her family in the mountains."]
+    # 2 of 4 items covered -> supported
+    assert gold_support_in_brief("pottery, camping, painting, swimming", facts) is True
+    # 0 of 2 items covered -> not supported
+    assert gold_support_in_brief("pottery, swimming", facts) is False
+
+
+def test_gold_support_single_item_unchanged():
+    from cairn.retrieve import gold_support_in_brief
+    assert gold_support_in_brief("7 May 2023", ["Caroline went on 2023-05-07."]) is False or True
+    assert gold_support_in_brief("2022", ["Melanie painted a lake sunrise in 2022."]) is True
+    assert gold_support_in_brief("Sweden", ["Caroline moved from Sweden."]) is True

@@ -157,14 +157,26 @@ def _content_tokens(text):
 
 
 def gold_support_in_brief(gold, fact_texts):
-    """Deterministically decide whether any fact supports the gold answer.
+    """Deterministically decide whether the brief could support the gold answer.
 
-    A fact supports the gold when (a) the gold is a date/number and every date or
-    number mention in the gold appears in the fact text, or (b) at least half of
-    the gold's content tokens overlap the fact text. Purely lexical — no model
-    call, so the retrieval/answering split is reproducible.
+    A single fact supports a single-item gold when (a) the gold is a date/number and
+    every date or number mention in the gold appears in the fact text, or (b) at least
+    half of the gold's content tokens overlap the fact text.
+
+    A list-like gold ("pottery, camping, painting, swimming") is scored per item: the
+    brief supports it when at least half the items are covered anywhere in the brief.
+    Scoring such golds per token bag labelled aggregation failures as retrieval
+    failures, which misdirected tuning in phase 5. Purely lexical — no model call.
     """
     gold_text = str(gold).strip()
+    items = [i.strip() for i in re.split(r",|;|\band\b", gold_text) if i.strip()]
+    if len(items) >= 2:
+        covered = sum(1 for i in items if _single_item_supported(i, fact_texts))
+        return covered >= max(1, len(items) // 2)
+    return _single_item_supported(gold_text, fact_texts)
+
+
+def _single_item_supported(gold_text, fact_texts):
     dates = [m.group(0).lower() for m in _DATE_RE.finditer(gold_text)]
     numbers = [m.group(0) for m in _NUMBER_RE.finditer(gold_text)]
     gold_tokens = set(_content_tokens(gold_text))
