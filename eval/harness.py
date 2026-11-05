@@ -335,7 +335,13 @@ class CairnBackend(FullContextBackend):
                 "Reply with a short answer only — a date, name, number, place, "
                 "short phrase, or a short list when the question asks for one. "
                 "Do not restate the supporting fact. Do not use markdown "
-                "or bold. If the records do not answer it, reply exactly: Not recorded.\n\n"
+                "or bold. Any record that mentions the question's subject answers the "
+                "question, even if its phrasing differs from the question. Reply "
+                "\"Not recorded\" only when no record mentions the subject at all. When "
+                "several records answer, combine them into one answer; when the question "
+                "asks what someone designed, wanted, liked or did, list every supported "
+                "item rather than picking one. Keep the answer short — a phrase or a "
+                "short list, no preamble.\n\n"
                 "Answer:")},
         ], 128)
 
@@ -513,7 +519,10 @@ def save_results(backend_name: str, rows: list[dict], judge_model: str,
     # Phase 5: the scope is part of the filename so runs never overwrite each other.
     limit_part = "all" if limit is None else str(limit)
     questions_part = "all" if max_questions is None else str(max_questions)
-    path = RESULTS_DIR / f"{date}-{backend_name}-s{limit_part}-q{questions_part}.json"
+    # Phase 9: scope alone is not unique across phases, so two runs of the same scope
+    # overwrote each other's evidence. A UTC stamp makes a collision impossible.
+    stamp = dt.datetime.now(dt.timezone.utc).strftime("%H%M%SZ")
+    path = RESULTS_DIR / f"{date}-{backend_name}-s{limit_part}-q{questions_part}-{stamp}.json"
     doc = {
         "dataset": DATASET.name,
         "dataset_license": "LoCoMo, Snap Research, ACL 2024 (research use)",

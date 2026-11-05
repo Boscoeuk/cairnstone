@@ -6,7 +6,7 @@
   "judge_model": "local-judge",
   "judge_note": "local-judged; not GPT-judged, so not directly comparable to published LoCoMo figures",
   "engine": "TensorFold (tensorfold-native)",
-  "timestamp": "2026-11-05T20:42:50.406996+00:00",
+  "timestamp": "2026-11-05T22:05:44.231504+00:00",
   "aggregate": {
     "accuracy_by_category": {
       "commonsense": {
@@ -30,11 +30,11 @@
     "accuracy_overall": 0.453,
     "judge_ambiguous_count": 0,
     "mean_context_tokens": 932.22,
-    "mean_latency_s": 2.397,
-    "median_latency_s": 2.441,
-    "latency_outlier_count": 0,
-    "mean_engine_tokens_per_second": 27.841,
-    "mean_engine_prefill_seconds": 2.232,
+    "mean_latency_s": 3.212,
+    "median_latency_s": 2.712,
+    "latency_outlier_count": 3,
+    "mean_engine_tokens_per_second": 20.483,
+    "mean_engine_prefill_seconds": 2.19,
     "prompt_cache_hit_rate": 0.0,
     "diagnostic_rows": 0,
     "gold_support_present": null,
@@ -53,7 +53,7 @@
       "category_name": "temporal",
       "context_tokens": 1079,
       "tokens_estimated": false,
-      "latency_s": 5.395,
+      "latency_s": 27.536,
       "sources": [
         "session_10",
         "session_7",
@@ -64,14 +64,14 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.838476807020736,
-        "prefill_seconds": 5.281238,
-        "time_to_first_token": 5.290449791,
+        "tokens_per_second": 6.32656960198956,
+        "prefill_seconds": 2.56264,
+        "time_to_first_token": 27.37417375,
         "cached_tokens": 0,
-        "wall_seconds": 5.395
+        "wall_seconds": 27.536
       },
       "answer": "Yesterday",
-      "latency_outlier": false
+      "latency_outlier": true
     },
     {
       "sample_id": "conv-26",
@@ -84,7 +84,7 @@
       "category_name": "temporal",
       "context_tokens": 1028,
       "tokens_estimated": false,
-      "latency_s": 2.498,
+      "latency_s": 2.675,
       "sources": [
         "session_9",
         "session_17",
@@ -95,11 +95,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 30.523956378681973,
-        "prefill_seconds": 2.282086209,
-        "time_to_first_token": 2.296496042,
+        "tokens_per_second": 24.707685737855318,
+        "prefill_seconds": 2.309193333,
+        "time_to_first_token": 2.428957458,
         "cached_tokens": 0,
-        "wall_seconds": 2.498
+        "wall_seconds": 2.675
       },
       "answer": "She didn't paint a sunrise",
       "latency_outlier": false
@@ -115,7 +115,7 @@
       "category_name": "commonsense",
       "context_tokens": 883,
       "tokens_estimated": false,
-      "latency_s": 2.274,
+      "latency_s": 2.595,
       "sources": [
         "session_4",
         "session_5",
@@ -126,11 +126,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 44.993335137266115,
-        "prefill_seconds": 2.123402667,
-        "time_to_first_token": 2.136184834,
+        "tokens_per_second": 28.621613026241807,
+        "prefill_seconds": 2.133927875,
+        "time_to_first_token": 2.381654875,
         "cached_tokens": 0,
-        "wall_seconds": 2.274
+        "wall_seconds": 2.595
       },
       "answer": "Counseling or mental health",
       "latency_outlier": false
@@ -146,7 +146,7 @@
       "category_name": "multi-hop",
       "context_tokens": 725,
       "tokens_estimated": false,
-      "latency_s": 1.838,
+      "latency_s": 1.963,
       "sources": [
         "session_4",
         "session_18",
@@ -157,11 +157,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.755230966804604,
-        "prefill_seconds": 1.725713084,
-        "time_to_first_token": 1.735798167,
+        "tokens_per_second": 16.82012111698253,
+        "prefill_seconds": 1.72294625,
+        "time_to_first_token": 1.839147708,
         "cached_tokens": 0,
-        "wall_seconds": 1.838
+        "wall_seconds": 1.963
       },
       "answer": "adoption",
       "latency_outlier": false
@@ -177,7 +177,7 @@
       "category_name": "multi-hop",
       "context_tokens": 697,
       "tokens_estimated": false,
-      "latency_s": 1.824,
+      "latency_s": 1.974,
       "sources": [
         "session_17",
         "session_4",
@@ -188,11 +188,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 14.638479902772387,
-        "prefill_seconds": 1.670605667,
-        "time_to_first_token": 1.682706291,
+        "tokens_per_second": 11.251299173451434,
+        "prefill_seconds": 1.672784292,
+        "time_to_first_token": 1.791565792,
         "cached_tokens": 0,
-        "wall_seconds": 1.824
+        "wall_seconds": 1.974
       },
       "answer": "Trans person",
       "latency_outlier": false
@@ -208,7 +208,7 @@
       "category_name": "temporal",
       "context_tokens": 513,
       "tokens_estimated": false,
-      "latency_s": 1.393,
+      "latency_s": 1.627,
       "sources": [
         "session_2",
         "session_4",
@@ -219,11 +219,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.443171861841684,
-        "prefill_seconds": 1.280577917,
-        "time_to_first_token": 1.286533042,
+        "tokens_per_second": 16.396696157545755,
+        "prefill_seconds": 1.296083709,
+        "time_to_first_token": 1.50134275,
         "cached_tokens": 0,
-        "wall_seconds": 1.393
+        "wall_seconds": 1.627
       },
       "answer": "Last Saturday",
       "latency_outlier": false
@@ -239,7 +239,7 @@
       "category_name": "temporal",
       "context_tokens": 721,
       "tokens_estimated": false,
-      "latency_s": 1.941,
+      "latency_s": 2.193,
       "sources": [
         "session_12",
         "session_10",
@@ -250,11 +250,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 28.47911737747257,
-        "prefill_seconds": 1.79114125,
-        "time_to_first_token": 1.79691925,
+        "tokens_per_second": 21.95301315368568,
+        "prefill_seconds": 1.790508292,
+        "time_to_first_token": 2.006674166,
         "cached_tokens": 0,
-        "wall_seconds": 1.941
+        "wall_seconds": 2.193
       },
       "answer": "A few weeks ago",
       "latency_outlier": false
@@ -270,7 +270,7 @@
       "category_name": "multi-hop",
       "context_tokens": 444,
       "tokens_estimated": false,
-      "latency_s": 1.312,
+      "latency_s": 1.421,
       "sources": [
         "session_4",
         "session_11",
@@ -281,11 +281,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 8.222791063944305,
-        "prefill_seconds": 1.1804155,
-        "time_to_first_token": 1.18603825,
+        "tokens_per_second": 8.172341074485349,
+        "prefill_seconds": 1.162402125,
+        "time_to_first_token": 1.29266625,
         "cached_tokens": 0,
-        "wall_seconds": 1.312
+        "wall_seconds": 1.421
       },
       "answer": "Single",
       "latency_outlier": false
@@ -301,7 +301,7 @@
       "category_name": "temporal",
       "context_tokens": 878,
       "tokens_estimated": false,
-      "latency_s": 2.222,
+      "latency_s": 2.453,
       "sources": [
         "session_3",
         "session_5",
@@ -312,11 +312,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.42415871613738,
-        "prefill_seconds": 2.107937208,
-        "time_to_first_token": 2.120662417,
+        "tokens_per_second": 15.984207602888347,
+        "prefill_seconds": 2.1004765,
+        "time_to_first_token": 2.324076916,
         "cached_tokens": 0,
-        "wall_seconds": 2.222
+        "wall_seconds": 2.453
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -332,7 +332,7 @@
       "category_name": "temporal",
       "context_tokens": 873,
       "tokens_estimated": false,
-      "latency_s": 2.235,
+      "latency_s": 2.494,
       "sources": [
         "session_4",
         "session_8",
@@ -343,11 +343,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.962636532081998,
-        "prefill_seconds": 2.119768625,
-        "time_to_first_token": 2.129489917,
+        "tokens_per_second": 15.71680925008408,
+        "prefill_seconds": 2.120144292,
+        "time_to_first_token": 2.363029625,
         "cached_tokens": 0,
-        "wall_seconds": 2.235
+        "wall_seconds": 2.494
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -363,7 +363,7 @@
       "category_name": "temporal",
       "context_tokens": 940,
       "tokens_estimated": false,
-      "latency_s": 2.335,
+      "latency_s": 2.594,
       "sources": [
         "session_8",
         "session_10",
@@ -374,11 +374,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.485485748802862,
-        "prefill_seconds": 2.212182459,
-        "time_to_first_token": 2.227785375,
+        "tokens_per_second": 16.79254075339734,
+        "prefill_seconds": 2.215819833,
+        "time_to_first_token": 2.471119416,
         "cached_tokens": 0,
-        "wall_seconds": 2.335
+        "wall_seconds": 2.594
       },
       "answer": "4 years",
       "latency_outlier": false
@@ -394,7 +394,7 @@
       "category_name": "multi-hop",
       "context_tokens": 463,
       "tokens_estimated": false,
-      "latency_s": 2.202,
+      "latency_s": 2.964,
       "sources": [
         "session_13",
         "session_4",
@@ -405,11 +405,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 63.162796866411036,
-        "prefill_seconds": 1.192161083,
-        "time_to_first_token": 1.200349333,
+        "tokens_per_second": 41.92725155065894,
+        "prefill_seconds": 1.226946417,
+        "time_to_first_token": 1.454995542,
         "cached_tokens": 0,
-        "wall_seconds": 2.202
+        "wall_seconds": 2.964
       },
       "answer": "I'm sorry, but the context provided doesn't contain any information about where Caroline moved from 4 years ago. The conversations cover topics like Caroline's interest in counseling/mental health work, Melanie's trip to the museum with her kids, and their mutual support, but nothing about a move or a previous location.",
       "latency_outlier": false
@@ -425,7 +425,7 @@
       "category_name": "temporal",
       "context_tokens": 626,
       "tokens_estimated": false,
-      "latency_s": 1.808,
+      "latency_s": 2.03,
       "sources": [
         "session_18",
         "session_4",
@@ -436,11 +436,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 31.219282177542436,
-        "prefill_seconds": 1.695648875,
-        "time_to_first_token": 1.707186208,
+        "tokens_per_second": 23.630846850466554,
+        "prefill_seconds": 1.63384425,
+        "time_to_first_token": 1.898682959,
         "cached_tokens": 0,
-        "wall_seconds": 1.808
+        "wall_seconds": 2.03
       },
       "answer": "Ten years ago",
       "latency_outlier": false
@@ -456,7 +456,7 @@
       "category_name": "multi-hop",
       "context_tokens": 743,
       "tokens_estimated": false,
-      "latency_s": 2.004,
+      "latency_s": 2.294,
       "sources": [
         "session_4",
         "session_7",
@@ -467,11 +467,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 43.44105014742155,
-        "prefill_seconds": 1.855544708,
-        "time_to_first_token": 1.862215625,
+        "tokens_per_second": 27.357301749328464,
+        "prefill_seconds": 1.852944,
+        "time_to_first_token": 2.068828333,
         "cached_tokens": 0,
-        "wall_seconds": 2.004
+        "wall_seconds": 2.294
       },
       "answer": "Counseling and mental health",
       "latency_outlier": false
@@ -487,7 +487,7 @@
       "category_name": "commonsense",
       "context_tokens": 1016,
       "tokens_estimated": false,
-      "latency_s": 2.495,
+      "latency_s": 2.743,
       "sources": [
         "session_7",
         "session_4",
@@ -498,11 +498,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.348369262060789,
-        "prefill_seconds": 2.382878167,
-        "time_to_first_token": 2.393786458,
+        "tokens_per_second": 7.7116411920183,
+        "prefill_seconds": 2.385030291,
+        "time_to_first_token": 2.610573292,
         "cached_tokens": 0,
-        "wall_seconds": 2.495
+        "wall_seconds": 2.743
       },
       "answer": "No",
       "latency_outlier": false
@@ -518,7 +518,7 @@
       "category_name": "multi-hop",
       "context_tokens": 703,
       "tokens_estimated": false,
-      "latency_s": 2.066,
+      "latency_s": 2.33,
       "sources": [
         "session_15",
         "session_4",
@@ -529,11 +529,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 42.47065985248524,
-        "prefill_seconds": 1.768647792,
-        "time_to_first_token": 1.778079542,
+        "tokens_per_second": 36.35953214372014,
+        "prefill_seconds": 1.769938125,
+        "time_to_first_token": 1.995727333,
         "cached_tokens": 0,
-        "wall_seconds": 2.066
+        "wall_seconds": 2.33
       },
       "answer": "running, reading, playing the violin, playing the clarinet",
       "latency_outlier": false
@@ -549,7 +549,7 @@
       "category_name": "temporal",
       "context_tokens": 931,
       "tokens_estimated": false,
-      "latency_s": 2.379,
+      "latency_s": 2.574,
       "sources": [
         "session_5",
         "session_5",
@@ -560,11 +560,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 40.61467408174574,
-        "prefill_seconds": 2.191195,
-        "time_to_first_token": 2.201792583,
+        "tokens_per_second": 31.058822961479002,
+        "prefill_seconds": 2.22460875,
+        "time_to_first_token": 2.345201583,
         "cached_tokens": 0,
-        "wall_seconds": 2.379
+        "wall_seconds": 2.574
       },
       "answer": "I'm a big fan of pottery",
       "latency_outlier": false
@@ -580,7 +580,7 @@
       "category_name": "temporal",
       "context_tokens": 904,
       "tokens_estimated": false,
-      "latency_s": 2.267,
+      "latency_s": 2.424,
       "sources": [
         "session_5",
         "session_7",
@@ -591,11 +591,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.63395239489258,
-        "prefill_seconds": 2.156882542,
-        "time_to_first_token": 2.165060875,
+        "tokens_per_second": 7.661674520029899,
+        "prefill_seconds": 2.15441375,
+        "time_to_first_token": 2.160036666,
         "cached_tokens": 0,
-        "wall_seconds": 2.267
+        "wall_seconds": 2.424
       },
       "answer": "This month",
       "latency_outlier": false
@@ -611,7 +611,7 @@
       "category_name": "multi-hop",
       "context_tokens": 509,
       "tokens_estimated": false,
-      "latency_s": 1.409,
+      "latency_s": 1.614,
       "sources": [
         "session_10",
         "session_12",
@@ -622,11 +622,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 29.88339261135907,
-        "prefill_seconds": 1.289290041,
-        "time_to_first_token": 1.300548,
+        "tokens_per_second": 24.709627489434226,
+        "prefill_seconds": 1.276888167,
+        "time_to_first_token": 1.486845209,
         "cached_tokens": 0,
-        "wall_seconds": 1.409
+        "wall_seconds": 1.614
       },
       "answer": "Family camping trip",
       "latency_outlier": false
@@ -642,7 +642,7 @@
       "category_name": "multi-hop",
       "context_tokens": 792,
       "tokens_estimated": false,
-      "latency_s": 1.966,
+      "latency_s": 2.123,
       "sources": [
         "session_8",
         "session_15",
@@ -653,11 +653,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.438638735563615,
-        "prefill_seconds": 1.855645792,
-        "time_to_first_token": 1.863815875,
+        "tokens_per_second": 15.597040112265,
+        "prefill_seconds": 1.859385167,
+        "time_to_first_token": 1.990220792,
         "cached_tokens": 0,
-        "wall_seconds": 1.966
+        "wall_seconds": 2.123
       },
       "answer": "pottery",
       "latency_outlier": false
@@ -673,7 +673,7 @@
       "category_name": "temporal",
       "context_tokens": 612,
       "tokens_estimated": false,
-      "latency_s": 1.867,
+      "latency_s": 2.168,
       "sources": [
         "session_5",
         "session_15",
@@ -684,11 +684,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 45.7185766580166,
-        "prefill_seconds": 1.614543292,
-        "time_to_first_token": 1.621474,
+        "tokens_per_second": 35.92118239470195,
+        "prefill_seconds": 1.609528084,
+        "time_to_first_token": 1.858706,
         "cached_tokens": 0,
-        "wall_seconds": 1.867
+        "wall_seconds": 2.168
       },
       "answer": "I cannot answer this question based on the provided context.",
       "latency_outlier": false
@@ -704,7 +704,7 @@
       "category_name": "temporal",
       "context_tokens": 653,
       "tokens_estimated": false,
-      "latency_s": 1.701,
+      "latency_s": 1.837,
       "sources": [
         "session_18",
         "session_10",
@@ -715,11 +715,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.47281097078978,
-        "prefill_seconds": 1.592010209,
-        "time_to_first_token": 1.600360666,
+        "tokens_per_second": 16.217876269264718,
+        "prefill_seconds": 1.5937085,
+        "time_to_first_token": 1.707919666,
         "cached_tokens": 0,
-        "wall_seconds": 1.701
+        "wall_seconds": 1.837
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -735,7 +735,7 @@
       "category_name": "commonsense",
       "context_tokens": 927,
       "tokens_estimated": false,
-      "latency_s": 2.318,
+      "latency_s": 2.55,
       "sources": [
         "session_7",
         "session_6",
@@ -746,11 +746,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.14278073584089,
-        "prefill_seconds": 2.20418375,
-        "time_to_first_token": 2.215162459,
+        "tokens_per_second": 8.081355000792984,
+        "prefill_seconds": 2.208837417,
+        "time_to_first_token": 2.423048583,
         "cached_tokens": 0,
-        "wall_seconds": 2.318
+        "wall_seconds": 2.55
       },
       "answer": "Yes",
       "latency_outlier": false
@@ -766,7 +766,7 @@
       "category_name": "multi-hop",
       "context_tokens": 705,
       "tokens_estimated": false,
-      "latency_s": 1.844,
+      "latency_s": 2.142,
       "sources": [
         "session_7",
         "session_15",
@@ -777,11 +777,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 36.204195456574766,
-        "prefill_seconds": 1.694328458,
-        "time_to_first_token": 1.701807583,
+        "tokens_per_second": 23.165616202495286,
+        "prefill_seconds": 1.698379792,
+        "time_to_first_token": 1.922094459,
         "cached_tokens": 0,
-        "wall_seconds": 1.844
+        "wall_seconds": 2.142
       },
       "answer": "\"Charlotte's Web\"",
       "latency_outlier": false
@@ -797,7 +797,7 @@
       "category_name": "multi-hop",
       "context_tokens": 587,
       "tokens_estimated": false,
-      "latency_s": 1.69,
+      "latency_s": 1.943,
       "sources": [
         "session_15",
         "session_7",
@@ -808,11 +808,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 30.843505727145516,
-        "prefill_seconds": 1.574286583,
-        "time_to_first_token": 1.58679475,
+        "tokens_per_second": 24.081105162186244,
+        "prefill_seconds": 1.581340458,
+        "time_to_first_token": 1.815017833,
         "cached_tokens": 0,
-        "wall_seconds": 1.69
+        "wall_seconds": 1.943
       },
       "answer": "Playing clarinet",
       "latency_outlier": false
@@ -828,7 +828,7 @@
       "category_name": "temporal",
       "context_tokens": 1014,
       "tokens_estimated": false,
-      "latency_s": 2.455,
+      "latency_s": 2.707,
       "sources": [
         "session_7",
         "session_9",
@@ -839,11 +839,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 30.226839736953146,
-        "prefill_seconds": 2.341020417,
-        "time_to_first_token": 2.350883917,
+        "tokens_per_second": 22.967232458058486,
+        "prefill_seconds": 2.345507625,
+        "time_to_first_token": 2.572705209,
         "cached_tokens": 0,
-        "wall_seconds": 2.455
+        "wall_seconds": 2.707
       },
       "answer": "Two days ago",
       "latency_outlier": false
@@ -859,7 +859,7 @@
       "category_name": "temporal",
       "context_tokens": 839,
       "tokens_estimated": false,
-      "latency_s": 2.388,
+      "latency_s": 2.668,
       "sources": [
         "session_7",
         "session_15",
@@ -870,11 +870,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 44.59684448129227,
-        "prefill_seconds": 2.042107458,
-        "time_to_first_token": 2.048530625,
+        "tokens_per_second": 38.455581198990465,
+        "prefill_seconds": 2.050676084,
+        "time_to_first_token": 2.273944708,
         "cached_tokens": 0,
-        "wall_seconds": 2.388
+        "wall_seconds": 2.668
       },
       "answer": "The context does not mention Melanie reading a book called \"nothing is impossible.\"",
       "latency_outlier": false
@@ -890,7 +890,7 @@
       "category_name": "commonsense",
       "context_tokens": 716,
       "tokens_estimated": false,
-      "latency_s": 1.905,
+      "latency_s": 2.149,
       "sources": [
         "session_4",
         "session_1",
@@ -901,11 +901,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.442805334757232,
-        "prefill_seconds": 1.797190209,
-        "time_to_first_token": 1.806927541,
+        "tokens_per_second": 7.9281864868025425,
+        "prefill_seconds": 1.791474625,
+        "time_to_first_token": 2.019494375,
         "cached_tokens": 0,
-        "wall_seconds": 1.905
+        "wall_seconds": 2.149
       },
       "answer": "No",
       "latency_outlier": false
@@ -921,7 +921,7 @@
       "category_name": "temporal",
       "context_tokens": 1105,
       "tokens_estimated": false,
-      "latency_s": 2.605,
+      "latency_s": 2.864,
       "sources": [
         "session_19",
         "session_17",
@@ -932,11 +932,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.37344525145925,
-        "prefill_seconds": 2.495082417,
-        "time_to_first_token": 2.504267208,
+        "tokens_per_second": 15.7041905894491,
+        "prefill_seconds": 2.500287375,
+        "time_to_first_token": 2.732086208,
         "cached_tokens": 0,
-        "wall_seconds": 2.605
+        "wall_seconds": 2.864
       },
       "answer": "This week",
       "latency_outlier": false
@@ -952,7 +952,7 @@
       "category_name": "temporal",
       "context_tokens": 1060,
       "tokens_estimated": false,
-      "latency_s": 2.564,
+      "latency_s": 2.792,
       "sources": [
         "session_5",
         "session_8",
@@ -963,11 +963,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 18.790060997235514,
-        "prefill_seconds": 2.442797834,
-        "time_to_first_token": 2.453180708,
+        "tokens_per_second": 16.233508236938896,
+        "prefill_seconds": 2.446772792,
+        "time_to_first_token": 2.665185375,
         "cached_tokens": 0,
-        "wall_seconds": 2.564
+        "wall_seconds": 2.792
       },
       "answer": "Last Friday",
       "latency_outlier": false
@@ -983,7 +983,7 @@
       "category_name": "commonsense",
       "context_tokens": 987,
       "tokens_estimated": false,
-      "latency_s": 2.436,
+      "latency_s": 2.675,
       "sources": [
         "session_14",
         "session_10",
@@ -994,11 +994,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.928929615416514,
-        "prefill_seconds": 2.322304,
-        "time_to_first_token": 2.331005333,
+        "tokens_per_second": 7.848382375010135,
+        "prefill_seconds": 2.323277625,
+        "time_to_first_token": 2.54442475,
         "cached_tokens": 0,
-        "wall_seconds": 2.436
+        "wall_seconds": 2.675
       },
       "answer": "No",
       "latency_outlier": false
@@ -1014,7 +1014,7 @@
       "category_name": "temporal",
       "context_tokens": 809,
       "tokens_estimated": false,
-      "latency_s": 2.084,
+      "latency_s": 2.119,
       "sources": [
         "session_10",
         "session_12",
@@ -1025,11 +1025,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.120774951647263,
-        "prefill_seconds": 1.967568542,
-        "time_to_first_token": 1.980823,
+        "tokens_per_second": 16.791571470700283,
+        "prefill_seconds": 1.961290916,
+        "time_to_first_token": 1.995662958,
         "cached_tokens": 0,
-        "wall_seconds": 2.084
+        "wall_seconds": 2.119
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -1045,7 +1045,7 @@
       "category_name": "multi-hop",
       "context_tokens": 984,
       "tokens_estimated": false,
-      "latency_s": 2.657,
+      "latency_s": 2.932,
       "sources": [
         "session_7",
         "session_14",
@@ -1056,11 +1056,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 55.53389476558333,
-        "prefill_seconds": 2.314951916,
-        "time_to_first_token": 2.327386417,
+        "tokens_per_second": 48.65617181333316,
+        "prefill_seconds": 2.306753542,
+        "time_to_first_token": 2.5560345,
         "cached_tokens": 0,
-        "wall_seconds": 2.657
+        "wall_seconds": 2.932
       },
       "answer": "LGBTQ conference, pride parade, pride event, LGBTQ art show, LGBTQ activist group",
       "latency_outlier": false
@@ -1076,7 +1076,7 @@
       "category_name": "temporal",
       "context_tokens": 966,
       "tokens_estimated": false,
-      "latency_s": 2.38,
+      "latency_s": 2.628,
       "sources": [
         "session_10",
         "session_9",
@@ -1087,11 +1087,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.434540503813597,
-        "prefill_seconds": 2.265775333,
-        "time_to_first_token": 2.277837833,
+        "tokens_per_second": 15.052207641441361,
+        "prefill_seconds": 2.261998041,
+        "time_to_first_token": 2.49183925,
         "cached_tokens": 0,
-        "wall_seconds": 2.38
+        "wall_seconds": 2.628
       },
       "answer": "Last Friday",
       "latency_outlier": false
@@ -1107,7 +1107,7 @@
       "category_name": "multi-hop",
       "context_tokens": 931,
       "tokens_estimated": false,
-      "latency_s": 2.388,
+      "latency_s": 2.717,
       "sources": [
         "session_4",
         "session_15",
@@ -1118,11 +1118,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 40.707150901332795,
-        "prefill_seconds": 2.206390333,
-        "time_to_first_token": 2.212402917,
+        "tokens_per_second": 24.869579042405743,
+        "prefill_seconds": 2.197446125,
+        "time_to_first_token": 2.431675208,
         "cached_tokens": 0,
-        "wall_seconds": 2.388
+        "wall_seconds": 2.717
       },
       "answer": "Volunteering at the youth center",
       "latency_outlier": false
@@ -1138,7 +1138,7 @@
       "category_name": "temporal",
       "context_tokens": 1002,
       "tokens_estimated": false,
-      "latency_s": 2.441,
+      "latency_s": 2.684,
       "sources": [
         "session_10",
         "session_12",
@@ -1149,11 +1149,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.07603634644955,
-        "prefill_seconds": 2.321350291,
-        "time_to_first_token": 2.332442667,
+        "tokens_per_second": 15.402619625176944,
+        "prefill_seconds": 2.320453875,
+        "time_to_first_token": 2.550439375,
         "cached_tokens": 0,
-        "wall_seconds": 2.441
+        "wall_seconds": 2.684
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -1169,7 +1169,7 @@
       "category_name": "temporal",
       "context_tokens": 999,
       "tokens_estimated": false,
-      "latency_s": 2.429,
+      "latency_s": 2.589,
       "sources": [
         "session_4",
         "session_9",
@@ -1180,11 +1180,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.32139133901082,
-        "prefill_seconds": 2.319758833,
-        "time_to_first_token": 2.329049125,
+        "tokens_per_second": 15.113426226042888,
+        "prefill_seconds": 2.318827084,
+        "time_to_first_token": 2.453686666,
         "cached_tokens": 0,
-        "wall_seconds": 2.429
+        "wall_seconds": 2.589
       },
       "answer": "Last weekend",
       "latency_outlier": false
@@ -1200,7 +1200,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1001,
       "tokens_estimated": false,
-      "latency_s": 2.397,
+      "latency_s": 2.691,
       "sources": [
         "session_9",
         "session_17",
@@ -1211,11 +1211,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 21.815583780477052,
-        "prefill_seconds": 2.245949375,
-        "time_to_first_token": 2.256722584,
+        "tokens_per_second": 13.778651701519959,
+        "prefill_seconds": 2.245138459,
+        "time_to_first_token": 2.469714291,
         "cached_tokens": 0,
-        "wall_seconds": 2.397
+        "wall_seconds": 2.691
       },
       "answer": "A lake sunrise",
       "latency_outlier": false
@@ -1231,7 +1231,7 @@
       "category_name": "multi-hop",
       "context_tokens": 875,
       "tokens_estimated": false,
-      "latency_s": 2.425,
+      "latency_s": 2.934,
       "sources": [
         "session_10",
         "session_8",
@@ -1242,11 +1242,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 52.84151096998024,
-        "prefill_seconds": 2.106603541,
-        "time_to_first_token": 2.117749,
+        "tokens_per_second": 27.321990295997477,
+        "prefill_seconds": 2.104146625,
+        "time_to_first_token": 2.343410041,
         "cached_tokens": 0,
-        "wall_seconds": 2.425
+        "wall_seconds": 2.934
       },
       "answer": "Camping, hiking, exploring forests, playing games, and eating good food together",
       "latency_outlier": false
@@ -1262,7 +1262,7 @@
       "category_name": "multi-hop",
       "context_tokens": 986,
       "tokens_estimated": false,
-      "latency_s": 2.73,
+      "latency_s": 3.048,
       "sources": [
         "session_7",
         "session_10",
@@ -1273,11 +1273,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 52.65586689487485,
-        "prefill_seconds": 2.314608125,
-        "time_to_first_token": 2.325516,
+        "tokens_per_second": 47.5305296060743,
+        "prefill_seconds": 2.320960125,
+        "time_to_first_token": 2.603251708,
         "cached_tokens": 0,
-        "wall_seconds": 2.73
+        "wall_seconds": 3.048
       },
       "answer": "Attending conferences, pride parades, joining an activist group, mentoring, and organizing an LGBTQ art show",
       "latency_outlier": false
@@ -1293,7 +1293,7 @@
       "category_name": "multi-hop",
       "context_tokens": 607,
       "tokens_estimated": false,
-      "latency_s": 1.797,
+      "latency_s": 2.054,
       "sources": [
         "session_18",
         "session_10",
@@ -1304,11 +1304,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 36.95004486215797,
-        "prefill_seconds": 1.646164708,
-        "time_to_first_token": 1.656175167,
+        "tokens_per_second": 27.089858365930965,
+        "prefill_seconds": 1.642201625,
+        "time_to_first_token": 1.865147333,
         "cached_tokens": 0,
-        "wall_seconds": 1.797
+        "wall_seconds": 2.054
       },
       "answer": "Once or twice a year",
       "latency_outlier": false
@@ -1324,7 +1324,7 @@
       "category_name": "temporal",
       "context_tokens": 1064,
       "tokens_estimated": false,
-      "latency_s": 2.568,
+      "latency_s": 2.85,
       "sources": [
         "session_10",
         "session_7",
@@ -1335,11 +1335,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.477632169754003,
-        "prefill_seconds": 2.455588375,
-        "time_to_first_token": 2.465352292,
+        "tokens_per_second": 15.550905402870502,
+        "prefill_seconds": 2.452018958,
+        "time_to_first_token": 2.716306625,
         "cached_tokens": 0,
-        "wall_seconds": 2.568
+        "wall_seconds": 2.85
       },
       "answer": "Last Tuesday",
       "latency_outlier": false
@@ -1355,7 +1355,7 @@
       "category_name": "commonsense",
       "context_tokens": 905,
       "tokens_estimated": false,
-      "latency_s": 2.299,
+      "latency_s": 2.524,
       "sources": [
         "session_12",
         "session_17",
@@ -1366,11 +1366,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.430739440865214,
-        "prefill_seconds": 2.187768625,
-        "time_to_first_token": 2.196427834,
+        "tokens_per_second": 14.452572643562048,
+        "prefill_seconds": 2.169663,
+        "time_to_first_token": 2.381775083,
         "cached_tokens": 0,
-        "wall_seconds": 2.299
+        "wall_seconds": 2.524
       },
       "answer": "National park",
       "latency_outlier": false
@@ -1386,7 +1386,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1126,
       "tokens_estimated": false,
-      "latency_s": 2.774,
+      "latency_s": 3.057,
       "sources": [
         "session_14",
         "session_12",
@@ -1397,11 +1397,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 33.116733156143724,
-        "prefill_seconds": 2.570848875,
-        "time_to_first_token": 2.587118584,
+        "tokens_per_second": 21.820439876647306,
+        "prefill_seconds": 2.564874166,
+        "time_to_first_token": 2.777747417,
         "cached_tokens": 0,
-        "wall_seconds": 2.774
+        "wall_seconds": 3.057
       },
       "answer": "LGBTQ+ themed art",
       "latency_outlier": false
@@ -1417,7 +1417,7 @@
       "category_name": "temporal",
       "context_tokens": 636,
       "tokens_estimated": false,
-      "latency_s": 1.75,
+      "latency_s": 1.997,
       "sources": [
         "session_11",
         "session_10",
@@ -1428,11 +1428,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.116734469864145,
-        "prefill_seconds": 1.640689125,
-        "time_to_first_token": 1.647889791,
+        "tokens_per_second": 8.278622538539926,
+        "prefill_seconds": 1.636132292,
+        "time_to_first_token": 1.871328458,
         "cached_tokens": 0,
-        "wall_seconds": 1.75
+        "wall_seconds": 1.997
       },
       "answer": "Summer",
       "latency_outlier": false
@@ -1448,7 +1448,7 @@
       "category_name": "temporal",
       "context_tokens": 1058,
       "tokens_estimated": false,
-      "latency_s": 2.566,
+      "latency_s": 2.814,
       "sources": [
         "session_9",
         "session_10",
@@ -1459,11 +1459,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.620301773786196,
-        "prefill_seconds": 2.450957875,
-        "time_to_first_token": 2.464367584,
+        "tokens_per_second": 15.686587257292611,
+        "prefill_seconds": 2.451562042,
+        "time_to_first_token": 2.682580291,
         "cached_tokens": 0,
-        "wall_seconds": 2.566
+        "wall_seconds": 2.814
       },
       "answer": "Last Friday",
       "latency_outlier": false
@@ -1479,7 +1479,7 @@
       "category_name": "commonsense",
       "context_tokens": 967,
       "tokens_estimated": false,
-      "latency_s": 2.386,
+      "latency_s": 2.618,
       "sources": [
         "session_5",
         "session_14",
@@ -1490,11 +1490,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.999045891041076,
-        "prefill_seconds": 2.269222,
-        "time_to_first_token": 2.281897208,
+        "tokens_per_second": 7.851129520020882,
+        "prefill_seconds": 2.261179208,
+        "time_to_first_token": 2.486089583,
         "cached_tokens": 0,
-        "wall_seconds": 2.386
+        "wall_seconds": 2.618
       },
       "answer": "Yes",
       "latency_outlier": false
@@ -1510,7 +1510,7 @@
       "category_name": "multi-hop",
       "context_tokens": 644,
       "tokens_estimated": false,
-      "latency_s": 1.791,
+      "latency_s": 2.049,
       "sources": [
         "session_4",
         "session_6",
@@ -1521,11 +1521,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.472383251449088,
-        "prefill_seconds": 1.681892959,
-        "time_to_first_token": 1.68880575,
+        "tokens_per_second": 16.276709531001426,
+        "prefill_seconds": 1.6857165,
+        "time_to_first_token": 1.923548417,
         "cached_tokens": 0,
-        "wall_seconds": 1.791
+        "wall_seconds": 2.049
       },
       "answer": "Melanie",
       "latency_outlier": false
@@ -1541,7 +1541,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1025,
       "tokens_estimated": false,
-      "latency_s": 2.525,
+      "latency_s": 2.823,
       "sources": [
         "session_8",
         "session_5",
@@ -1552,11 +1552,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 36.06225426954551,
-        "prefill_seconds": 2.370571125,
-        "time_to_first_token": 2.380786917,
+        "tokens_per_second": 27.227572818441782,
+        "prefill_seconds": 2.370072375,
+        "time_to_first_token": 2.634153542,
         "cached_tokens": 0,
-        "wall_seconds": 2.525
+        "wall_seconds": 2.823
       },
       "answer": "Pots and a cup",
       "latency_outlier": false
@@ -1572,7 +1572,7 @@
       "category_name": "temporal",
       "context_tokens": 981,
       "tokens_estimated": false,
-      "latency_s": 2.444,
+      "latency_s": 2.704,
       "sources": [
         "session_9",
         "session_8",
@@ -1583,11 +1583,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 29.20374172940908,
-        "prefill_seconds": 2.29497875,
-        "time_to_first_token": 2.303501916,
+        "tokens_per_second": 21.55110965262779,
+        "prefill_seconds": 2.290203291,
+        "time_to_first_token": 2.512513584,
         "cached_tokens": 0,
-        "wall_seconds": 2.444
+        "wall_seconds": 2.704
       },
       "answer": "They never went together",
       "latency_outlier": false
@@ -1603,7 +1603,7 @@
       "category_name": "commonsense",
       "context_tokens": 451,
       "tokens_estimated": false,
-      "latency_s": 1.336,
+      "latency_s": 1.51,
       "sources": [
         "session_18",
         "session_4",
@@ -1614,11 +1614,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 33.41787119044122,
-        "prefill_seconds": 1.175565,
-        "time_to_first_token": 1.182413541,
+        "tokens_per_second": 22.672879253241696,
+        "prefill_seconds": 1.166628625,
+        "time_to_first_token": 1.283477542,
         "cached_tokens": 0,
-        "wall_seconds": 1.336
+        "wall_seconds": 1.51
       },
       "answer": "Liberal/progressive",
       "latency_outlier": false
@@ -1634,7 +1634,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1023,
       "tokens_estimated": false,
-      "latency_s": 2.424,
+      "latency_s": 2.694,
       "sources": [
         "session_9",
         "session_14",
@@ -1645,11 +1645,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 43.47068783473743,
-        "prefill_seconds": 2.268214292,
-        "time_to_first_token": 2.280712833,
+        "tokens_per_second": 13.636851773671443,
+        "prefill_seconds": 2.249026875,
+        "time_to_first_token": 2.2526175,
         "cached_tokens": 0,
-        "wall_seconds": 2.424
+        "wall_seconds": 2.694
       },
       "answer": "Landscapes and still life",
       "latency_outlier": false
@@ -1665,7 +1665,7 @@
       "category_name": "multi-hop",
       "context_tokens": 586,
       "tokens_estimated": false,
-      "latency_s": 1.746,
+      "latency_s": 2.074,
       "sources": [
         "session_7",
         "session_13",
@@ -1676,11 +1676,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 41.29349928003014,
-        "prefill_seconds": 1.5652285,
-        "time_to_first_token": 1.572563708,
+        "tokens_per_second": 25.28728532643604,
+        "prefill_seconds": 1.576247792,
+        "time_to_first_token": 1.7937215,
         "cached_tokens": 0,
-        "wall_seconds": 1.746
+        "wall_seconds": 2.074
       },
       "answer": "Luna, Oliver, and Bailey",
       "latency_outlier": false
@@ -1696,7 +1696,7 @@
       "category_name": "temporal",
       "context_tokens": 1114,
       "tokens_estimated": false,
-      "latency_s": 2.697,
+      "latency_s": 2.967,
       "sources": [
         "session_19",
         "session_17",
@@ -1707,11 +1707,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 28.33080211781812,
-        "prefill_seconds": 2.545690291,
-        "time_to_first_token": 2.551778625,
+        "tokens_per_second": 21.739642379730604,
+        "prefill_seconds": 2.556030083,
+        "time_to_first_token": 2.7795155,
         "cached_tokens": 0,
-        "wall_seconds": 2.697
+        "wall_seconds": 2.967
       },
       "answer": "Researching adoption agencies",
       "latency_outlier": false
@@ -1727,7 +1727,7 @@
       "category_name": "temporal",
       "context_tokens": 1035,
       "tokens_estimated": false,
-      "latency_s": 2.491,
+      "latency_s": 2.718,
       "sources": [
         "session_13",
         "session_9",
@@ -1738,11 +1738,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.80081214615082,
-        "prefill_seconds": 2.376567958,
-        "time_to_first_token": 2.385469458,
+        "tokens_per_second": 15.36157786262677,
+        "prefill_seconds": 2.368252125,
+        "time_to_first_token": 2.581720042,
         "cached_tokens": 0,
-        "wall_seconds": 2.491
+        "wall_seconds": 2.718
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -1758,7 +1758,7 @@
       "category_name": "multi-hop",
       "context_tokens": 982,
       "tokens_estimated": false,
-      "latency_s": 2.426,
+      "latency_s": 2.576,
       "sources": [
         "session_9",
         "session_14",
@@ -1769,11 +1769,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.723898361844444,
-        "prefill_seconds": 2.311425459,
-        "time_to_first_token": 2.319378875,
+        "tokens_per_second": 7.692936441920734,
+        "prefill_seconds": 2.306970834,
+        "time_to_first_token": 2.312929417,
         "cached_tokens": 0,
-        "wall_seconds": 2.426
+        "wall_seconds": 2.576
       },
       "answer": "Flowers",
       "latency_outlier": false
@@ -1789,7 +1789,7 @@
       "category_name": "multi-hop",
       "context_tokens": 681,
       "tokens_estimated": false,
-      "latency_s": 1.964,
+      "latency_s": 2.245,
       "sources": [
         "session_17",
         "session_4",
@@ -1800,11 +1800,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 59.707045787654984,
-        "prefill_seconds": 1.650293333,
-        "time_to_first_token": 1.658587542,
+        "tokens_per_second": 51.476941368836215,
+        "prefill_seconds": 1.648517125,
+        "time_to_first_token": 1.890533,
         "cached_tokens": 0,
-        "wall_seconds": 1.964
+        "wall_seconds": 2.245
       },
       "answer": "Necklace, hand-painted bowl, rainbow flag mural, eagle, stained glass window",
       "latency_outlier": false
@@ -1820,7 +1820,7 @@
       "category_name": "temporal",
       "context_tokens": 985,
       "tokens_estimated": false,
-      "latency_s": 2.441,
+      "latency_s": 2.687,
       "sources": [
         "session_12",
         "session_16",
@@ -1831,11 +1831,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.796696244184645,
-        "prefill_seconds": 2.328654416,
-        "time_to_first_token": 2.338060708,
+        "tokens_per_second": 16.352589163902827,
+        "prefill_seconds": 2.333707541,
+        "time_to_first_token": 2.559744958,
         "cached_tokens": 0,
-        "wall_seconds": 2.441
+        "wall_seconds": 2.687
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -1851,7 +1851,7 @@
       "category_name": "temporal",
       "context_tokens": 935,
       "tokens_estimated": false,
-      "latency_s": 2.326,
+      "latency_s": 2.463,
       "sources": [
         "session_5",
         "session_14",
@@ -1862,11 +1862,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.183234577173007,
-        "prefill_seconds": 2.214417208,
-        "time_to_first_token": 2.222613625,
+        "tokens_per_second": 7.995447903672314,
+        "prefill_seconds": 2.211962,
+        "time_to_first_token": 2.335785417,
         "cached_tokens": 0,
-        "wall_seconds": 2.326
+        "wall_seconds": 2.463
       },
       "answer": "Yesterday",
       "latency_outlier": false
@@ -1882,7 +1882,7 @@
       "category_name": "commonsense",
       "context_tokens": 672,
       "tokens_estimated": false,
-      "latency_s": 1.754,
+      "latency_s": 1.88,
       "sources": [
         "session_10",
         "session_14",
@@ -1893,11 +1893,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.46148760604258,
-        "prefill_seconds": 1.6346245,
-        "time_to_first_token": 1.643639,
+        "tokens_per_second": 7.933218169449574,
+        "prefill_seconds": 1.630927125,
+        "time_to_first_token": 1.74927475,
         "cached_tokens": 0,
-        "wall_seconds": 1.754
+        "wall_seconds": 1.88
       },
       "answer": "Yes",
       "latency_outlier": false
@@ -1913,7 +1913,7 @@
       "category_name": "multi-hop",
       "context_tokens": 670,
       "tokens_estimated": false,
-      "latency_s": 1.737,
+      "latency_s": 1.97,
       "sources": [
         "session_15",
         "session_15",
@@ -1924,11 +1924,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.688932771954313,
-        "prefill_seconds": 1.626958458,
-        "time_to_first_token": 1.635250875,
+        "tokens_per_second": 15.724326393050703,
+        "prefill_seconds": 1.61070775,
+        "time_to_first_token": 1.839752,
         "cached_tokens": 0,
-        "wall_seconds": 1.737
+        "wall_seconds": 1.97
       },
       "answer": "Clarinet",
       "latency_outlier": false
@@ -1944,7 +1944,7 @@
       "category_name": "multi-hop",
       "context_tokens": 812,
       "tokens_estimated": false,
-      "latency_s": 2.114,
+      "latency_s": 2.318,
       "sources": [
         "session_15",
         "session_15",
@@ -1955,11 +1955,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.131356814191367,
-        "prefill_seconds": 1.989049042,
-        "time_to_first_token": 2.00475925,
+        "tokens_per_second": 15.586287922675677,
+        "prefill_seconds": 1.979113417,
+        "time_to_first_token": 2.184449417,
         "cached_tokens": 0,
-        "wall_seconds": 2.114
+        "wall_seconds": 2.318
       },
       "answer": "Summer Sounds",
       "latency_outlier": false
@@ -1975,7 +1975,7 @@
       "category_name": "temporal",
       "context_tokens": 761,
       "tokens_estimated": false,
-      "latency_s": 1.989,
+      "latency_s": 2.251,
       "sources": [
         "session_12",
         "session_18",
@@ -1986,11 +1986,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.67327694697046,
-        "prefill_seconds": 1.877958875,
-        "time_to_first_token": 1.887604208,
+        "tokens_per_second": 16.146708997955425,
+        "prefill_seconds": 1.879424958,
+        "time_to_first_token": 2.12135425,
         "cached_tokens": 0,
-        "wall_seconds": 1.989
+        "wall_seconds": 2.251
       },
       "answer": "Last weekend",
       "latency_outlier": false
@@ -2006,7 +2006,7 @@
       "category_name": "temporal",
       "context_tokens": 896,
       "tokens_estimated": false,
-      "latency_s": 2.26,
+      "latency_s": 2.545,
       "sources": [
         "session_15",
         "session_14",
@@ -2017,11 +2017,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.14373400247595,
-        "prefill_seconds": 2.149451584,
-        "time_to_first_token": 2.156362375,
+        "tokens_per_second": 14.93571109854022,
+        "prefill_seconds": 2.149505666,
+        "time_to_first_token": 2.406665708,
         "cached_tokens": 0,
-        "wall_seconds": 2.26
+        "wall_seconds": 2.545
       },
       "answer": "Next month",
       "latency_outlier": false
@@ -2037,7 +2037,7 @@
       "category_name": "commonsense",
       "context_tokens": 680,
       "tokens_estimated": false,
-      "latency_s": 1.864,
+      "latency_s": 2.105,
       "sources": [
         "session_15",
         "session_15",
@@ -2048,11 +2048,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.010147787319395,
-        "prefill_seconds": 1.753116291,
-        "time_to_first_token": 1.759476209,
+        "tokens_per_second": 7.83478015606882,
+        "prefill_seconds": 1.741283542,
+        "time_to_first_token": 1.972107917,
         "cached_tokens": 0,
-        "wall_seconds": 1.864
+        "wall_seconds": 2.105
       },
       "answer": "Yes",
       "latency_outlier": false
@@ -2068,7 +2068,7 @@
       "category_name": "multi-hop",
       "context_tokens": 881,
       "tokens_estimated": false,
-      "latency_s": 2.32,
+      "latency_s": 2.66,
       "sources": [
         "session_8",
         "session_6",
@@ -2079,11 +2079,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 40.62645011035362,
-        "prefill_seconds": 2.132478417,
-        "time_to_first_token": 2.142601875,
+        "tokens_per_second": 25.002939274104097,
+        "prefill_seconds": 2.143954875,
+        "time_to_first_token": 2.375831375,
         "cached_tokens": 0,
-        "wall_seconds": 2.32
+        "wall_seconds": 2.66
       },
       "answer": "Acceptance and self-acceptance",
       "latency_outlier": false
@@ -2099,7 +2099,7 @@
       "category_name": "multi-hop",
       "context_tokens": 958,
       "tokens_estimated": false,
-      "latency_s": 2.405,
+      "latency_s": 2.645,
       "sources": [
         "session_8",
         "session_4",
@@ -2110,11 +2110,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 29.221297922535935,
-        "prefill_seconds": 2.249096375,
-        "time_to_first_token": 2.262941458,
+        "tokens_per_second": 21.92624339519196,
+        "prefill_seconds": 2.2407415,
+        "time_to_first_token": 2.45629275,
         "cached_tokens": 0,
-        "wall_seconds": 2.405
+        "wall_seconds": 2.645
       },
       "answer": "Explores nature",
       "latency_outlier": false
@@ -2130,7 +2130,7 @@
       "category_name": "temporal",
       "context_tokens": 716,
       "tokens_estimated": false,
-      "latency_s": 1.908,
+      "latency_s": 2.138,
       "sources": [
         "session_16",
         "session_18",
@@ -2141,11 +2141,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.55704907089496,
-        "prefill_seconds": 1.78802625,
-        "time_to_first_token": 1.799443625,
+        "tokens_per_second": 15.65665482042412,
+        "prefill_seconds": 1.800092292,
+        "time_to_first_token": 2.00609775,
         "cached_tokens": 0,
-        "wall_seconds": 1.908
+        "wall_seconds": 2.138
       },
       "answer": "Last weekend",
       "latency_outlier": false
@@ -2161,7 +2161,7 @@
       "category_name": "temporal",
       "context_tokens": 1020,
       "tokens_estimated": false,
-      "latency_s": 2.477,
+      "latency_s": 2.696,
       "sources": [
         "session_16",
         "session_14",
@@ -2172,11 +2172,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.859625612494437,
-        "prefill_seconds": 2.358165041,
-        "time_to_first_token": 2.37191675,
+        "tokens_per_second": 15.677052714089752,
+        "prefill_seconds": 2.349881333,
+        "time_to_first_token": 2.562847958,
         "cached_tokens": 0,
-        "wall_seconds": 2.477
+        "wall_seconds": 2.696
       },
       "answer": "Seven years",
       "latency_outlier": false
@@ -2192,7 +2192,7 @@
       "category_name": "commonsense",
       "context_tokens": 371,
       "tokens_estimated": false,
-      "latency_s": 1.183,
+      "latency_s": 1.389,
       "sources": [
         "session_4",
         "session_18",
@@ -2203,11 +2203,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 33.804588223741696,
-        "prefill_seconds": 1.02467425,
-        "time_to_first_token": 1.030467083,
+        "tokens_per_second": 31.67863509787618,
+        "prefill_seconds": 1.010343041,
+        "time_to_first_token": 1.226272708,
         "cached_tokens": 0,
-        "wall_seconds": 1.183
+        "wall_seconds": 1.389
       },
       "answer": "Passion and hard work",
       "latency_outlier": false
@@ -2223,7 +2223,7 @@
       "category_name": "multi-hop",
       "context_tokens": 903,
       "tokens_estimated": false,
-      "latency_s": 2.265,
+      "latency_s": 2.486,
       "sources": [
         "session_5",
         "session_7",
@@ -2234,11 +2234,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 29.46245746357704,
-        "prefill_seconds": 2.149537417,
-        "time_to_first_token": 2.159216292,
+        "tokens_per_second": 23.350058954618017,
+        "prefill_seconds": 2.131875459,
+        "time_to_first_token": 2.353259958,
         "cached_tokens": 0,
-        "wall_seconds": 2.265
+        "wall_seconds": 2.486
       },
       "answer": "A transgender conference",
       "latency_outlier": false
@@ -2254,7 +2254,7 @@
       "category_name": "multi-hop",
       "context_tokens": 628,
       "tokens_estimated": false,
-      "latency_s": 1.813,
+      "latency_s": 2.05,
       "sources": [
         "session_7",
         "session_11",
@@ -2265,11 +2265,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 35.121371980713114,
-        "prefill_seconds": 1.657213542,
-        "time_to_first_token": 1.665203791,
+        "tokens_per_second": 27.484111270369933,
+        "prefill_seconds": 1.640493,
+        "time_to_first_token": 1.865119583,
         "cached_tokens": 0,
-        "wall_seconds": 1.813
+        "wall_seconds": 2.05
       },
       "answer": "\"Becoming Nicole\"",
       "latency_outlier": false
@@ -2285,7 +2285,7 @@
       "category_name": "temporal",
       "context_tokens": 1105,
       "tokens_estimated": false,
-      "latency_s": 2.62,
+      "latency_s": 2.754,
       "sources": [
         "session_17",
         "session_19",
@@ -2296,11 +2296,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.12837717937991,
-        "prefill_seconds": 2.507655209,
-        "time_to_first_token": 2.517755,
+        "tokens_per_second": 16.697516580863557,
+        "prefill_seconds": 2.502486833,
+        "time_to_first_token": 2.629778959,
         "cached_tokens": 0,
-        "wall_seconds": 2.62
+        "wall_seconds": 2.754
       },
       "answer": "Last year",
       "latency_outlier": false
@@ -2316,7 +2316,7 @@
       "category_name": "temporal",
       "context_tokens": 368,
       "tokens_estimated": false,
-      "latency_s": 1.281,
+      "latency_s": 1.498,
       "sources": [
         "session_13",
         "session_4",
@@ -2327,11 +2327,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 49.919832205466406,
-        "prefill_seconds": 1.01275925,
-        "time_to_first_token": 1.018449916,
+        "tokens_per_second": 49.63121771830502,
+        "prefill_seconds": 1.007959583,
+        "time_to_first_token": 1.232377208,
         "cached_tokens": 0,
-        "wall_seconds": 1.281
+        "wall_seconds": 1.498
       },
       "answer": "There is no information in the context about when Melanie got hurt.",
       "latency_outlier": false
@@ -2347,7 +2347,7 @@
       "category_name": "temporal",
       "context_tokens": 803,
       "tokens_estimated": false,
-      "latency_s": 2.07,
+      "latency_s": 24.402,
       "sources": [
         "session_18",
         "session_10",
@@ -2358,14 +2358,14 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 31.10719593638819,
-        "prefill_seconds": 1.961254666,
-        "time_to_first_token": 1.969986375,
+        "tokens_per_second": 22.88780536661969,
+        "prefill_seconds": 2.028189,
+        "time_to_first_token": 24.267069917,
         "cached_tokens": 0,
-        "wall_seconds": 2.07
+        "wall_seconds": 24.402
       },
       "answer": "This past weekend",
-      "latency_outlier": false
+      "latency_outlier": true
     },
     {
       "sample_id": "conv-30",
@@ -2378,7 +2378,7 @@
       "category_name": "temporal",
       "context_tokens": 1033,
       "tokens_estimated": false,
-      "latency_s": 2.531,
+      "latency_s": 2.881,
       "sources": [
         "session_8",
         "session_10",
@@ -2389,11 +2389,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 28.64786557859972,
-        "prefill_seconds": 2.379683,
-        "time_to_first_token": 2.388196125,
+        "tokens_per_second": 8.215848834543332,
+        "prefill_seconds": 2.37739525,
+        "time_to_first_token": 2.390333292,
         "cached_tokens": 0,
-        "wall_seconds": 2.531
+        "wall_seconds": 2.881
       },
       "answer": "After losing his job",
       "latency_outlier": false
@@ -2409,7 +2409,7 @@
       "category_name": "temporal",
       "context_tokens": 1044,
       "tokens_estimated": false,
-      "latency_s": 2.553,
+      "latency_s": 2.789,
       "sources": [
         "session_1",
         "session_6",
@@ -2420,11 +2420,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.664837427101833,
-        "prefill_seconds": 2.435727292,
-        "time_to_first_token": 2.446768458,
+        "tokens_per_second": 15.347584496625243,
+        "prefill_seconds": 2.439518958,
+        "time_to_first_token": 2.656624542,
         "cached_tokens": 0,
-        "wall_seconds": 2.553
+        "wall_seconds": 2.789
       },
       "answer": "This month",
       "latency_outlier": false
@@ -2440,7 +2440,7 @@
       "category_name": "single-hop",
       "context_tokens": 1156,
       "tokens_estimated": false,
-      "latency_s": 2.774,
+      "latency_s": 3.076,
       "sources": [
         "session_9",
         "session_9",
@@ -2451,11 +2451,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 14.639131679904406,
-        "prefill_seconds": 2.622445833,
-        "time_to_first_token": 2.632645292,
+        "tokens_per_second": 8.794858831588142,
+        "prefill_seconds": 2.6151525,
+        "time_to_first_token": 2.844476625,
         "cached_tokens": 0,
-        "wall_seconds": 2.774
+        "wall_seconds": 3.076
       },
       "answer": "Dancing",
       "latency_outlier": false
@@ -2471,7 +2471,7 @@
       "category_name": "multi-hop",
       "context_tokens": 616,
       "tokens_estimated": false,
-      "latency_s": 1.844,
+      "latency_s": 2.119,
       "sources": [
         "session_12",
         "session_6",
@@ -2482,11 +2482,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 31.00139000415672,
-        "prefill_seconds": 1.640681834,
-        "time_to_first_token": 1.646411625,
+        "tokens_per_second": 24.742739938854502,
+        "prefill_seconds": 1.633726625,
+        "time_to_first_token": 1.872299125,
         "cached_tokens": 0,
-        "wall_seconds": 1.844
+        "wall_seconds": 2.119
       },
       "answer": "They are both chasing their dreams",
       "latency_outlier": false
@@ -2502,7 +2502,7 @@
       "category_name": "single-hop",
       "context_tokens": 1117,
       "tokens_estimated": false,
-      "latency_s": 2.724,
+      "latency_s": 2.982,
       "sources": [
         "session_11",
         "session_4",
@@ -2513,11 +2513,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 28.943385601735123,
-        "prefill_seconds": 2.570756542,
-        "time_to_first_token": 2.581258791,
+        "tokens_per_second": 22.230265255693208,
+        "prefill_seconds": 2.568298375,
+        "time_to_first_token": 2.79954225,
         "cached_tokens": 0,
-        "wall_seconds": 2.724
+        "wall_seconds": 2.982
       },
       "answer": "Losing his job",
       "latency_outlier": false
@@ -2533,7 +2533,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1126,
       "tokens_estimated": false,
-      "latency_s": 2.885,
+      "latency_s": 3.24,
       "sources": [
         "session_2",
         "session_4",
@@ -2544,11 +2544,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 48.83948096288139,
-        "prefill_seconds": 2.581223334,
-        "time_to_first_token": 2.593433917,
+        "tokens_per_second": 33.03986522642496,
+        "prefill_seconds": 2.578537709,
+        "time_to_first_token": 2.812700584,
         "cached_tokens": 0,
-        "wall_seconds": 2.885
+        "wall_seconds": 3.24
       },
       "answer": "Downtown with natural light, a good dance floor with Marley flooring",
       "latency_outlier": false
@@ -2564,7 +2564,7 @@
       "category_name": "temporal",
       "context_tokens": 909,
       "tokens_estimated": false,
-      "latency_s": 2.296,
+      "latency_s": 2.445,
       "sources": [
         "session_1",
         "session_1",
@@ -2575,11 +2575,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.25569431370097,
-        "prefill_seconds": 2.17661375,
-        "time_to_first_token": 2.190934708,
+        "tokens_per_second": 15.591056929208657,
+        "prefill_seconds": 2.190227791,
+        "time_to_first_token": 2.313396292,
         "cached_tokens": 0,
-        "wall_seconds": 2.296
+        "wall_seconds": 2.445
       },
       "answer": "Next month",
       "latency_outlier": false
@@ -2595,7 +2595,7 @@
       "category_name": "temporal",
       "context_tokens": 1154,
       "tokens_estimated": false,
-      "latency_s": 2.743,
+      "latency_s": 2.968,
       "sources": [
         "session_2",
         "session_14",
@@ -2606,11 +2606,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 31.173473344347478,
-        "prefill_seconds": 2.628985625,
-        "time_to_first_token": 2.642405042,
+        "tokens_per_second": 22.913757908311194,
+        "prefill_seconds": 2.617276416,
+        "time_to_first_token": 2.833704166,
         "cached_tokens": 0,
-        "wall_seconds": 2.743
+        "wall_seconds": 2.968
       },
       "answer": "Session 2",
       "latency_outlier": false
@@ -2626,7 +2626,7 @@
       "category_name": "temporal",
       "context_tokens": 968,
       "tokens_estimated": false,
-      "latency_s": 2.286,
+      "latency_s": 2.548,
       "sources": [
         "session_1",
         "session_2",
@@ -2637,11 +2637,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.040454698859001,
-        "prefill_seconds": 2.170792375,
-        "time_to_first_token": 2.181239583,
+        "tokens_per_second": 8.240071720925053,
+        "prefill_seconds": 2.166665542,
+        "time_to_first_token": 2.423755583,
         "cached_tokens": 0,
-        "wall_seconds": 2.286
+        "wall_seconds": 2.548
       },
       "answer": "Yesterday",
       "latency_outlier": false
@@ -2657,7 +2657,7 @@
       "category_name": "multi-hop",
       "context_tokens": 826,
       "tokens_estimated": false,
-      "latency_s": 2.111,
+      "latency_s": 2.25,
       "sources": [
         "session_1",
         "session_2",
@@ -2668,11 +2668,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.05583886489247,
-        "prefill_seconds": 1.999968625,
-        "time_to_first_token": 2.007372542,
+        "tokens_per_second": 15.9675539304134,
+        "prefill_seconds": 1.993249667,
+        "time_to_first_token": 2.121993375,
         "cached_tokens": 0,
-        "wall_seconds": 2.111
+        "wall_seconds": 2.25
       },
       "answer": "Rome",
       "latency_outlier": false
@@ -2688,7 +2688,7 @@
       "category_name": "temporal",
       "context_tokens": 1128,
       "tokens_estimated": false,
-      "latency_s": 2.728,
+      "latency_s": 3.067,
       "sources": [
         "session_5",
         "session_18",
@@ -2699,11 +2699,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 31.406445976222894,
-        "prefill_seconds": 2.610964583,
-        "time_to_first_token": 2.62615675,
+        "tokens_per_second": 12.216844941723064,
+        "prefill_seconds": 2.592302541,
+        "time_to_first_token": 2.818204084,
         "cached_tokens": 0,
-        "wall_seconds": 2.728
+        "wall_seconds": 3.067
       },
       "answer": "Session 5",
       "latency_outlier": false
@@ -2719,7 +2719,7 @@
       "category_name": "temporal",
       "context_tokens": 910,
       "tokens_estimated": false,
-      "latency_s": 2.24,
+      "latency_s": 2.519,
       "sources": [
         "session_5",
         "session_9",
@@ -2730,11 +2730,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 28.84540844196935,
-        "prefill_seconds": 2.086318125,
-        "time_to_first_token": 2.095754625,
+        "tokens_per_second": 17.682436672662824,
+        "prefill_seconds": 2.0661885,
+        "time_to_first_token": 2.288670875,
         "cached_tokens": 0,
-        "wall_seconds": 2.24
+        "wall_seconds": 2.519
       },
       "answer": "A few years ago",
       "latency_outlier": false
@@ -2750,7 +2750,7 @@
       "category_name": "temporal",
       "context_tokens": 953,
       "tokens_estimated": false,
-      "latency_s": 2.498,
+      "latency_s": 3.272,
       "sources": [
         "session_9",
         "session_9",
@@ -2761,11 +2761,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 45.93793784597009,
-        "prefill_seconds": 2.240577709,
-        "time_to_first_token": 2.253422083,
+        "tokens_per_second": 15.607079924228024,
+        "prefill_seconds": 2.29388175,
+        "time_to_first_token": 2.563402292,
         "cached_tokens": 0,
-        "wall_seconds": 2.498
+        "wall_seconds": 3.272
       },
       "answer": "The context does not mention Jon going to the gym.",
       "latency_outlier": false
@@ -2781,7 +2781,7 @@
       "category_name": "temporal",
       "context_tokens": 1135,
       "tokens_estimated": false,
-      "latency_s": 2.756,
+      "latency_s": 3.028,
       "sources": [
         "session_6",
         "session_2",
@@ -2792,11 +2792,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 21.912291844731428,
-        "prefill_seconds": 2.59935975,
-        "time_to_first_token": 2.613489792,
+        "tokens_per_second": 13.33253835851281,
+        "prefill_seconds": 2.574166166,
+        "time_to_first_token": 2.797507291,
         "cached_tokens": 0,
-        "wall_seconds": 2.756
+        "wall_seconds": 3.028
       },
       "answer": "Session 6",
       "latency_outlier": false
@@ -2812,7 +2812,7 @@
       "category_name": "temporal",
       "context_tokens": 1039,
       "tokens_estimated": false,
-      "latency_s": 2.502,
+      "latency_s": 2.782,
       "sources": [
         "session_18",
         "session_18",
@@ -2823,11 +2823,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 30.207703030729782,
-        "prefill_seconds": 2.387435542,
-        "time_to_first_token": 2.397780458,
+        "tokens_per_second": 23.795060944861895,
+        "prefill_seconds": 2.388077625,
+        "time_to_first_token": 2.6524775,
         "cached_tokens": 0,
-        "wall_seconds": 2.502
+        "wall_seconds": 2.782
       },
       "answer": "Session 8",
       "latency_outlier": false
@@ -2843,7 +2843,7 @@
       "category_name": "temporal",
       "context_tokens": 1103,
       "tokens_estimated": false,
-      "latency_s": 2.617,
+      "latency_s": 2.846,
       "sources": [
         "session_8",
         "session_4",
@@ -2854,11 +2854,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.666972661816484,
-        "prefill_seconds": 2.497186625,
-        "time_to_first_token": 2.512244291,
+        "tokens_per_second": 15.910492912798215,
+        "prefill_seconds": 2.486459958,
+        "time_to_first_token": 2.715680666,
         "cached_tokens": 0,
-        "wall_seconds": 2.617
+        "wall_seconds": 2.846
       },
       "answer": "Next month",
       "latency_outlier": false
@@ -2874,7 +2874,7 @@
       "category_name": "temporal",
       "context_tokens": 1099,
       "tokens_estimated": false,
-      "latency_s": 2.644,
+      "latency_s": 2.899,
       "sources": [
         "session_1",
         "session_4",
@@ -2885,11 +2885,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.298480632336645,
-        "prefill_seconds": 2.527735041,
-        "time_to_first_token": 2.540482542,
+        "tokens_per_second": 15.438084596844071,
+        "prefill_seconds": 2.525430792,
+        "time_to_first_token": 2.765838625,
         "cached_tokens": 0,
-        "wall_seconds": 2.644
+        "wall_seconds": 2.899
       },
       "answer": "Next month",
       "latency_outlier": false
@@ -2905,7 +2905,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1149,
       "tokens_estimated": false,
-      "latency_s": 2.996,
+      "latency_s": 3.241,
       "sources": [
         "session_6",
         "session_2",
@@ -2916,11 +2916,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 53.512141084738566,
-        "prefill_seconds": 2.608055,
-        "time_to_first_token": 2.617169875,
+        "tokens_per_second": 48.88512378924472,
+        "prefill_seconds": 2.608047625,
+        "time_to_first_token": 2.828116208,
         "cached_tokens": 0,
-        "wall_seconds": 2.996
+        "wall_seconds": 3.241
       },
       "answer": "Her passion for fashion trends and finding unique pieces, plus wanting to blend her love for dance and fashion",
       "latency_outlier": false
@@ -2936,7 +2936,7 @@
       "category_name": "multi-hop",
       "context_tokens": 895,
       "tokens_estimated": false,
-      "latency_s": 2.273,
+      "latency_s": 2.518,
       "sources": [
         "session_6",
         "session_18",
@@ -2947,11 +2947,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.72041264590303,
-        "prefill_seconds": 2.1570295,
-        "time_to_first_token": 2.165049833,
+        "tokens_per_second": 7.494252807407056,
+        "prefill_seconds": 2.149383791,
+        "time_to_first_token": 2.382665167,
         "cached_tokens": 0,
-        "wall_seconds": 2.273
+        "wall_seconds": 2.518
       },
       "answer": "Yes",
       "latency_outlier": false
@@ -2967,7 +2967,7 @@
       "category_name": "temporal",
       "context_tokens": 1063,
       "tokens_estimated": false,
-      "latency_s": 2.574,
+      "latency_s": 2.806,
       "sources": [
         "session_12",
         "session_11",
@@ -2978,11 +2978,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 29.873820450870635,
-        "prefill_seconds": 2.463295958,
-        "time_to_first_token": 2.471263,
+        "tokens_per_second": 23.662898350104413,
+        "prefill_seconds": 2.4468655,
+        "time_to_first_token": 2.676293083,
         "cached_tokens": 0,
-        "wall_seconds": 2.574
+        "wall_seconds": 2.806
       },
       "answer": "Session 11",
       "latency_outlier": false
@@ -2998,7 +2998,7 @@
       "category_name": "temporal",
       "context_tokens": 1137,
       "tokens_estimated": false,
-      "latency_s": 2.801,
+      "latency_s": 3.242,
       "sources": [
         "session_12",
         "session_1",
@@ -3009,11 +3009,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 21.495803430722702,
-        "prefill_seconds": 2.600316,
-        "time_to_first_token": 2.6104,
+        "tokens_per_second": 10.187398234736294,
+        "prefill_seconds": 2.587421333,
+        "time_to_first_token": 2.845870375,
         "cached_tokens": 0,
-        "wall_seconds": 2.801
+        "wall_seconds": 3.242
       },
       "answer": "Before session 12",
       "latency_outlier": false
@@ -3029,7 +3029,7 @@
       "category_name": "temporal",
       "context_tokens": 1136,
       "tokens_estimated": false,
-      "latency_s": 3.119,
+      "latency_s": 3.501,
       "sources": [
         "session_14",
         "session_10",
@@ -3040,11 +3040,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 49.74217378208598,
-        "prefill_seconds": 2.580816792,
-        "time_to_first_token": 2.591117125,
+        "tokens_per_second": 39.239594551093916,
+        "prefill_seconds": 2.583698417,
+        "time_to_first_token": 2.834038334,
         "cached_tokens": 0,
-        "wall_seconds": 3.119
+        "wall_seconds": 3.501
       },
       "answer": "The context does not mention Jon reading \"The Lean Startup\" or any book, so there is no answer in the provided context.",
       "latency_outlier": false
@@ -3060,7 +3060,7 @@
       "category_name": "temporal",
       "context_tokens": 1131,
       "tokens_estimated": false,
-      "latency_s": 2.72,
+      "latency_s": 2.937,
       "sources": [
         "session_13",
         "session_8",
@@ -3071,11 +3071,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 30.206182265090522,
-        "prefill_seconds": 2.611618583,
-        "time_to_first_token": 2.618695834,
+        "tokens_per_second": 23.1858519931138,
+        "prefill_seconds": 2.603221875,
+        "time_to_first_token": 2.802465667,
         "cached_tokens": 0,
-        "wall_seconds": 2.72
+        "wall_seconds": 2.937
       },
       "answer": "Session 13",
       "latency_outlier": false
@@ -3091,7 +3091,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1175,
       "tokens_estimated": false,
-      "latency_s": 2.936,
+      "latency_s": 3.278,
       "sources": [
         "session_2",
         "session_8",
@@ -3102,11 +3102,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 45.64649973738946,
-        "prefill_seconds": 2.684729041,
-        "time_to_first_token": 2.691898416,
+        "tokens_per_second": 29.499471050348138,
+        "prefill_seconds": 2.667728708,
+        "time_to_first_token": 2.902153375,
         "cached_tokens": 0,
-        "wall_seconds": 2.936
+        "wall_seconds": 3.278
       },
       "answer": "Working with fashion bloggers and influencers, plus doing more ads",
       "latency_outlier": false
@@ -3122,7 +3122,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1099,
       "tokens_estimated": false,
-      "latency_s": 2.802,
+      "latency_s": 3.098,
       "sources": [
         "session_18",
         "session_8",
@@ -3133,11 +3133,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 54.558747040187974,
-        "prefill_seconds": 2.514141083,
-        "time_to_first_token": 2.523271667,
+        "tokens_per_second": 47.14996163171872,
+        "prefill_seconds": 2.511732417,
+        "time_to_first_token": 2.7761785,
         "cached_tokens": 0,
-        "wall_seconds": 2.802
+        "wall_seconds": 3.098
       },
       "answer": "A fair, a dance competition, and workshops/classes at local schools and centers",
       "latency_outlier": false
@@ -3153,7 +3153,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1107,
       "tokens_estimated": false,
-      "latency_s": 2.81,
+      "latency_s": 2.977,
       "sources": [
         "session_18",
         "session_11",
@@ -3164,11 +3164,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 48.15034023697108,
-        "prefill_seconds": 2.53209925,
-        "time_to_first_token": 2.5380855,
+        "tokens_per_second": 41.48333783603055,
+        "prefill_seconds": 2.550479291,
+        "time_to_first_token": 2.659023667,
         "cached_tokens": 0,
-        "wall_seconds": 2.81
+        "wall_seconds": 2.977
       },
       "answer": "A place of support and encouragement for dancers to express themselves and grow",
       "latency_outlier": false
@@ -3184,7 +3184,7 @@
       "category_name": "temporal",
       "context_tokens": 832,
       "tokens_estimated": false,
-      "latency_s": 2.139,
+      "latency_s": 2.271,
       "sources": [
         "session_14",
         "session_13",
@@ -3195,11 +3195,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.163462421705512,
-        "prefill_seconds": 2.029320625,
-        "time_to_first_token": 2.037350417,
+        "tokens_per_second": 8.099409429941534,
+        "prefill_seconds": 2.02757825,
+        "time_to_first_token": 2.14434325,
         "cached_tokens": 0,
-        "wall_seconds": 2.139
+        "wall_seconds": 2.271
       },
       "answer": "Yesterday",
       "latency_outlier": false
@@ -3215,7 +3215,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1067,
       "tokens_estimated": false,
-      "latency_s": 2.575,
+      "latency_s": 2.817,
       "sources": [
         "session_4",
         "session_8",
@@ -3226,11 +3226,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.256993274427968,
-        "prefill_seconds": 2.464478792,
-        "time_to_first_token": 2.473249541,
+        "tokens_per_second": 7.915415866055333,
+        "prefill_seconds": 2.45551875,
+        "time_to_first_token": 2.686782333,
         "cached_tokens": 0,
-        "wall_seconds": 2.575
+        "wall_seconds": 2.817
       },
       "answer": "Yes",
       "latency_outlier": false
@@ -3246,7 +3246,7 @@
       "category_name": "temporal",
       "context_tokens": 857,
       "tokens_estimated": false,
-      "latency_s": 2.094,
+      "latency_s": 2.325,
       "sources": [
         "session_1",
         "session_15",
@@ -3257,11 +3257,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 20.29787126075153,
-        "prefill_seconds": 1.981202,
-        "time_to_first_token": 1.99101625,
+        "tokens_per_second": 16.583644794912136,
+        "prefill_seconds": 1.962994042,
+        "time_to_first_token": 2.199524375,
         "cached_tokens": 0,
-        "wall_seconds": 2.094
+        "wall_seconds": 2.325
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -3277,7 +3277,7 @@
       "category_name": "multi-hop",
       "context_tokens": 796,
       "tokens_estimated": false,
-      "latency_s": 2.018,
+      "latency_s": 2.267,
       "sources": [
         "session_1",
         "session_2",
@@ -3288,11 +3288,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 22.074899412593552,
-        "prefill_seconds": 1.86441975,
-        "time_to_first_token": 1.876165875,
+        "tokens_per_second": 16.64518208283971,
+        "prefill_seconds": 1.848731083,
+        "time_to_first_token": 2.081035709,
         "cached_tokens": 0,
-        "wall_seconds": 2.018
+        "wall_seconds": 2.267
       },
       "answer": "Paris, Rome",
       "latency_outlier": false
@@ -3308,7 +3308,7 @@
       "category_name": "temporal",
       "context_tokens": 1107,
       "tokens_estimated": false,
-      "latency_s": 5.861,
+      "latency_s": 2.861,
       "sources": [
         "session_15",
         "session_4",
@@ -3319,11 +3319,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.803593148256985,
-        "prefill_seconds": 5.750177125,
-        "time_to_first_token": 5.756106375,
+        "tokens_per_second": 7.839355918517735,
+        "prefill_seconds": 2.511635292,
+        "time_to_first_token": 2.729739041,
         "cached_tokens": 0,
-        "wall_seconds": 5.861
+        "wall_seconds": 2.861
       },
       "answer": "Tomorrow",
       "latency_outlier": false
@@ -3339,7 +3339,7 @@
       "category_name": "multi-hop",
       "context_tokens": 1114,
       "tokens_estimated": false,
-      "latency_s": 2.718,
+      "latency_s": 2.987,
       "sources": [
         "session_15",
         "session_11",
@@ -3350,11 +3350,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 21.59669149052777,
-        "prefill_seconds": 2.561889792,
-        "time_to_first_token": 2.573947375,
+        "tokens_per_second": 16.45422434786424,
+        "prefill_seconds": 2.566293709,
+        "time_to_first_token": 2.802900292,
         "cached_tokens": 0,
-        "wall_seconds": 2.718
+        "wall_seconds": 2.987
       },
       "answer": "A few months",
       "latency_outlier": false
@@ -3370,7 +3370,7 @@
       "category_name": "temporal",
       "context_tokens": 1165,
       "tokens_estimated": false,
-      "latency_s": 2.751,
+      "latency_s": 2.98,
       "sources": [
         "session_16",
         "session_8",
@@ -3381,11 +3381,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.772085392196466,
-        "prefill_seconds": 2.632430458,
-        "time_to_first_token": 2.645730083,
+        "tokens_per_second": 16.09275322240888,
+        "prefill_seconds": 2.626855625,
+        "time_to_first_token": 2.852472667,
         "cached_tokens": 0,
-        "wall_seconds": 2.751
+        "wall_seconds": 2.98
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -3401,7 +3401,7 @@
       "category_name": "temporal",
       "context_tokens": 1119,
       "tokens_estimated": false,
-      "latency_s": 2.681,
+      "latency_s": 2.96,
       "sources": [
         "session_18",
         "session_2",
@@ -3412,11 +3412,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.821401930875833,
-        "prefill_seconds": 2.570682667,
-        "time_to_first_token": 2.576876792,
+        "tokens_per_second": 7.824453197086442,
+        "prefill_seconds": 2.572352167,
+        "time_to_first_token": 2.827090667,
         "cached_tokens": 0,
-        "wall_seconds": 2.681
+        "wall_seconds": 2.96
       },
       "answer": "Yesterday",
       "latency_outlier": false
@@ -3432,7 +3432,7 @@
       "category_name": "temporal",
       "context_tokens": 1124,
       "tokens_estimated": false,
-      "latency_s": 2.706,
+      "latency_s": 2.933,
       "sources": [
         "session_17",
         "session_1",
@@ -3443,11 +3443,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.46921260887342,
-        "prefill_seconds": 2.584629334,
-        "time_to_first_token": 2.598367125,
+        "tokens_per_second": 16.15452879452677,
+        "prefill_seconds": 2.58565975,
+        "time_to_first_token": 2.804979166,
         "cached_tokens": 0,
-        "wall_seconds": 2.706
+        "wall_seconds": 2.933
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -3463,7 +3463,7 @@
       "category_name": "temporal",
       "context_tokens": 1029,
       "tokens_estimated": false,
-      "latency_s": 2.504,
+      "latency_s": 2.751,
       "sources": [
         "session_14",
         "session_18",
@@ -3474,11 +3474,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.1622044679075,
-        "prefill_seconds": 2.37996275,
-        "time_to_first_token": 2.393778042,
+        "tokens_per_second": 15.8993201625591,
+        "prefill_seconds": 2.371786666,
+        "time_to_first_token": 2.619185417,
         "cached_tokens": 0,
-        "wall_seconds": 2.504
+        "wall_seconds": 2.751
       },
       "answer": "Last week",
       "latency_outlier": false
@@ -3494,7 +3494,7 @@
       "category_name": "temporal",
       "context_tokens": 1095,
       "tokens_estimated": false,
-      "latency_s": 2.631,
+      "latency_s": 2.862,
       "sources": [
         "session_18",
         "session_18",
@@ -3505,11 +3505,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 28.317347797205315,
-        "prefill_seconds": 2.511491041,
-        "time_to_first_token": 2.5214005,
+        "tokens_per_second": 24.024657370747263,
+        "prefill_seconds": 2.509753292,
+        "time_to_first_token": 2.733256708,
         "cached_tokens": 0,
-        "wall_seconds": 2.631
+        "wall_seconds": 2.862
       },
       "answer": "Session 18",
       "latency_outlier": false
@@ -3525,7 +3525,7 @@
       "category_name": "temporal",
       "context_tokens": 726,
       "tokens_estimated": false,
-      "latency_s": 1.986,
+      "latency_s": 2.225,
       "sources": [
         "session_19",
         "session_1",
@@ -3536,11 +3536,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 21.55988142438921,
-        "prefill_seconds": 1.830789834,
-        "time_to_first_token": 1.8411285,
+        "tokens_per_second": 16.495185467741603,
+        "prefill_seconds": 1.825027791,
+        "time_to_first_token": 2.038262959,
         "cached_tokens": 0,
-        "wall_seconds": 1.986
+        "wall_seconds": 2.225
       },
       "answer": "Session 19",
       "latency_outlier": false
@@ -3556,7 +3556,7 @@
       "category_name": "temporal",
       "context_tokens": 1192,
       "tokens_estimated": false,
-      "latency_s": 2.824,
+      "latency_s": 3.065,
       "sources": [
         "session_1",
         "session_9",
@@ -3567,11 +3567,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.235385353342775,
-        "prefill_seconds": 2.70471325,
-        "time_to_first_token": 2.716076708,
+        "tokens_per_second": 15.021508885481625,
+        "prefill_seconds": 2.708683667,
+        "time_to_first_token": 2.926847583,
         "cached_tokens": 0,
-        "wall_seconds": 2.824
+        "wall_seconds": 3.065
       },
       "answer": "Last Friday",
       "latency_outlier": false
@@ -3587,7 +3587,7 @@
       "category_name": "single-hop",
       "context_tokens": 1073,
       "tokens_estimated": false,
-      "latency_s": 2.613,
+      "latency_s": 2.939,
       "sources": [
         "session_1",
         "session_1",
@@ -3598,11 +3598,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 21.742609725004037,
-        "prefill_seconds": 2.463767292,
-        "time_to_first_token": 2.471280666,
+        "tokens_per_second": 13.669286423379948,
+        "prefill_seconds": 2.459043791,
+        "time_to_first_token": 2.713461167,
         "cached_tokens": 0,
-        "wall_seconds": 2.613
+        "wall_seconds": 2.939
       },
       "answer": "Contemporary dance",
       "latency_outlier": false
@@ -3618,7 +3618,7 @@
       "category_name": "single-hop",
       "context_tokens": 1134,
       "tokens_estimated": false,
-      "latency_s": 2.695,
+      "latency_s": 2.945,
       "sources": [
         "session_9",
         "session_5",
@@ -3629,11 +3629,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.913178541558803,
-        "prefill_seconds": 2.581622334,
-        "time_to_first_token": 2.590058375,
+        "tokens_per_second": 15.107523074380946,
+        "prefill_seconds": 2.587053875,
+        "time_to_first_token": 2.807955625,
         "cached_tokens": 0,
-        "wall_seconds": 2.695
+        "wall_seconds": 2.945
       },
       "answer": "Contemporary",
       "latency_outlier": false
@@ -3649,7 +3649,7 @@
       "category_name": "single-hop",
       "context_tokens": 1064,
       "tokens_estimated": false,
-      "latency_s": 2.699,
+      "latency_s": 3.005,
       "sources": [
         "session_9",
         "session_1",
@@ -3660,11 +3660,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 43.199343369980774,
-        "prefill_seconds": 2.434921584,
-        "time_to_first_token": 2.44136825,
+        "tokens_per_second": 33.52188969645356,
+        "prefill_seconds": 2.443266333,
+        "time_to_first_token": 2.672214458,
         "cached_tokens": 0,
-        "wall_seconds": 2.699
+        "wall_seconds": 3.005
       },
       "answer": "Winning first place at a regionals at age fifteen",
       "latency_outlier": false
@@ -3680,7 +3680,7 @@
       "category_name": "single-hop",
       "context_tokens": 951,
       "tokens_estimated": false,
-      "latency_s": 2.431,
+      "latency_s": 2.718,
       "sources": [
         "session_1",
         "session_1",
@@ -3691,11 +3691,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 44.37570327515932,
-        "prefill_seconds": 2.2407955,
-        "time_to_first_token": 2.247452041,
+        "tokens_per_second": 36.15897524885601,
+        "prefill_seconds": 2.248185125,
+        "time_to_first_token": 2.492527959,
         "cached_tokens": 0,
-        "wall_seconds": 2.431
+        "wall_seconds": 2.718
       },
       "answer": "Contemporary piece called \"Finding Freedom\"",
       "latency_outlier": false
@@ -3711,7 +3711,7 @@
       "category_name": "single-hop",
       "context_tokens": 966,
       "tokens_estimated": false,
-      "latency_s": 2.367,
+      "latency_s": 2.623,
       "sources": [
         "session_1",
         "session_9",
@@ -3722,11 +3722,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 30.0696361655212,
-        "prefill_seconds": 2.253927292,
-        "time_to_first_token": 2.264006417,
+        "tokens_per_second": 23.914577130489892,
+        "prefill_seconds": 2.250995333,
+        "time_to_first_token": 2.493686292,
         "cached_tokens": 0,
-        "wall_seconds": 2.367
+        "wall_seconds": 2.623
       },
       "answer": "Grace and skill",
       "latency_outlier": false
@@ -3742,7 +3742,7 @@
       "category_name": "single-hop",
       "context_tokens": 1016,
       "tokens_estimated": false,
-      "latency_s": 2.461,
+      "latency_s": 2.754,
       "sources": [
         "session_1",
         "session_9",
@@ -3753,11 +3753,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 30.31382386152645,
-        "prefill_seconds": 2.350243709,
-        "time_to_first_token": 2.358092125,
+        "tokens_per_second": 24.7125451167669,
+        "prefill_seconds": 2.364723042,
+        "time_to_first_token": 2.62979975,
         "cached_tokens": 0,
-        "wall_seconds": 2.461
+        "wall_seconds": 2.754
       },
       "answer": "They look great",
       "latency_outlier": false
@@ -3773,7 +3773,7 @@
       "category_name": "single-hop",
       "context_tokens": 965,
       "tokens_estimated": false,
-      "latency_s": 2.457,
+      "latency_s": 2.803,
       "sources": [
         "session_1",
         "session_5",
@@ -3784,11 +3784,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 39.04229256341932,
-        "prefill_seconds": 2.263568667,
-        "time_to_first_token": 2.273248417,
+        "tokens_per_second": 21.536826926431402,
+        "prefill_seconds": 2.265753084,
+        "time_to_first_token": 2.472954125,
         "cached_tokens": 0,
-        "wall_seconds": 2.457
+        "wall_seconds": 2.803
       },
       "answer": "Glad to be part of it",
       "latency_outlier": false
@@ -3804,7 +3804,7 @@
       "category_name": "single-hop",
       "context_tokens": 1128,
       "tokens_estimated": false,
-      "latency_s": 2.709,
+      "latency_s": 2.966,
       "sources": [
         "session_2",
         "session_4",
@@ -3815,11 +3815,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 30.11860465564556,
-        "prefill_seconds": 2.5964425,
-        "time_to_first_token": 2.60577525,
+        "tokens_per_second": 23.912949022112233,
+        "prefill_seconds": 2.600380708,
+        "time_to_first_token": 2.836910917,
         "cached_tokens": 0,
-        "wall_seconds": 2.709
+        "wall_seconds": 2.966
       },
       "answer": "Marley flooring",
       "latency_outlier": false
@@ -3835,7 +3835,7 @@
       "category_name": "single-hop",
       "context_tokens": 1171,
       "tokens_estimated": false,
-      "latency_s": 2.858,
+      "latency_s": 3.176,
       "sources": [
         "session_2",
         "session_6",
@@ -3846,11 +3846,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 29.90890256729346,
-        "prefill_seconds": 2.648832834,
-        "time_to_first_token": 2.655287625,
+        "tokens_per_second": 21.159863157613238,
+        "prefill_seconds": 2.660816667,
+        "time_to_first_token": 2.887499417,
         "cached_tokens": 0,
-        "wall_seconds": 2.858
+        "wall_seconds": 3.176
       },
       "answer": "A place with great natural light",
       "latency_outlier": false
@@ -3866,7 +3866,7 @@
       "category_name": "single-hop",
       "context_tokens": 1138,
       "tokens_estimated": false,
-      "latency_s": 2.84,
+      "latency_s": 3.248,
       "sources": [
         "session_3",
         "session_8",
@@ -3877,11 +3877,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 38.942242164496356,
-        "prefill_seconds": 2.59404675,
-        "time_to_first_token": 2.603854083,
+        "tokens_per_second": 21.263364804436296,
+        "prefill_seconds": 2.579712417,
+        "time_to_first_token": 2.818390875,
         "cached_tokens": 0,
-        "wall_seconds": 2.84
+        "wall_seconds": 3.248
       },
       "answer": "The space (cozy and inviting interior)",
       "latency_outlier": false
@@ -3897,7 +3897,7 @@
       "category_name": "single-hop",
       "context_tokens": 1142,
       "tokens_estimated": false,
-      "latency_s": 2.802,
+      "latency_s": 3.201,
       "sources": [
         "session_3",
         "session_2",
@@ -3908,11 +3908,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 22.988769985861904,
-        "prefill_seconds": 2.616014583,
-        "time_to_first_token": 2.62427375,
+        "tokens_per_second": 12.582253177305175,
+        "prefill_seconds": 2.609502208,
+        "time_to_first_token": 2.879395875,
         "cached_tokens": 0,
-        "wall_seconds": 2.802
+        "wall_seconds": 3.201
       },
       "answer": "Cozy and comfortable",
       "latency_outlier": false
@@ -3928,7 +3928,7 @@
       "category_name": "single-hop",
       "context_tokens": 1065,
       "tokens_estimated": false,
-      "latency_s": 2.704,
+      "latency_s": 3.109,
       "sources": [
         "session_4",
         "session_6",
@@ -3939,11 +3939,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 30.734701986494432,
-        "prefill_seconds": 2.465566584,
-        "time_to_first_token": 2.472622792,
+        "tokens_per_second": 17.127320216660603,
+        "prefill_seconds": 2.461837125,
+        "time_to_first_token": 2.6947025,
         "cached_tokens": 0,
-        "wall_seconds": 2.704
+        "wall_seconds": 3.109
       },
       "answer": "\"Wow, that's awesome!\"",
       "latency_outlier": false
@@ -3959,7 +3959,7 @@
       "category_name": "single-hop",
       "context_tokens": 1142,
       "tokens_estimated": false,
-      "latency_s": 2.908,
+      "latency_s": 3.151,
       "sources": [
         "session_3",
         "session_3",
@@ -3970,11 +3970,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 51.20656178088065,
-        "prefill_seconds": 2.602711584,
-        "time_to_first_token": 2.609817417,
+        "tokens_per_second": 38.831478891618396,
+        "prefill_seconds": 2.636472666,
+        "time_to_first_token": 2.758923459,
         "cached_tokens": 0,
-        "wall_seconds": 2.908
+        "wall_seconds": 3.151
       },
       "answer": "To make the place look like her own style and make her customers feel cozy",
       "latency_outlier": false
@@ -3990,7 +3990,7 @@
       "category_name": "single-hop",
       "context_tokens": 1125,
       "tokens_estimated": false,
-      "latency_s": 2.916,
+      "latency_s": 3.154,
       "sources": [
         "session_3",
         "session_3",
@@ -4001,11 +4001,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 55.44644438211032,
-        "prefill_seconds": 2.59569825,
-        "time_to_first_token": 2.605276167,
+        "tokens_per_second": 48.22056089089903,
+        "prefill_seconds": 2.580211167,
+        "time_to_first_token": 2.79666425,
         "cached_tokens": 0,
-        "wall_seconds": 2.916
+        "wall_seconds": 3.154
       },
       "answer": "Creating a special experience for customers is the key to making them feel welcome and coming back",
       "latency_outlier": false
@@ -4021,7 +4021,7 @@
       "category_name": "single-hop",
       "context_tokens": 1119,
       "tokens_estimated": false,
-      "latency_s": 2.86,
+      "latency_s": 3.197,
       "sources": [
         "session_3",
         "session_2",
@@ -4032,11 +4032,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 36.235281115575596,
-        "prefill_seconds": 2.572158125,
-        "time_to_first_token": 2.579707917,
+        "tokens_per_second": 26.877653234258432,
+        "prefill_seconds": 2.583350917,
+        "time_to_first_token": 2.820592708,
         "cached_tokens": 0,
-        "wall_seconds": 2.86
+        "wall_seconds": 3.197
       },
       "answer": "Making them feel like they're in a cool oasis",
       "latency_outlier": false
@@ -4052,7 +4052,7 @@
       "category_name": "single-hop",
       "context_tokens": 1071,
       "tokens_estimated": false,
-      "latency_s": 2.494,
+      "latency_s": 2.75,
       "sources": [
         "session_4",
         "session_6",
@@ -4063,11 +4063,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.588612563719327,
-        "prefill_seconds": 2.379429,
-        "time_to_first_token": 2.385728333,
+        "tokens_per_second": 7.894124008794054,
+        "prefill_seconds": 2.377688208,
+        "time_to_first_token": 2.61867375,
         "cached_tokens": 0,
-        "wall_seconds": 2.494
+        "wall_seconds": 2.75
       },
       "answer": "Great",
       "latency_outlier": false
@@ -4083,7 +4083,7 @@
       "category_name": "single-hop",
       "context_tokens": 777,
       "tokens_estimated": false,
-      "latency_s": 2.019,
+      "latency_s": 2.244,
       "sources": [
         "session_5",
         "session_9",
@@ -4094,11 +4094,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.11126264643611,
-        "prefill_seconds": 1.904624583,
-        "time_to_first_token": 1.910832084,
+        "tokens_per_second": 15.503986179498657,
+        "prefill_seconds": 1.894791,
+        "time_to_first_token": 2.110583666,
         "cached_tokens": 0,
-        "wall_seconds": 2.019
+        "wall_seconds": 2.244
       },
       "answer": "freedom",
       "latency_outlier": false
@@ -4114,7 +4114,7 @@
       "category_name": "single-hop",
       "context_tokens": 1031,
       "tokens_estimated": false,
-      "latency_s": 2.527,
+      "latency_s": 2.843,
       "sources": [
         "session_6",
         "session_6",
@@ -4125,11 +4125,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 28.540628544411604,
-        "prefill_seconds": 2.377592583,
-        "time_to_first_token": 2.38354575,
+        "tokens_per_second": 17.797374664769766,
+        "prefill_seconds": 2.3788745,
+        "time_to_first_token": 2.614210709,
         "cached_tokens": 0,
-        "wall_seconds": 2.527
+        "wall_seconds": 2.843
       },
       "answer": "A rollercoaster",
       "latency_outlier": false
@@ -4145,7 +4145,7 @@
       "category_name": "single-hop",
       "context_tokens": 1100,
       "tokens_estimated": false,
-      "latency_s": 2.662,
+      "latency_s": 2.916,
       "sources": [
         "session_10",
         "session_14",
@@ -4156,11 +4156,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 43.69807071488362,
-        "prefill_seconds": 2.511244458,
-        "time_to_first_token": 2.52029175,
+        "tokens_per_second": 32.08441057633077,
+        "prefill_seconds": 2.513170208,
+        "time_to_first_token": 2.723554334,
         "cached_tokens": 0,
-        "wall_seconds": 2.662
+        "wall_seconds": 2.916
       },
       "answer": "Stay passionate, focused and resilient",
       "latency_outlier": false
@@ -4176,7 +4176,7 @@
       "category_name": "single-hop",
       "context_tokens": 993,
       "tokens_estimated": false,
-      "latency_s": 2.484,
+      "latency_s": 2.748,
       "sources": [
         "session_8",
         "session_5",
@@ -4187,11 +4187,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 21.11384320332191,
-        "prefill_seconds": 2.331355583,
-        "time_to_first_token": 2.337800875,
+        "tokens_per_second": 15.738864206648266,
+        "prefill_seconds": 2.321390167,
+        "time_to_first_token": 2.552138625,
         "cached_tokens": 0,
-        "wall_seconds": 2.484
+        "wall_seconds": 2.748
       },
       "answer": "For his biz",
       "latency_outlier": false
@@ -4207,7 +4207,7 @@
       "category_name": "single-hop",
       "context_tokens": 1145,
       "tokens_estimated": false,
-      "latency_s": 2.805,
+      "latency_s": 3.16,
       "sources": [
         "session_8",
         "session_5",
@@ -4218,11 +4218,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 33.66279220271437,
-        "prefill_seconds": 2.609904458,
-        "time_to_first_token": 2.62209525,
+        "tokens_per_second": 18.331324968645873,
+        "prefill_seconds": 2.607468791,
+        "time_to_first_token": 2.8281065,
         "cached_tokens": 0,
-        "wall_seconds": 2.805
+        "wall_seconds": 3.16
       },
       "answer": "Passion for dance and fashion",
       "latency_outlier": false
@@ -4238,7 +4238,7 @@
       "category_name": "single-hop",
       "context_tokens": 1151,
       "tokens_estimated": false,
-      "latency_s": 2.709,
+      "latency_s": 2.989,
       "sources": [
         "session_5",
         "session_9",
@@ -4249,11 +4249,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 10.075511728691618,
-        "prefill_seconds": 2.595851084,
-        "time_to_first_token": 2.605146834,
+        "tokens_per_second": 7.666345319025377,
+        "prefill_seconds": 2.590603,
+        "time_to_first_token": 2.855535709,
         "cached_tokens": 0,
-        "wall_seconds": 2.709
+        "wall_seconds": 2.989
       },
       "answer": "Happy",
       "latency_outlier": false
@@ -4269,7 +4269,7 @@
       "category_name": "single-hop",
       "context_tokens": 1104,
       "tokens_estimated": false,
-      "latency_s": 2.611,
+      "latency_s": 2.756,
       "sources": [
         "session_8",
         "session_1",
@@ -4280,11 +4280,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.337886806201702,
-        "prefill_seconds": 2.497641958,
-        "time_to_first_token": 2.50372875,
+        "tokens_per_second": 16.164092565906724,
+        "prefill_seconds": 2.499077542,
+        "time_to_first_token": 2.630020375,
         "cached_tokens": 0,
-        "wall_seconds": 2.611
+        "wall_seconds": 2.756
       },
       "answer": "A trophy",
       "latency_outlier": false
@@ -4300,7 +4300,7 @@
       "category_name": "single-hop",
       "context_tokens": 1087,
       "tokens_estimated": false,
-      "latency_s": 2.677,
+      "latency_s": 2.898,
       "sources": [
         "session_10",
         "session_7",
@@ -4311,11 +4311,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 44.28168881925495,
-        "prefill_seconds": 2.484600292,
-        "time_to_first_token": 2.492558834,
+        "tokens_per_second": 28.047102120995838,
+        "prefill_seconds": 2.483141459,
+        "time_to_first_token": 2.609114583,
         "cached_tokens": 0,
-        "wall_seconds": 2.677
+        "wall_seconds": 2.898
       },
       "answer": "By reminding herself of her successes and progress",
       "latency_outlier": false
@@ -4331,7 +4331,7 @@
       "category_name": "single-hop",
       "context_tokens": 1160,
       "tokens_estimated": false,
-      "latency_s": 2.774,
+      "latency_s": 3.011,
       "sources": [
         "session_12",
         "session_1",
@@ -4342,11 +4342,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 18.999193721716434,
-        "prefill_seconds": 2.656106791,
-        "time_to_first_token": 2.665875334,
+        "tokens_per_second": 15.95194750188554,
+        "prefill_seconds": 2.649471,
+        "time_to_first_token": 2.880733083,
         "cached_tokens": 0,
-        "wall_seconds": 2.774
+        "wall_seconds": 3.011
       },
       "answer": "Fashion internship",
       "latency_outlier": false
@@ -4362,7 +4362,7 @@
       "category_name": "single-hop",
       "context_tokens": 1092,
       "tokens_estimated": false,
-      "latency_s": 2.575,
+      "latency_s": 2.89,
       "sources": [
         "session_12",
         "session_2",
@@ -4373,11 +4373,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 42.82955878573233,
-        "prefill_seconds": 2.421652417,
-        "time_to_first_token": 2.429723042,
+        "tokens_per_second": 27.034384398208047,
+        "prefill_seconds": 2.408814292,
+        "time_to_first_token": 2.663876167,
         "cached_tokens": 0,
-        "wall_seconds": 2.575
+        "wall_seconds": 2.89
       },
       "answer": "Fashion department of an international company",
       "latency_outlier": false
@@ -4393,7 +4393,7 @@
       "category_name": "single-hop",
       "context_tokens": 451,
       "tokens_estimated": false,
-      "latency_s": 1.479,
+      "latency_s": 1.734,
       "sources": [
         "session_9",
         "session_3",
@@ -4404,11 +4404,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 37.01265790840629,
-        "prefill_seconds": 1.169741,
-        "time_to_first_token": 1.177364709,
+        "tokens_per_second": 31.657120735311338,
+        "prefill_seconds": 1.162169208,
+        "time_to_first_token": 1.382826583,
         "cached_tokens": 0,
-        "wall_seconds": 1.479
+        "wall_seconds": 1.734
       },
       "answer": "The context does not mention any book Jon is reading.",
       "latency_outlier": false
@@ -4424,7 +4424,7 @@
       "category_name": "single-hop",
       "context_tokens": 1111,
       "tokens_estimated": false,
-      "latency_s": 2.688,
+      "latency_s": 2.933,
       "sources": [
         "session_18",
         "session_13",
@@ -4435,11 +4435,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 28.67791239136747,
-        "prefill_seconds": 2.572746584,
-        "time_to_first_token": 2.579609333,
+        "tokens_per_second": 24.401121843203484,
+        "prefill_seconds": 2.571748292,
+        "time_to_first_token": 2.807214584,
         "cached_tokens": 0,
-        "wall_seconds": 2.688
+        "wall_seconds": 2.933
       },
       "answer": "Support and encouragement",
       "latency_outlier": false
@@ -4455,7 +4455,7 @@
       "category_name": "single-hop",
       "context_tokens": 946,
       "tokens_estimated": false,
-      "latency_s": 2.39,
+      "latency_s": 2.542,
       "sources": [
         "session_12",
         "session_13",
@@ -4466,11 +4466,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 36.02720774729076,
-        "prefill_seconds": 2.241381917,
-        "time_to_first_token": 2.247403667,
+        "tokens_per_second": 26.417444495298025,
+        "prefill_seconds": 2.238165333,
+        "time_to_first_token": 2.347766459,
         "cached_tokens": 0,
-        "wall_seconds": 2.39
+        "wall_seconds": 2.542
       },
       "answer": "To stay organized and motivated",
       "latency_outlier": false
@@ -4486,7 +4486,7 @@
       "category_name": "single-hop",
       "context_tokens": 597,
       "tokens_estimated": false,
-      "latency_s": 1.754,
+      "latency_s": 2.018,
       "sources": [
         "session_12",
         "session_7",
@@ -4497,11 +4497,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 29.075226019722148,
-        "prefill_seconds": 1.606434708,
-        "time_to_first_token": 1.613925708,
+        "tokens_per_second": 21.954213116407413,
+        "prefill_seconds": 1.597066709,
+        "time_to_first_token": 1.8309735,
         "cached_tokens": 0,
-        "wall_seconds": 1.754
+        "wall_seconds": 2.018
       },
       "answer": "won't give up",
       "latency_outlier": false
@@ -4517,7 +4517,7 @@
       "category_name": "single-hop",
       "context_tokens": 768,
       "tokens_estimated": false,
-      "latency_s": 2.059,
+      "latency_s": 2.321,
       "sources": [
         "session_2",
         "session_9",
@@ -4528,11 +4528,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 29.457006118772487,
-        "prefill_seconds": 1.910085958,
-        "time_to_first_token": 1.918000334,
+        "tokens_per_second": 22.09101082252427,
+        "prefill_seconds": 1.895070125,
+        "time_to_first_token": 2.135788083,
         "cached_tokens": 0,
-        "wall_seconds": 2.059
+        "wall_seconds": 2.321
       },
       "answer": "To clear his mind",
       "latency_outlier": false
@@ -4548,7 +4548,7 @@
       "category_name": "single-hop",
       "context_tokens": 764,
       "tokens_estimated": false,
-      "latency_s": 1.922,
+      "latency_s": 2.161,
       "sources": [
         "session_15",
         "session_15",
@@ -4559,11 +4559,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 29.770137327162644,
-        "prefill_seconds": 1.8071565,
-        "time_to_first_token": 1.816315542,
+        "tokens_per_second": 23.917810367194036,
+        "prefill_seconds": 1.800373417,
+        "time_to_first_token": 2.031946667,
         "cached_tokens": 0,
-        "wall_seconds": 1.922
+        "wall_seconds": 2.161
       },
       "answer": "A dance studio",
       "latency_outlier": false
@@ -4579,7 +4579,7 @@
       "category_name": "single-hop",
       "context_tokens": 1148,
       "tokens_estimated": false,
-      "latency_s": 2.737,
+      "latency_s": 2.985,
       "sources": [
         "session_15",
         "session_13",
@@ -4590,11 +4590,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 9.65745798110049,
-        "prefill_seconds": 2.618403333,
-        "time_to_first_token": 2.628526292,
+        "tokens_per_second": 7.757362605937647,
+        "prefill_seconds": 2.601092792,
+        "time_to_first_token": 2.852652459,
         "cached_tokens": 0,
-        "wall_seconds": 2.737
+        "wall_seconds": 2.985
       },
       "answer": "Amazing",
       "latency_outlier": false
@@ -4610,7 +4610,7 @@
       "category_name": "single-hop",
       "context_tokens": 1159,
       "tokens_estimated": false,
-      "latency_s": 2.754,
+      "latency_s": 45.336,
       "sources": [
         "session_15",
         "session_15",
@@ -4621,14 +4621,14 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 19.464301735839083,
-        "prefill_seconds": 2.637697792,
-        "time_to_first_token": 2.647030541,
+        "tokens_per_second": 0.0468475926021093,
+        "prefill_seconds": 2.635115125,
+        "time_to_first_token": 2.641112625,
         "cached_tokens": 0,
-        "wall_seconds": 2.754
+        "wall_seconds": 45.336
       },
       "answer": "Excited",
-      "latency_outlier": false
+      "latency_outlier": true
     },
     {
       "sample_id": "conv-30",
@@ -4641,7 +4641,7 @@
       "category_name": "single-hop",
       "context_tokens": 1161,
       "tokens_estimated": false,
-      "latency_s": 2.782,
+      "latency_s": 3.581,
       "sources": [
         "session_9",
         "session_11",
@@ -4652,11 +4652,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 28.574107393996755,
-        "prefill_seconds": 2.629589959,
-        "time_to_first_token": 2.637770042,
+        "tokens_per_second": 17.714160950919542,
+        "prefill_seconds": 2.614160791,
+        "time_to_first_token": 3.351908,
         "cached_tokens": 0,
-        "wall_seconds": 2.782
+        "wall_seconds": 3.581
       },
       "answer": "It's like air",
       "latency_outlier": false
@@ -4672,7 +4672,7 @@
       "category_name": "single-hop",
       "context_tokens": 1112,
       "tokens_estimated": false,
-      "latency_s": 2.722,
+      "latency_s": 2.735,
       "sources": [
         "session_15",
         "session_4",
@@ -4683,11 +4683,11 @@
       "flags": [],
       "engine": {
         "engine": "glm-zig",
-        "tokens_per_second": 44.6192236448064,
-        "prefill_seconds": 2.533298167,
-        "time_to_first_token": 2.539457833,
+        "tokens_per_second": 44.78854889378891,
+        "prefill_seconds": 2.539763667,
+        "time_to_first_token": 2.550557666,
         "cached_tokens": 0,
-        "wall_seconds": 2.722
+        "wall_seconds": 2.735
       },
       "answer": "Capture the joy and thrill that dance brings",
       "latency_outlier": false
