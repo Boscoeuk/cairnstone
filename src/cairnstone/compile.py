@@ -230,7 +230,7 @@ def write_facts(conn, page_id, version_id, capture_id, facts):
         if span is None:
             rejected.append((f["text"], "quote not found in capture"))
             continue
-        speaker = _speaker_for_quote(capture_text, f["quote"])
+        speaker = _speaker_for_quote(capture_text, span)
         subject_error = _subject_error(f["subject"], speaker, f["quote"],
                                        capture_text)
         if subject_error:
@@ -284,20 +284,25 @@ def _speaker_of(capture_text):
 _LABEL_RE = re.compile(r"(?:^|\n)\s*([A-Za-z][A-Za-z0-9'_]*)\s*:")
 
 
-def _speaker_for_quote(capture_text, quote):
+def _speaker_for_quote(capture_text, span):
     """The author of the turn the quote belongs to.
 
     Captures begin 'Name: ...'; a capture may carry several turn labels, in which
     case the quote's speaker is the nearest label at or before the quote's first
-    occurrence. Single-turn captures (the harness norm) resolve to the first label.
+    character. Single-turn captures (the harness norm) resolve to the first label.
+
+    `span` is the (start, end) returned by `locate()`, so the lookup uses the same
+    case/format-tolerant match that produced the stored citation. Re-searching with an
+    exact `find()` here would miss a quote that differs only by case, fall back to the
+    first label, and attribute a multi-turn quote to the wrong speaker — which lets the
+    D1 person check run against the wrong person.
     """
     labels = [(m.start(), m.group(1))
               for m in _LABEL_RE.finditer(capture_text or "")]
     if not labels:
         return None
-    idx = capture_text.find(quote) if quote else -1
-    if idx >= 0:
-        preceding = [name for pos, name in labels if pos <= idx]
+    if span is not None:
+        preceding = [name for pos, name in labels if pos <= span[0]]
         if preceding:
             return preceding[-1]
     return labels[0][1]

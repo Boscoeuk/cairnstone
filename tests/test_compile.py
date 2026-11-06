@@ -602,3 +602,71 @@ def test_locate_tolerates_markdown_and_unicode_formatting():
     start, end = span
     assert capture[start:end].startswith("Capability clone.")
     assert "phases 0–4" in capture[start:end]
+
+
+def test_multi_turn_speaker_resolved_from_located_span(db):
+    """Regression: the quote's speaker must come from the span `locate()` returns.
+
+    `locate()` is case- and format-tolerant, so an exact `find()` for the speaker lookup
+    misses a quote that differs only by case. It then fell back to the first turn label,
+    which in a multi-turn capture is the wrong speaker — and the D1 person check ran
+    against the wrong person, accepting 'Caroline is proud of her adoption progress' from
+    Melanie's lower-cased turn. The bypass is only reachable with more than one turn label
+    and a case-varied quote, so both are exercised here.
+    """
+    capture = ("Caroline: Hey Melanie, how are you?\n"
+               "Melanie: I'm so proud of my adoption progress.")
+    conn, brain = db
+    cid = store.add_capture(conn, brain, "conversation", capture, "test:p13a")
+
+    def payload(subject, quote):
+        return ('{"facts": [{"text": "%s is proud of her adoption progress",'
+                ' "subject": "%s", "quote": "%s", "bucket": "people",'
+                ' "page_title": "%s", "page_path": "people/%s"}]}'
+                % (subject, subject, quote, subject, subject.lower()))
+
+    exact = payload("Caroline", "I'm so proud of my adoption progress")
+    lowered = payload("Caroline", "i'm so proud of my adoption progress")
+
+    # Same wrong attribution, whatever the case of the model's quote.
+    for reply in (exact, lowered):
+        result = compile_all(conn, brain, [cid], FakeClient([reply]))
+        assert result["facts_accepted"] == 0, reply
+        assert result["facts_rejected"][0][2].startswith("subject_mismatch"), reply
+        assert "Melanie" in result["facts_rejected"][0][2], reply
+
+    # And the right attribution is accepted from the same case-varied quote, which shows
+    # the speaker resolved to Melanie's turn rather than merely being rejected.
+    result = compile_all(conn, brain, [cid],
+                         FakeClient([payload("Melanie", "i'm so proud of my adoption progress")]))
+    assert result["facts_accepted"] == 1, result["facts_rejected"]
+    page = store.get_page(conn, "people/melanie")["page"]
+    fact = store.facts_for_page(conn, page["id"])[0]
+    assert fact["quote"] == "I'm so proud of my adoption progress", \
+        "stored quote is the real span text, not the model's lower-cased copy"
+
+
+def test_entity_subject_rejected_by_grounding_branch(db):
+    """The entity-grounding branch must reject on its own account.
+
+    `test_entity_subject_rejected_when_quote_never_mentions_it` is caught by the weak-quote
+    guard and so passes even with `_subject_error` disabled. Here the claim and the quote
+    share content tokens ('retrieval', 'latency'), so the weak-quote guard does not fire and
+    the entity subject 'the storage layer' — absent from the quote — is the only defect. The
+    quote carries 'I' but the speaker is a role label ('assistant'), which cannot resolve
+    who 'I' is, so the subject must be grounded in the quote itself.
+    """
+    conn, brain = db
+    capture = "assistant: I measured retrieval latency at 1,200 tokens."
+    cid = store.add_capture(conn, brain, "chat", capture, "test:p13b")
+    payload = ('{"facts": [{"text": "The storage layer holds retrieval latency at 1,200 tokens",'
+               ' "subject": "the storage layer",'
+               ' "quote": "I measured retrieval latency at 1,200 tokens.",'
+               ' "bucket": "projects", "page_title": "Storage",'
+               ' "page_path": "projects/storage"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([payload]))
+    assert result["facts_accepted"] == 0, "entity subject absent from the quote must be rejected"
+    reason = result["facts_rejected"][0][2]
+    assert reason.startswith("subject_unresolved"), reason
+    assert "is not mentioned in the quote" in reason, reason
+
