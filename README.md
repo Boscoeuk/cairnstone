@@ -97,16 +97,29 @@ the Markdown export print it under every claim.
 
 The two baselines do not depend on the compiler, so their numbers carry over from the same
 150-question scope. By category, cairnstone wins temporal questions decisively (88.5% vs 32.8%
-full context) and multi-hop (70.0% vs 57.3%), loses single-hop narrowly (73.7% vs 76.3%) and
-commonsense (63.6% vs 90.9% for naive chunk-RAG). 13 questions were retrieval failures and 20
-answering failures; no latency outliers.
+full context) and multi-hop (70.0% vs 57.5%), loses single-hop narrowly (73.7% vs 76.3%) and
+commonsense (63.6% vs 72.7% full context and 90.9% for naive chunk-RAG). 13 questions were
+retrieval failures and 20 answering failures; no latency outliers.
+
+**Most of the headline gap is an answer-format effect, not a retrieval advantage.** Of full
+context's 41 wrong temporal answers, 27 give a relative date ("Yesterday", "Next month") where the
+gold wants the absolute one (e.g. gold "7 May 2023", answer "Yesterday"). The full-context prompt
+does include the session dates but asks only for "a short phrase", with no instruction to resolve
+relative dates; the compiled facts carry absolute dates. Outside temporal questions (89 of the 150)
+the two are level: cairnstone 63/89 (70.8%) against full context 60/89 (67.4%) — a tie within noise
+at this sample size. So read the 24.7-point headline as mostly a date-resolution capability rather
+than a general one; rerunning full context with an explicit date-resolution instruction is the test
+that would settle it.
 
 **Read this with care.** The numbers are **local-judged** (a local model as judge, not
 GPT-4o), so they are comparable in shape to published LoCoMo figures, not identical to them.
-They cover **2 conversations** of the dataset — a small sample, not a benchmark result.
-Commonsense and multi-hop questions remain the weak spot: the compiled pages hold explicit
-claims, and questions needing inference beyond them fail more often than the full-context
-baseline. Full methodology and per-phase measurements: `eval/README.md` and `reports/`.
+They cover **2 conversations** of the dataset — a small sample, not a benchmark result. Against
+the previous measurement on the same 150 questions this run is 0 lost and 1 gained (exact McNemar
+p = 1.0), so 78.0% is **unchanged within noise**, not an improvement.
+Commonsense questions remain the weak spot: the compiled pages hold explicit claims, and questions
+needing inference beyond them fail more often than either baseline (63.6% against 72.7% full
+context and 90.9% naive chunk-RAG). Full methodology and per-phase measurements: `eval/README.md`
+and `reports/`.
 
 ## Development
 
