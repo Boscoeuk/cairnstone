@@ -543,3 +543,62 @@ def test_weak_quote_still_rejected_without_name_or_overlap(db):
     result = compile_all(conn, brain, [cid], FakeClient([fact]))
     assert result["facts_accepted"] == 0
     assert result["facts_rejected"][0][2].startswith("weak_quote")
+
+
+# ---- the maintainer: dogfooding on a real agent transcript (phase 12). The phase-7 subject rule
+# ---- assumed people speaking in turns; agent logs use role labels and non-person subjects.
+
+def test_entity_subject_accepted_when_quote_is_about_it(db):
+    """'Phase 0 plan' is a project artifact, not a person: person grammar cannot judge it,
+    so the only requirement is that the quote is actually about it."""
+    conn, brain = db
+    capture = "assistant: Phase 0 deliverables: scope, brief, and the eval harness."
+    cid = store.add_capture(conn, brain, "chat", capture, "test:p12a")
+    payload = ('{"facts": [{"text": "Phase 0 deliverables include the eval harness",'
+               ' "subject": "Phase 0 deliverables",'
+               ' "quote": "Phase 0 deliverables: scope, brief, and the eval harness.",'
+               ' "bucket": "projects", "page_title": "Phase 0",'
+               ' "page_path": "projects/phase-0"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([payload]))
+    assert result["facts_accepted"] == 1, result["facts_rejected"]
+
+
+def test_entity_subject_rejected_when_quote_never_mentions_it(db):
+    conn, brain = db
+    capture = "assistant: The harness measures accuracy at 77.3%."
+    cid = store.add_capture(conn, brain, "chat", capture, "test:p12b")
+    payload = ('{"facts": [{"text": "Storage layer uses SQLite",'
+               ' "subject": "the storage layer",'
+               ' "quote": "The harness measures accuracy at 77.3%.",'
+               ' "bucket": "projects", "page_title": "Storage",'
+               ' "page_path": "projects/storage"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([payload]))
+    assert result["facts_accepted"] == 0
+    reason = result["facts_rejected"][0][2]
+    assert reason.startswith("subject_unresolved") or reason.startswith("weak_quote")
+
+
+def test_role_speaker_does_not_reject_grounded_person_fact(db):
+    """'assistant' is a role, not a person: 'I' cannot be resolved to it, so a fact about a
+    named person must not be rejected merely because the speaker is a role label."""
+    conn, brain = db
+    capture = "assistant: Ged asked for a fully local build with no cloud inference."
+    cid = store.add_capture(conn, brain, "chat", capture, "test:p12c")
+    payload = ('{"facts": [{"text": "Ged required a fully local build",'
+               ' "subject": "Ged",'
+               ' "quote": "Ged asked for a fully local build with no cloud inference.",'
+               ' "bucket": "people", "page_title": "Ged", "page_path": "people/ged"}]}')
+    result = compile_all(conn, brain, [cid], FakeClient([payload]))
+    assert result["facts_accepted"] == 1, result["facts_rejected"]
+
+
+def test_locate_tolerates_markdown_and_unicode_formatting():
+    """A quote that differs only cosmetically is still verbatim evidence; the returned span
+    must be real capture text, never a normalised string."""
+    capture = "**Capability clone.** Build phases 0–4 and stop — that is the recommendation."
+    quote = "Capability clone. Build phases 0-4 and stop - that is the recommendation."
+    span = locate(capture, quote)
+    assert span is not None
+    start, end = span
+    assert capture[start:end].startswith("Capability clone.")
+    assert "phases 0–4" in capture[start:end]

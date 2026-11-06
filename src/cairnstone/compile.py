@@ -155,37 +155,49 @@ def locate(capture_text, quote):
     idx = capture_text.find(quote)
     if idx != -1:
         return (idx, idx + len(quote))
-    # Whitespace-normalised fallback: align the normalised quote inside the
-    # normalised capture, then map offsets back through a position table.
-    norm_cap = _norm(capture_text)
-    norm_quote = _norm(quote)
-    if not norm_quote:
-        return None
-    # Build mapping from normalised index -> original index by walking the
-    # original text: each non-ws char maps to itself; each ws run collapses
-    # to one normalised space mapped to the run's first char.
-    mapping = []
-    j = 0
-    for i, ch in enumerate(capture_text):
-        if j >= len(norm_cap):
-            break
+    # Cosmetic fallback: markdown emphasis markers, unicode dashes/quotes and case are
+    # formatting, not wording. A quote that differs only cosmetically is still verbatim
+    # evidence, so align it on a normalised copy and map the match back to real offsets.
+    # The stored span is always a substring of the capture, so P2 is not weakened.
+    for fold in (False, True):
+        norm_cap, pos = _norm_with_map(capture_text, fold)
+        norm_quote, _ = _norm_with_map(quote, fold)
+        if not norm_quote or not norm_cap:
+            continue
+        j = norm_cap.find(norm_quote)
+        if j == -1:
+            continue
+        return (pos[j], pos[j + len(norm_quote) - 1] + 1)
+    return None
+
+
+_MARKDOWN_CHARS = frozenset("*_`#>|~")
+_UNICODE_MAP = {"–": "-", "—": "-", "‘": "'", "’": "'",
+                "“": '"', "”": '"', "…": "..."}
+
+
+def _norm_with_map(text, fold_case=False):
+    """Normalise for matching only, returning (normalised, positions) where
+    positions[i] is the offset in `text` that produced normalised character i."""
+    out, pos, prev_space = [], [], False
+    for i, ch in enumerate(text):
+        if ch in _MARKDOWN_CHARS:
+            continue
         if ch.isspace():
-            if j > 0 and norm_cap[j - 1] != " ":
-                mapping.append(i)
-                j += 1
-        else:
-            mapping.append(i)
-            j += 1
-    if len(mapping) != len(norm_cap):
-        return None
-    j = norm_cap.find(norm_quote)
-    if j == -1:
-        return None
-    start = mapping[j]
-    last = mapping[j + len(norm_quote) - 1]
-    # End at the end of the last matched original character.
-    end = last + 1
-    return (start, end)
+            if out and not prev_space:
+                out.append(" ")
+                pos.append(i)
+                prev_space = True
+            continue
+        prev_space = False
+        mapped = _UNICODE_MAP.get(ch)
+        for c in (mapped if mapped is not None else ch):
+            out.append(c.lower() if fold_case else c)
+            pos.append(i)
+    while out and out[-1] == " ":
+        out.pop()
+        pos.pop()
+    return "".join(out), pos
 
 
 # -------------------------------------------------------------------- pages
@@ -304,21 +316,74 @@ def _known_person_names(capture_text):
 
 
 def _subject_named(subject, quote):
-    """True when the subject's own name appears in the quote (case-insensitive)."""
-    for token in re.findall(r"[A-Za-z]{2,}", subject or ""):
-        if re.search(r"\b%s\b" % re.escape(token), quote, re.IGNORECASE):
-            return True
-    return False
+    """True when the subject's own name appears in the quote. Stopwords are excluded: a
+    subject like 'the storage layer' must not be "mentioned" by the word 'the'."""
+    quote_tokens = set(_content_tokens(quote))
+    return any(t in quote_tokens for t in _content_tokens(subject))
+
+
+_ROLE_LABELS = frozenset("user assistant system tool human ai bot agent operator".split())
+
+
+def _is_role_label(name):
+    """True for transcript role labels ('user', 'assistant'). A role is not a person:
+    it cannot tell us who 'I' refers to, so grammatical-person checks cannot resolve
+    identity from it."""
+    return bool(name) and name.strip().lower() in _ROLE_LABELS
+
+
+def _grounded_in_quote(subject, quote):
+    """True when the quote actually mentions the subject (by name or content token)."""
+    if _subject_named(subject, quote):
+        return True
+    return _tokens_overlap(_content_tokens(subject), _content_tokens(quote))
 
 
 def _subject_error(subject, speaker, quote, capture_text):
     """Return a rejection reason when the subject contradicts the quote's grammatical
-    person, else None (phase 7A, enforced in code — the prompt alone is not trusted)."""
+    person, else None (phase 7A, enforced in code — the prompt alone is not trusted).
+
+    Phase 12 (dogfooding on a real agent transcript): the phase-7 rule assumed every
+    subject is a person speaking in a turn. Agent sessions break both assumptions —
+    speakers are role labels ('assistant', 'user') and subjects are projects, phases,
+    decisions and tools. Applying person grammar there rejected 80% of extracted facts.
+    """
     if not subject or not str(subject).strip():
         return "subject_unresolved: no subject given"
     subj = str(subject).strip()
     subj_l = _norm(subj).lower()
     speaker_l = _norm(speaker).lower() if speaker else None
+    has_person_grammar = bool(_FIRST_PERSON_RE.search(quote)
+                              or _SECOND_PERSON_RE.search(quote))
+    if not has_person_grammar:
+        # No 'I'/'you' in the quote, so nothing claims who is speaking. What can still be
+        # decided: if the quote names a different person, that person is the subject.
+        mentioned = [t for t in _NAME_TOKEN_RE.findall(quote)
+                     if t in _known_person_names(capture_text)]
+        if mentioned:
+            if any(_norm(t).lower() == subj_l for t in mentioned):
+                return None
+            return ("subject_mismatch: quote is about %s, not subject %r"
+                    % (mentioned, subj))
+        # Otherwise: a quote inside the subject's own turn belongs to the subject.
+        if speaker_l and subj_l == speaker_l:
+            return None
+        if speaker_l and not _is_role_label(speaker):
+            # A real person spoke this turn and the subject is somebody else, with
+            # nothing in the quote to identify them: unresolvable, so do not guess.
+            return ("subject_unresolved: quote is in %r's turn but gives no signal "
+                    "for subject %r" % (speaker, subj))
+        # A transcript role ('assistant'/'user') is not a candidate subject at all, so
+        # there is nothing to contradict. Defer to the weak-quote guard, which still
+        # requires the quote to support the claim.
+        return None
+    if speaker_l is None or _is_role_label(speaker):
+        # A transcript role ('assistant', 'user') cannot tell us who 'I' or 'you' is, so
+        # the model's subject is the only identity signal available. Require grounding.
+        if _grounded_in_quote(subj, quote):
+            return None
+        return ("subject_unresolved: no person-level speaker and subject %r is not "
+                "mentioned in the quote" % subj)
     if _FIRST_PERSON_RE.search(quote):
         if speaker_l and subj_l == speaker_l:
             return None

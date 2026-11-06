@@ -1,0 +1,22 @@
+[
+  {"id": "q01", "question": "What accuracy did the compiled-memory backend reach on 150 LoCoMo questions?", "gold": "77.3%", "known_from": "reports/phase9-review.md"},
+  {"id": "q02", "question": "What accuracy did the full-context baseline reach on the same 150 questions?", "gold": "53.3%", "known_from": "reports/phase9-review.md"},
+  {"id": "q03", "question": "What accuracy did naive chunk-RAG reach on those 150 questions?", "gold": "45.3%", "known_from": "reports/phase9-review.md"},
+  {"id": "q04", "question": "Why did the MCP server say the mcp package was not installed when it was installed?", "gold": "mcp 2.x renamed FastMCP to MCPServer and the old fastmcp module raises ModuleNotFoundError, which was misreported as not installed", "known_from": "reports/phase10-review.md"},
+  {"id": "q05", "question": "Which extraction defect did phase 7 fix?", "gold": "facts were attributed to the speaker instead of the subject, e.g. Caroline is married when Caroline was asking Melanie about her marriage", "known_from": "reports/phase7-review.md"},
+  {"id": "q06", "question": "What was the single-hop accuracy after phase 9?", "gold": "73.7%", "known_from": "reports/phase9-review.md"},
+  {"id": "q07", "question": "What did the weak_quote audit find and what was done about it?", "gold": "8 of 10 sampled rejections were valid facts lost, so the guard was relaxed, but only 3 of 33 facts were recovered", "known_from": "reports/phase9-review.md"},
+  {"id": "q08", "question": "How does TensorFold reuse prompt prefixes?", "gold": "only at a message boundary: stable content must be its own leading system message", "known_from": "docs/tensorfold-integration.md"},
+  {"id": "q09", "question": "Which model judged the LoCoMo answers?", "gold": "local-judge", "known_from": "eval/README.md"},
+  {"id": "q10", "question": "What did the first CI failure expose about the retriever?", "gold": "briefs and search called the embedding endpoint unconditionally and failed when it was down; embeddings became optional", "known_from": "reports/phase11-review.md"},
+  {"id": "q11", "question": "What is the citation chain that every fact must support?", "gold": "claim to capture to span to verbatim quote", "known_from": "README.md"},
+  {"id": "q12", "question": "Which inference engine serves glm-5.3-flash on the Mac Studio?", "gold": "TensorFold", "known_from": "docs/tensorfold-integration.md"},
+  {"id": "q13", "question": "What release tag was published?", "gold": "v0.1.0", "known_from": "reports/phase11-review.md"},
+  {"id": "q14", "question": "How many tests pass in the suite after the rename?", "gold": "83", "known_from": "reports/phase11-review.md"},
+  {"id": "q15", "question": "What was wrong with phase 5's claim of measuring two conversations?", "gold": "all 60 questions came from conv-26 because the question cap was global, so the second conversation was never reached", "known_from": "reports/phase5-review.md"},
+  {"id": "q16", "question": "What did the reviewer find about structured output in TensorFold 1.2.3?", "gold": "still unsupported: response_format and guided fields return HTTP 400 on Metal GLM", "known_from": "reports/tf-canary-1.2.3.md"},
+  {"id": "q17", "question": "Why does the compiled backend lose on commonsense questions?", "gold": "a flat fact set loses the surrounding conversation that inference needs", "known_from": "reports/phase8-review.md"},
+  {"id": "q18", "question": "What was phase 8 multi-hop accuracy against full context?", "gold": "67.5% versus 57.3%", "known_from": "reports/phase8-review.md"},
+  {"id": "q19", "question": "What was the project's working name before it was renamed?", "gold": "cairn", "known_from": "CHANGELOG.md"},
+  {"id": "q20", "question": "What did the publish guard flag when the first push was blocked?", "gold": "a LAN IP, local paths, model names, long digit runs and machine-local git emails; each was allowed with a stated reason", "known_from": "reports/phase11-review.md"}
+]

@@ -1,5 +1,8 @@
 eval/datasets/*.json
 eval/results/cairn-db/
+eval/dogfood/*.db
+eval/dogfood/*.db-shm
+eval/dogfood/*.db-wal
 *.db-shm
 *.db-wal
 *.tmp*
