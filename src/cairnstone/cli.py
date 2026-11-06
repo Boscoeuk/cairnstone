@@ -49,9 +49,23 @@ def _brain_id(conn):
     return row["id"]
 
 
+def _env(suffix, default=None):
+    """Read a Cairnstone setting, preferring CAIRNSTONE_* over the legacy CAIRN_*.
+
+    The project was renamed before release but the environment prefix was left behind,
+    so both spellings must work: new installs document CAIRNSTONE_*, older shells and
+    profiles still export CAIRN_*.
+    """
+    for prefix in ("CAIRNSTONE_", "CAIRN_"):
+        value = os.environ.get(prefix + suffix)
+        if value:
+            return value
+    return default
+
+
 def _client():
-    base_url = os.environ.get("CAIRN_BASE_URL", DEFAULT_BASE_URL)
-    model = os.environ.get("CAIRN_MODEL", DEFAULT_MODEL)
+    base_url = _env("BASE_URL", DEFAULT_BASE_URL)
+    model = _env("MODEL", DEFAULT_MODEL)
     return LLMClient(base_url=base_url, model=model)
 
 

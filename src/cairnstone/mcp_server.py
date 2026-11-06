@@ -26,7 +26,7 @@ MCP_INSTALL_HINT = (
     'pip install "cairnstone[mcp]"  (or: pip install mcp)'
 )
 
-DEFAULT_DB = os.environ.get("CAIRN_DB", "cairnstone.db")
+DEFAULT_DB = os.environ.get("CAIRNSTONE_DB") or os.environ.get("CAIRN_DB") or "cairnstone.db"
 DEFAULT_BRAIN = ("default", "default")
 
 
@@ -77,13 +77,16 @@ def _brain_id(conn):
 
 
 def db_path():
-    return os.environ.get("CAIRN_DB", DEFAULT_DB)
+    return (os.environ.get("CAIRNSTONE_DB") or os.environ.get("CAIRN_DB")
+            or DEFAULT_DB)
 
 
 def _client():
-    return LLMClient(
-        base_url=os.environ.get("CAIRN_BASE_URL", DEFAULT_BASE_URL),
-        model=os.environ.get("CAIRN_MODEL", DEFAULT_MODEL))
+    base_url = (os.environ.get("CAIRNSTONE_BASE_URL") or os.environ.get("CAIRN_BASE_URL")
+                or DEFAULT_BASE_URL)
+    model = (os.environ.get("CAIRNSTONE_MODEL") or os.environ.get("CAIRN_MODEL")
+             or DEFAULT_MODEL)
+    return LLMClient(base_url=base_url, model=model)
 
 
 # ------------------------------------------------------------- tool bodies

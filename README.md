@@ -14,8 +14,10 @@ built to run entirely on local hardware.
 ## Hard constraints
 
 - **No cloud inference.** Every model call goes to an endpoint on the local network:
-  - compiler/answerer: `CAIRN_BASE_URL` (default `http://127.0.0.1:8460/v1`), model `glm-5.3-flash`
-  - judge (evaluation only): `CAIRN_JUDGE_URL` (default `http://127.0.0.1:8000/v1`), model `local-judge`
+  - compiler/answerer: `CAIRNSTONE_BASE_URL` (default `http://127.0.0.1:8460/v1`), model
+    `CAIRNSTONE_MODEL` (default `glm-5.3-flash`)
+  - judge (evaluation only): configured in `eval/harness.py`
+  - the legacy `CAIRN_*` spellings are still honoured, so an existing shell keeps working
   - embeddings: `http://127.0.0.1:1234/v1` (`text-embedding-nomic-embed-text-v1.5`, 768d)
 - If an endpoint is unreachable the tool fails loudly. There is no cloud fallback.
 - Data stays on disk. SQLite + Markdown export. Nothing leaves the machine.
@@ -45,8 +47,8 @@ cairnstone export --db brain.db --out ./export         # one Markdown file per p
 ```
 
 `init`, `ingest`, `search`, `page`, `history` and `export` need no model. `compile` and
-`brief` call the local endpoint configured by `CAIRN_BASE_URL` (default
-`http://127.0.0.1:8460/v1`) and `CAIRN_MODEL` (default `glm-5.3-flash`); if it is
+`brief` call the local endpoint configured by `CAIRNSTONE_BASE_URL` (default
+`http://127.0.0.1:8460/v1`) and `CAIRNSTONE_MODEL` (default `glm-5.3-flash`); if it is
 unreachable they exit non-zero with a clear message — there is no cloud fallback.
 Every command prints a machine-greppable `ok:` / `error:` line and exits non-zero on failure.
 
@@ -64,9 +66,9 @@ in an MCP client (e.g. Claude Desktop) with:
       "command": "python3",
       "args": ["-m", "cairnstone.mcp_server"],
       "env": {
-        "CAIRN_DB": "/path/to/brain.db",
-        "CAIRN_BASE_URL": "http://127.0.0.1:8460/v1",
-        "CAIRN_MODEL": "glm-5.3-flash"
+        "CAIRNSTONE_DB": "/path/to/brain.db",
+        "CAIRNSTONE_BASE_URL": "http://127.0.0.1:8460/v1",
+        "CAIRNSTONE_MODEL": "glm-5.3-flash"
       }
     }
   }

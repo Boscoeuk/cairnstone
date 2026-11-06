@@ -189,3 +189,25 @@ def test_live_smoke_end_to_end(db, tmp_path, capsys):
     assert "citations:" in out
     assert cli.main(["export", "--db", db, "--out", str(tmp_path / "md")]) == 0
     assert "ok: exported" in capsys.readouterr().out
+
+
+def test_cairnstone_env_prefix_wins(monkeypatch):
+    """CAIRNSTONE_* is the documented prefix and must beat the legacy CAIRN_*."""
+    monkeypatch.setenv("CAIRNSTONE_BASE_URL", "http://127.0.0.1:9999/v1")
+    monkeypatch.setenv("CAIRN_BASE_URL", "http://127.0.0.1:1111/v1")
+    monkeypatch.setenv("CAIRNSTONE_MODEL", "model-new")
+    monkeypatch.setenv("CAIRN_MODEL", "model-old")
+    client = cli._client()
+    assert client.base_url == "http://127.0.0.1:9999/v1"
+    assert client.model == "model-new"
+
+
+def test_legacy_cairn_env_still_honoured(monkeypatch):
+    """A shell that predates the rename must keep working."""
+    monkeypatch.delenv("CAIRNSTONE_BASE_URL", raising=False)
+    monkeypatch.delenv("CAIRNSTONE_MODEL", raising=False)
+    monkeypatch.setenv("CAIRN_BASE_URL", "http://127.0.0.1:1111/v1")
+    monkeypatch.setenv("CAIRN_MODEL", "model-old")
+    client = cli._client()
+    assert client.base_url == "http://127.0.0.1:1111/v1"
+    assert client.model == "model-old"
