@@ -91,3 +91,10 @@ mass mutation usually means a policy bug rather than a changed world.
 No policy may introduce a cloud call. If a local endpoint is unreachable the pass fails loudly
 and resumes from the last completed capture. Degrading to a cloud model is forbidden; degrading
 to fewer facts is allowed.
+
+## P13 — Exported quotes carry bracketed redaction markers
+
+Any fact quote exported outside the local machine replaces each machine-local literal — network
+address, filesystem path, model label, route label, tool name, agent name — with a bracketed
+marker from a closed set, sets `redacted: true`, and records one `{marker, kind, reason}` entry per
+marker occurrence; no original literal appears anywhere in the export.

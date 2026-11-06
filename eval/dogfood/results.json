@@ -21,7 +21,9 @@
           "span": [
             252,
             321
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 52,
@@ -31,7 +33,9 @@
           "span": [
             11,
             100
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 110,
@@ -41,7 +45,9 @@
           "span": [
             1314,
             1371
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 111,
@@ -51,7 +57,9 @@
           "span": [
             1372,
             1422
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 196,
@@ -61,7 +69,9 @@
           "span": [
             132,
             224
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 197,
@@ -71,7 +81,9 @@
           "span": [
             229,
             272
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 389,
@@ -81,7 +93,9 @@
           "span": [
             407,
             451
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 393,
@@ -91,7 +105,9 @@
           "span": [
             654,
             691
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 477,
@@ -101,7 +117,9 @@
           "span": [
             1022,
             1063
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 516,
@@ -111,7 +129,9 @@
           "span": [
             814,
             856
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 826,
@@ -121,7 +141,9 @@
           "span": [
             873,
             914
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1385,
@@ -131,7 +153,9 @@
           "span": [
             544,
             682
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1474,
@@ -141,7 +165,9 @@
           "span": [
             764,
             977
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1550,
@@ -151,7 +177,9 @@
           "span": [
             932,
             980
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1568,
@@ -161,7 +189,9 @@
           "span": [
             288,
             339
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1584,
@@ -171,7 +201,9 @@
           "span": [
             1116,
             1249
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "75.0%",
@@ -194,7 +226,9 @@
           "span": [
             1314,
             1371
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 117,
@@ -204,7 +238,9 @@
           "span": [
             474,
             537
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 245,
@@ -214,7 +250,9 @@
           "span": [
             1015,
             1240
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 370,
@@ -224,7 +262,9 @@
           "span": [
             686,
             719
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 476,
@@ -234,7 +274,9 @@
           "span": [
             973,
             1021
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 505,
@@ -244,7 +286,9 @@
           "span": [
             453,
             481
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 536,
@@ -254,7 +298,9 @@
           "span": [
             354,
             399
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 558,
@@ -264,7 +310,9 @@
           "span": [
             343,
             396
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 577,
@@ -274,7 +322,9 @@
           "span": [
             683,
             767
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 584,
@@ -284,7 +334,9 @@
           "span": [
             622,
             657
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 658,
@@ -294,7 +346,9 @@
           "span": [
             10,
             176
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 825,
@@ -304,7 +358,9 @@
           "span": [
             824,
             872
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1007,
@@ -314,7 +370,9 @@
           "span": [
             373,
             507
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1049,
@@ -324,7 +382,9 @@
           "span": [
             49,
             131
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1246,
@@ -334,7 +394,9 @@
           "span": [
             182,
             384
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1571,
@@ -344,7 +406,9 @@
           "span": [
             230,
             287
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "83.3%",
@@ -367,7 +431,9 @@
           "span": [
             1372,
             1422
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 116,
@@ -377,7 +443,9 @@
           "span": [
             420,
             469
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 395,
@@ -387,7 +455,9 @@
           "span": [
             723,
             865
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 469,
@@ -397,7 +467,9 @@
           "span": [
             11,
             96
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 477,
@@ -407,7 +479,9 @@
           "span": [
             1022,
             1063
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 506,
@@ -417,7 +491,9 @@
           "span": [
             486,
             508
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 537,
@@ -427,7 +503,9 @@
           "span": [
             404,
             443
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 559,
@@ -437,7 +515,9 @@
           "span": [
             401,
             447
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 584,
@@ -447,7 +527,9 @@
           "span": [
             622,
             657
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 587,
@@ -457,7 +539,9 @@
           "span": [
             733,
             950
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 697,
@@ -467,7 +551,9 @@
           "span": [
             482,
             680
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 826,
@@ -477,7 +563,9 @@
           "span": [
             873,
             914
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1007,
@@ -487,7 +575,9 @@
           "span": [
             373,
             507
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1049,
@@ -497,7 +587,9 @@
           "span": [
             49,
             131
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1219,
@@ -507,7 +599,9 @@
           "span": [
             482,
             680
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1568,
@@ -517,7 +611,9 @@
           "span": [
             288,
             339
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "45.3%",
@@ -536,10 +632,18 @@
           "fact_id": 37,
           "text": "coding agent is installed but currently broken as of 2026-11-05, with bun throwing a parse error in its bundle",
           "source_ref": "session:local-df43f0:15:0",
-          "quote": "coding agent is installed but **currently broken** \u2014 bun throws a parse error in its bundle",
+          "quote": "[redacted tool name] is installed but **currently broken** \u2014 bun throws a parse error in its bundle",
           "span": [
             11,
             93
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted tool name]",
+              "kind": "tool name",
+              "reason": "external coding-agent harness name replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -550,7 +654,9 @@
           "span": [
             61,
             134
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1022,
@@ -560,7 +666,9 @@
           "span": [
             64,
             143
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1023,
@@ -570,7 +678,9 @@
           "span": [
             145,
             215
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1024,
@@ -580,7 +690,9 @@
           "span": [
             11,
             71
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1087,
@@ -590,7 +702,9 @@
           "span": [
             187,
             370
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1314,
@@ -600,7 +714,9 @@
           "span": [
             1153,
             1268
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1327,
@@ -610,7 +726,9 @@
           "span": [
             1089,
             1382
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1330,
@@ -620,7 +738,9 @@
           "span": [
             496,
             593
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1369,
@@ -630,7 +750,9 @@
           "span": [
             1364,
             1494
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1416,
@@ -640,7 +762,9 @@
           "span": [
             1088,
             1152
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1464,
@@ -650,7 +774,9 @@
           "span": [
             1122,
             1371
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1465,
@@ -660,7 +786,9 @@
           "span": [
             1372,
             1505
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1590,
@@ -670,7 +798,9 @@
           "span": [
             1276,
             1437
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "`pip install mcp` gives mcp 2.x, where `FastMCP` was renamed `MCPServer`; the old `mcp.server.fastmcp` shim raises `ModuleNotFoundError` (an `ImportError` subclass), so cairn's handler misreported it as \"not installed.\"",
@@ -693,7 +823,9 @@
           "span": [
             107,
             145
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 457,
@@ -703,7 +835,9 @@
           "span": [
             54,
             102
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 517,
@@ -713,7 +847,9 @@
           "span": [
             1193,
             1293
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 524,
@@ -723,7 +859,9 @@
           "span": [
             58,
             185
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 531,
@@ -733,7 +871,9 @@
           "span": [
             46,
             164
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 551,
@@ -743,7 +883,9 @@
           "span": [
             11,
             42
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 553,
@@ -753,7 +895,9 @@
           "span": [
             11,
             43
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 557,
@@ -763,7 +907,9 @@
           "span": [
             289,
             338
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 558,
@@ -773,7 +919,9 @@
           "span": [
             343,
             396
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 559,
@@ -783,7 +931,9 @@
           "span": [
             401,
             447
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 777,
@@ -793,7 +943,9 @@
           "span": [
             629,
             730
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1106,
@@ -803,7 +955,9 @@
           "span": [
             557,
             881
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1254,
@@ -813,7 +967,9 @@
           "span": [
             377,
             438
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1281,
@@ -823,7 +979,9 @@
           "span": [
             134,
             172
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1454,
@@ -833,7 +991,9 @@
           "span": [
             1232,
             1338
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1459,
@@ -843,7 +1003,9 @@
           "span": [
             336,
             490
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1465,
@@ -853,7 +1015,9 @@
           "span": [
             1372,
             1505
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "Subject resolution",
@@ -876,7 +1040,9 @@
           "span": [
             289,
             338
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 558,
@@ -886,7 +1052,9 @@
           "span": [
             343,
             396
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 559,
@@ -896,7 +1064,9 @@
           "span": [
             401,
             447
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 598,
@@ -906,7 +1076,9 @@
           "span": [
             947,
             1012
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 603,
@@ -916,7 +1088,9 @@
           "span": [
             701,
             918
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 604,
@@ -926,7 +1100,9 @@
           "span": [
             920,
             972
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 994,
@@ -936,7 +1112,9 @@
           "span": [
             11,
             96
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 995,
@@ -946,7 +1124,9 @@
           "span": [
             258,
             309
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 996,
@@ -956,7 +1136,9 @@
           "span": [
             310,
             361
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 997,
@@ -966,7 +1148,9 @@
           "span": [
             362,
             414
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 998,
@@ -976,7 +1160,9 @@
           "span": [
             415,
             472
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 999,
@@ -986,7 +1172,9 @@
           "span": [
             473,
             531
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1000,
@@ -996,7 +1184,9 @@
           "span": [
             583,
             619
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1001,
@@ -1006,7 +1196,9 @@
           "span": [
             625,
             721
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1002,
@@ -1016,7 +1208,9 @@
           "span": [
             857,
             958
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1268,
@@ -1026,7 +1220,9 @@
           "span": [
             1098,
             1232
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1449,
@@ -1036,7 +1232,9 @@
           "span": [
             720,
             760
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1493,
@@ -1046,7 +1244,9 @@
           "span": [
             617,
             662
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1496,
@@ -1056,7 +1256,9 @@
           "span": [
             987,
             1096
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "73.7%",
@@ -1079,7 +1281,9 @@
           "span": [
             146,
             224
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 586,
@@ -1089,7 +1293,9 @@
           "span": [
             269,
             428
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 582,
@@ -1099,7 +1305,9 @@
           "span": [
             429,
             520
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 609,
@@ -1109,7 +1317,9 @@
           "span": [
             215,
             341
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1012,
@@ -1119,7 +1329,9 @@
           "span": [
             221,
             260
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1266,
@@ -1129,16 +1341,26 @@
           "span": [
             836,
             993
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1273,
           "text": "During Phase 8, the user dispatched an coding-agent worker (pid 76780) with bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message, and instructed it to audit 10 of 33 weak_quote rejections and relax the guard if more than 2 of 10 were valid, run all three backends at --limit 2 --questions-per-sample 75 --max-questions 150, and state whether the larger sample confirms, weakens, or overturns phase 7's 78.3%.",
           "source_ref": "session:local-df43f0:456:20",
-          "quote": "DISPATCH Phase 8 coding-agent worker (pid 76780) \u2014 bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message; audit 10 of 33 `weak_quote` rejections and relax the guard if more than 2 of 10 were valid; run all three backends at `--limit 2 --questions-per-sample 75 --max-questions 150`; state whether the larger sample confirms, weakens, or overturns phase 7\u2019s 78.3%",
+          "quote": "DISPATCH Phase 8 [redacted tool name] worker (pid 76780) \u2014 bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message; audit 10 of 33 `weak_quote` rejections and relax the guard if more than 2 of 10 were valid; run all three backends at `--limit 2 --questions-per-sample 75 --max-questions 150`; state whether the larger sample confirms, weakens, or overturns phase 7\u2019s 78.3%",
           "span": [
             11,
             432
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted tool name]",
+              "kind": "tool name",
+              "reason": "external coding-agent harness name replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -1149,7 +1371,9 @@
           "span": [
             515,
             614
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1307,
@@ -1159,7 +1383,9 @@
           "span": [
             255,
             306
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1402,
@@ -1169,7 +1395,9 @@
           "span": [
             282,
             339
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1412,
@@ -1179,7 +1407,9 @@
           "span": [
             241,
             324
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1463,
@@ -1189,7 +1419,9 @@
           "span": [
             943,
             1094
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1577,
@@ -1199,7 +1431,9 @@
           "span": [
             490,
             544
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1578,
@@ -1209,7 +1443,9 @@
           "span": [
             548,
             662
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "8 of 10 rejections were valid facts lost \u2192 guard relaxed",
@@ -1232,7 +1468,9 @@
           "span": [
             11,
             64
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 48,
@@ -1242,7 +1480,9 @@
           "span": [
             11,
             195
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 56,
@@ -1252,7 +1492,9 @@
           "span": [
             166,
             241
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 57,
@@ -1262,7 +1504,9 @@
           "span": [
             11,
             122
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 59,
@@ -1272,7 +1516,9 @@
           "span": [
             39,
             201
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 84,
@@ -1282,7 +1528,9 @@
           "span": [
             779,
             849
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 182,
@@ -1292,7 +1540,9 @@
           "span": [
             1336,
             1428
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 184,
@@ -1302,7 +1552,9 @@
           "span": [
             234,
             573
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 248,
@@ -1312,7 +1564,9 @@
           "span": [
             330,
             398
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 538,
@@ -1322,7 +1576,9 @@
           "span": [
             1117,
             1237
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 755,
@@ -1332,7 +1588,9 @@
           "span": [
             817,
             976
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1029,
@@ -1342,7 +1600,9 @@
           "span": [
             295,
             329
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1169,
@@ -1352,7 +1612,9 @@
           "span": [
             72,
             159
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1429,
@@ -1362,7 +1624,9 @@
           "span": [
             1018,
             1279
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1478,
@@ -1372,7 +1636,9 @@
           "span": [
             1308,
             1440
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "At message boundaries",
@@ -1395,7 +1661,9 @@
           "span": [
             252,
             321
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 19,
@@ -1405,7 +1673,9 @@
           "span": [
             26,
             163
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 196,
@@ -1415,7 +1685,9 @@
           "span": [
             132,
             224
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 197,
@@ -1425,16 +1697,26 @@
           "span": [
             229,
             272
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 226,
           "text": "The evaluation harness uses a local judge model called local-judge instead of GPT, with results labelled LOCAL-JUDGED.",
           "source_ref": "session:local-df43f0:104:14",
-          "quote": "Local judge (`local-judge`), not GPT.** Results are labelled LOCAL-JUDGED",
+          "quote": "Local judge (`[redacted route label]`), not GPT.** Results are labelled LOCAL-JUDGED",
           "span": [
             16,
             95
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted route label]",
+              "kind": "route label",
+              "reason": "local provider route alias replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -1445,7 +1727,9 @@
           "span": [
             376,
             453
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 274,
@@ -1455,7 +1739,9 @@
           "span": [
             1140,
             1303
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 732,
@@ -1465,7 +1751,9 @@
           "span": [
             343,
             480
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 781,
@@ -1475,7 +1763,9 @@
           "span": [
             742,
             954
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 840,
@@ -1485,7 +1775,9 @@
           "span": [
             772,
             912
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1243,
@@ -1495,7 +1787,9 @@
           "span": [
             977,
             1227
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1385,
@@ -1505,7 +1799,9 @@
           "span": [
             544,
             682
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1551,
@@ -1515,7 +1811,9 @@
           "span": [
             981,
             1049
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1634,
@@ -1525,7 +1823,9 @@
           "span": [
             49,
             184
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "`local-judge` (local model)",
@@ -1548,7 +1848,9 @@
           "span": [
             166,
             331
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 444,
@@ -1558,7 +1860,9 @@
           "span": [
             337,
             492
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 445,
@@ -1568,7 +1872,9 @@
           "span": [
             494,
             633
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 470,
@@ -1578,7 +1884,9 @@
           "span": [
             102,
             195
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 834,
@@ -1588,7 +1896,9 @@
           "span": [
             125,
             228
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1018,
@@ -1598,7 +1908,9 @@
           "span": [
             269,
             357
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1063,
@@ -1608,7 +1920,9 @@
           "span": [
             55,
             163
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1079,
@@ -1618,7 +1932,9 @@
           "span": [
             31,
             76
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1080,
@@ -1628,7 +1944,9 @@
           "span": [
             71,
             94
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1081,
@@ -1638,7 +1956,9 @@
           "span": [
             11,
             103
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1093,
@@ -1648,7 +1968,9 @@
           "span": [
             870,
             1000
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1318,
@@ -1658,7 +1980,9 @@
           "span": [
             1423,
             1463
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1113,
@@ -1668,7 +1992,9 @@
           "span": [
             11,
             49
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1592,
@@ -1678,7 +2004,9 @@
           "span": [
             11,
             61
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1597,
@@ -1688,7 +2016,9 @@
           "span": [
             52,
             237
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1598,
@@ -1698,7 +2028,9 @@
           "span": [
             11,
             113
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1600,
@@ -1708,7 +2040,9 @@
           "span": [
             11,
             42
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1606,
@@ -1718,7 +2052,9 @@
           "span": [
             926,
             1000
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "A genuine isolation defect \u2014 the retriever can't work without embeddings even though search already degrades.",
@@ -1741,7 +2077,9 @@
           "span": [
             154,
             285
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 123,
@@ -1751,7 +2089,9 @@
           "span": [
             493,
             531
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 124,
@@ -1761,7 +2101,9 @@
           "span": [
             534,
             616
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 126,
@@ -1771,7 +2113,9 @@
           "span": [
             838,
             931
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 142,
@@ -1781,7 +2125,9 @@
           "span": [
             210,
             424
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 698,
@@ -1791,7 +2137,9 @@
           "span": [
             717,
             955
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 700,
@@ -1801,7 +2149,9 @@
           "span": [
             1080,
             1283
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 744,
@@ -1811,7 +2161,9 @@
           "span": [
             389,
             595
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1052,
@@ -1821,7 +2173,9 @@
           "span": [
             176,
             305
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1220,
@@ -1831,7 +2185,9 @@
           "span": [
             717,
             955
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1241,
@@ -1841,16 +2197,26 @@
           "span": [
             710,
             820
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1525,
           "text": "the maintainer's cairn project has a retrieve.py at ~/cairn/src/cairn/retrieve.py with hybrid fact-level search, an embedding cache, prefix-stable build_brief, citation rendering, selection scoring, and gold_support_in_brief scores that treat list-like gold per item",
           "source_ref": "session:local-df43f0:456:47",
-          "quote": "~/cairn/src/cairn/retrieve.py` \u2014 hybrid fact-level search, embedding cache, prefix-stable `build_brief`, citation rendering, selection scoring; `gold_support_in_brief` scores list-like gold per item",
+          "quote": "[redacted path]/cairn/src/cairn/retrieve.py` \u2014 hybrid fact-level search, embedding cache, prefix-stable `build_brief`, citation rendering, selection scoring; `gold_support_in_brief` scores list-like gold per item",
           "span": [
             473,
             682
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted path]",
+              "kind": "path",
+              "reason": "machine-local filesystem path replaced with a bracketed marker"
+            }
           ]
         }
       ],
@@ -1874,26 +2240,49 @@
           "span": [
             11,
             64
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 75,
           "text": "glm-5.3-flash maps to glm-5.3-flash at 127.0.0.1:8460.",
           "source_ref": "session:local-df43f0:66:0",
-          "quote": "`glm-5.3-flash` \u2192 `glm-5.3-flash` at 127.0.0.1:8460",
+          "quote": "`[redacted model label]` \u2192 `glm-5.3-flash` at 127.0.0.1:8460",
           "span": [
             927,
             971
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted model label]",
+              "kind": "model label",
+              "reason": "local model alias replaced with a bracketed marker"
+            }
           ]
         },
         {
           "fact_id": 147,
           "text": "The assistant committed to a constraint of no cloud inference; every model call goes to http://127.0.0.1:8460/v1 (glm-5.3-flash) or http://127.0.0.1:8889/v1 (local-judge), with embeddings at http://127.0.0.1:1234/v1",
           "source_ref": "session:local-df43f0:104:3",
-          "quote": "No cloud inference.** Every model call goes to `http://127.0.0.1:8460/v1` (`glm-5.3-flash`) or `http://127.0.0.1:8889/v1` (`local-judge`). Embeddings at `http://127.0.0.1:1234/v1`.",
+          "quote": "No cloud inference.** Every model call goes to `http://127.0.0.1:8460/v1` (`glm-5.3-flash`) or `http://[redacted address]/v1` (`[redacted route label]`). Embeddings at `http://127.0.0.1:1234/v1`.",
           "span": [
             63,
             250
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted address]",
+              "kind": "address",
+              "reason": "machine-local network address replaced with a bracketed marker"
+            },
+            {
+              "marker": "[redacted route label]",
+              "kind": "route label",
+              "reason": "local provider route alias replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -1904,26 +2293,54 @@
           "span": [
             660,
             838
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 250,
           "text": "coding agent was verified to drive both local models with real tool calls via the hello.txt smoke test on glm-5.3-flash/glm-5.3-flash and local-judge",
           "source_ref": "session:local-df43f0:104:17",
-          "quote": "Yes, verified by the hello.txt smoke test on both `glm-5.3-flash/glm-5.3-flash` and `local-judge`",
+          "quote": "Yes, verified by the hello.txt smoke test on both `[redacted model label]/glm-5.3-flash` and `[redacted route label]/[redacted route label]`",
           "span": [
             553,
             667
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted model label]",
+              "kind": "model label",
+              "reason": "local model alias replaced with a bracketed marker"
+            },
+            {
+              "marker": "[redacted route label]",
+              "kind": "route label",
+              "reason": "local provider route alias replaced with a bracketed marker"
+            },
+            {
+              "marker": "[redacted route label]",
+              "kind": "route label",
+              "reason": "local provider route alias replaced with a bracketed marker"
+            }
           ]
         },
         {
           "fact_id": 257,
           "text": "The glm-5.3-flash endpoint is at http://127.0.0.1:8460/v1 with model id glm-5.3-flash using the OpenAI-completions API",
           "source_ref": "session:local-df43f0:104:18",
-          "quote": "`glm-5.3-flash`: `http://127.0.0.1:8460/v1`, model id `glm-5.3-flash`, OpenAI-completions API.",
+          "quote": "`[redacted model label]`: `http://127.0.0.1:8460/v1`, model id `glm-5.3-flash`, OpenAI-completions API.",
           "span": [
             626,
             713
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted model label]",
+              "kind": "model label",
+              "reason": "local model alias replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -1934,26 +2351,49 @@
           "span": [
             290,
             355
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 619,
           "text": "All model inference must stay local: every model call goes to http://127.0.0.1:8460/v1 (glm-5.3-flash) or http://127.0.0.1:8889/v1 (local-judge), with embeddings at http://127.0.0.1:1234/v1",
           "source_ref": "session:local-df43f0:269:4",
-          "quote": "No cloud inference.** Every model call goes to `http://127.0.0.1:8460/v1` (`glm-5.3-flash`) or `http://127.0.0.1:8889/v1` (`local-judge`). Embeddings at `http://127.0.0.1:1234/v1`.",
+          "quote": "No cloud inference.** Every model call goes to `http://127.0.0.1:8460/v1` (`glm-5.3-flash`) or `http://[redacted address]/v1` (`[redacted route label]`). Embeddings at `http://127.0.0.1:1234/v1`.",
           "span": [
             58,
             245
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted address]",
+              "kind": "address",
+              "reason": "machine-local network address replaced with a bracketed marker"
+            },
+            {
+              "marker": "[redacted route label]",
+              "kind": "route label",
+              "reason": "local provider route alias replaced with a bracketed marker"
+            }
           ]
         },
         {
           "fact_id": 811,
           "text": "The glm-5.3-flash local endpoint runs at http://127.0.0.1:8460/v1 with model glm-5.3-flash via OpenAI-completions",
           "source_ref": "session:local-df43f0:269:26",
-          "quote": "`glm-5.3-flash`: `http://127.0.0.1:8460/v1`, model `glm-5.3-flash`, OpenAI-completions.",
+          "quote": "`[redacted model label]`: `http://127.0.0.1:8460/v1`, model `glm-5.3-flash`, OpenAI-completions.",
           "span": [
             709,
             789
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted model label]",
+              "kind": "model label",
+              "reason": "local model alias replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -1964,36 +2404,72 @@
           "span": [
             790,
             957
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1140,
           "text": "The assistant committed to no cloud inference: every model call goes to http://127.0.0.1:8460/v1 (glm-5.3-flash) or http://127.0.0.1:8889/v1 (local-judge), with embeddings at http://127.0.0.1:1234/v1",
           "source_ref": "session:local-df43f0:456:3",
-          "quote": "No cloud inference.** Every model call goes to `http://127.0.0.1:8460/v1` (`glm-5.3-flash`) or `http://127.0.0.1:8889/v1` (`local-judge`). Embeddings at `http://127.0.0.1:1234/v1`.",
+          "quote": "No cloud inference.** Every model call goes to `http://127.0.0.1:8460/v1` (`glm-5.3-flash`) or `http://[redacted address]/v1` (`[redacted route label]`). Embeddings at `http://127.0.0.1:1234/v1`.",
           "span": [
             58,
             245
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted address]",
+              "kind": "address",
+              "reason": "machine-local network address replaced with a bracketed marker"
+            },
+            {
+              "marker": "[redacted route label]",
+              "kind": "route label",
+              "reason": "local provider route alias replaced with a bracketed marker"
+            }
           ]
         },
         {
           "fact_id": 1368,
           "text": "Endpoints live: 127.0.0.1:8460 serving glm-5.3-flash via TensorFold, 127.0.0.1:8889 (local-judge), and 127.0.0.1:1234 for nomic embeddings.",
           "source_ref": "session:local-df43f0:456:30",
-          "quote": "Endpoints live: `127.0.0.1:8460` (TensorFold serving `glm-5.3-flash`), `127.0.0.1:8889` (`local-judge`), `127.0.0.1:1234` (nomic embeddings).",
+          "quote": "Endpoints live: `127.0.0.1:8460` (TensorFold serving `glm-5.3-flash`), `[redacted address]` (`[redacted route label]`), `127.0.0.1:1234` (nomic embeddings).",
           "span": [
             1213,
             1361
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted address]",
+              "kind": "address",
+              "reason": "machine-local network address replaced with a bracketed marker"
+            },
+            {
+              "marker": "[redacted route label]",
+              "kind": "route label",
+              "reason": "local provider route alias replaced with a bracketed marker"
+            }
           ]
         },
         {
           "fact_id": 1538,
           "text": "The glm-5.3-flash local endpoint serves model glm-5.3-flash at http://127.0.0.1:8460/v1 with OpenAI-completions",
           "source_ref": "session:local-df43f0:456:48",
-          "quote": "`glm-5.3-flash`: `http://127.0.0.1:8460/v1`, model `glm-5.3-flash`, OpenAI-completions.",
+          "quote": "`[redacted model label]`: `http://127.0.0.1:8460/v1`, model `glm-5.3-flash`, OpenAI-completions.",
           "span": [
             835,
             915
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted model label]",
+              "kind": "model label",
+              "reason": "local model alias replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -2004,7 +2480,9 @@
           "span": [
             916,
             1083
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "TensorFold",
@@ -2027,7 +2505,9 @@
           "span": [
             918,
             1051
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 406,
@@ -2037,7 +2517,9 @@
           "span": [
             222,
             260
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 625,
@@ -2047,7 +2529,9 @@
           "span": [
             913,
             1046
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1039,
@@ -2057,7 +2541,9 @@
           "span": [
             11,
             75
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1094,
@@ -2067,7 +2553,9 @@
           "span": [
             486,
             543
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1146,
@@ -2077,7 +2565,9 @@
           "span": [
             912,
             1045
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1352,
@@ -2087,16 +2577,26 @@
           "span": [
             434,
             664
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1356,
           "text": "As of 2026-11-05, the cairn Phase 11 coding-agent worker (pid 98234, session proc_dfd215ee32cd) is running, building CI, release metadata/tag, CHANGELOG, CONTRIBUTING/SECURITY/templates, with no Phase 11 report yet",
           "source_ref": "session:local-df43f0:456:29",
-          "quote": "Phase 11 coding-agent worker is **currently running** (pid 98234, session `proc_dfd215ee32cd`) building CI, release metadata/tag, CHANGELOG, CONTRIBUTING/SECURITY/templates. No Phase 11 report yet.",
+          "quote": "Phase 11 [redacted tool name] worker is **currently running** (pid 98234, session `proc_dfd215ee32cd`) building CI, release metadata/tag, CHANGELOG, CONTRIBUTING/SECURITY/templates. No Phase 11 report yet.",
           "span": [
             222,
             410
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted tool name]",
+              "kind": "tool name",
+              "reason": "external coding-agent harness name replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -2107,7 +2607,9 @@
           "span": [
             864,
             972
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1421,
@@ -2117,7 +2619,9 @@
           "span": [
             1160,
             1262
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1423,
@@ -2127,16 +2631,26 @@
           "span": [
             10,
             189
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1536,
           "text": "the local publish-guard directory contains a publish hook and audit.log, with allow hits via 'publish-guard allow <fingerprint> --reason \"...\"'",
           "source_ref": "session:local-df43f0:456:48",
-          "quote": "`publish-guard/` \u2014 publish hook and `audit.log`; allow hits with `publish-guard allow <fingerprint> --reason \"...\"`.",
+          "quote": "`[redacted path]/publish-guard/` \u2014 publish hook and `audit.log`; allow hits with `publish-guard allow <fingerprint> --reason \"...\"`.",
           "span": [
             542,
             682
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted path]",
+              "kind": "path",
+              "reason": "machine-local filesystem path replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -2147,7 +2661,9 @@
           "span": [
             32,
             98
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1592,
@@ -2157,7 +2673,9 @@
           "span": [
             11,
             61
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1613,
@@ -2167,7 +2685,9 @@
           "span": [
             504,
             654
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1619,
@@ -2177,7 +2697,9 @@
           "span": [
             426,
             452
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "v0.1.0",
@@ -2200,7 +2722,9 @@
           "span": [
             11,
             62
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 443,
@@ -2210,7 +2734,9 @@
           "span": [
             736,
             765
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 556,
@@ -2220,7 +2746,9 @@
           "span": [
             149,
             190
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 686,
@@ -2230,7 +2758,9 @@
           "span": [
             813,
             988
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 700,
@@ -2240,7 +2770,9 @@
           "span": [
             1080,
             1283
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1073,
@@ -2250,7 +2782,9 @@
           "span": [
             1439,
             1486
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1087,
@@ -2260,7 +2794,9 @@
           "span": [
             187,
             370
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1089,
@@ -2270,7 +2806,9 @@
           "span": [
             371,
             485
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1193,
@@ -2280,7 +2818,9 @@
           "span": [
             10,
             185
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1208,
@@ -2290,7 +2830,9 @@
           "span": [
             813,
             988
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1222,
@@ -2300,7 +2842,9 @@
           "span": [
             1080,
             1283
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1264,
@@ -2310,7 +2854,9 @@
           "span": [
             640,
             687
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1274,
@@ -2320,7 +2866,9 @@
           "span": [
             466,
             514
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1514,
@@ -2330,7 +2878,9 @@
           "span": [
             904,
             925
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1585,
@@ -2340,7 +2890,9 @@
           "span": [
             1250,
             1315
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1598,
@@ -2350,7 +2902,9 @@
           "span": [
             11,
             113
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1599,
@@ -2360,7 +2914,9 @@
           "span": [
             11,
             41
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1612,
@@ -2370,7 +2926,9 @@
           "span": [
             450,
             473
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "83",
@@ -2393,7 +2951,9 @@
           "span": [
             107,
             145
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 433,
@@ -2403,7 +2963,9 @@
           "span": [
             11,
             85
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 436,
@@ -2413,7 +2975,9 @@
           "span": [
             198,
             223
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 457,
@@ -2423,7 +2987,9 @@
           "span": [
             54,
             102
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 459,
@@ -2433,7 +2999,9 @@
           "span": [
             11,
             95
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 467,
@@ -2443,7 +3011,9 @@
           "span": [
             93,
             149
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 499,
@@ -2453,7 +3023,9 @@
           "span": [
             111,
             195
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 577,
@@ -2463,7 +3035,9 @@
           "span": [
             683,
             767
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 777,
@@ -2473,7 +3047,9 @@
           "span": [
             629,
             730
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1249,
@@ -2483,7 +3059,9 @@
           "span": [
             624,
             894
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1445,
@@ -2493,7 +3071,9 @@
           "span": [
             33,
             231
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1452,
@@ -2503,7 +3083,9 @@
           "span": [
             233,
             273
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1446,
@@ -2513,7 +3095,9 @@
           "span": [
             275,
             397
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1447,
@@ -2523,7 +3107,9 @@
           "span": [
             399,
             500
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1453,
@@ -2533,7 +3119,9 @@
           "span": [
             694,
             718
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1449,
@@ -2543,7 +3131,9 @@
           "span": [
             720,
             760
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1451,
@@ -2553,7 +3143,9 @@
           "span": [
             855,
             963
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1485,
@@ -2563,7 +3155,9 @@
           "span": [
             1108,
             1187
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "The headline claim was wrong in a way that mattered.",
@@ -2586,7 +3180,9 @@
           "span": [
             391,
             519
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 185,
@@ -2596,7 +3192,9 @@
           "span": [
             660,
             838
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 216,
@@ -2606,7 +3204,9 @@
           "span": [
             459,
             667
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 407,
@@ -2616,7 +3216,9 @@
           "span": [
             266,
             335
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 733,
@@ -2626,26 +3228,44 @@
           "span": [
             142,
             230
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 784,
           "text": "TensorFold binary is at runtimes/tensorfold-1.0.7/tensorfold-1.0.7-macos-arm64/bin/tensorfold-native, version 1.0.7, Apache-2.0",
           "source_ref": "session:local-df43f0:269:23",
-          "quote": "binary `runtimes/tensorfold-1.0.7/tensorfold-1.0.7-macos-arm64/bin/tensorfold-native`, version 1.0.7, Apache-2.0",
+          "quote": "binary `[redacted path]/runtimes/tensorfold-1.0.7/tensorfold-1.0.7-macos-arm64/bin/tensorfold-native`, version 1.0.7, Apache-2.0",
           "span": [
             1104,
             1240
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted path]",
+              "kind": "path",
+              "reason": "machine-local filesystem path replaced with a bracketed marker"
+            }
           ]
         },
         {
           "fact_id": 1027,
           "text": "TensorFold 1.2.3 was tested by the reviewer while the speaker's eval runs had the GPU",
           "source_ref": "session:local-df43f0:361:1",
-          "quote": "the reviewer tested the new release while my eval runs had the GPU",
+          "quote": "[redacted agent name] tested the new release while my eval runs had the GPU",
           "span": [
             68,
             125
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted agent name]",
+              "kind": "agent name",
+              "reason": "internal agent name replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -2656,7 +3276,9 @@
           "span": [
             295,
             329
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1036,
@@ -2666,7 +3288,9 @@
           "span": [
             367,
             401
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1171,
@@ -2676,7 +3300,9 @@
           "span": [
             318,
             367
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1255,
@@ -2686,16 +3312,26 @@
           "span": [
             474,
             678
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1335,
           "text": "TensorFold 1.2.3 canary report by the reviewer found structured output still returns HTTP 400 on Metal GLM",
           "source_ref": "session:local-df43f0:456:25",
-          "quote": "READ `reports/tf-canary-1.2.3.md` \u2014 TensorFold 1.2.3 canary by the reviewer: structured output is still HTTP 400 on Metal GLM",
+          "quote": "READ `reports/tf-canary-1.2.3.md` \u2014 TensorFold 1.2.3 canary by [redacted agent name]: structured output is still HTTP 400 on Metal GLM",
           "span": [
             616,
             732
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted agent name]",
+              "kind": "agent name",
+              "reason": "internal agent name replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -2706,16 +3342,31 @@
           "span": [
             684,
             787
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1368,
           "text": "Endpoints live: 127.0.0.1:8460 serving glm-5.3-flash via TensorFold, 127.0.0.1:8889 (local-judge), and 127.0.0.1:1234 for nomic embeddings.",
           "source_ref": "session:local-df43f0:456:30",
-          "quote": "Endpoints live: `127.0.0.1:8460` (TensorFold serving `glm-5.3-flash`), `127.0.0.1:8889` (`local-judge`), `127.0.0.1:1234` (nomic embeddings).",
+          "quote": "Endpoints live: `127.0.0.1:8460` (TensorFold serving `glm-5.3-flash`), `[redacted address]` (`[redacted route label]`), `127.0.0.1:1234` (nomic embeddings).",
           "span": [
             1213,
             1361
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted address]",
+              "kind": "address",
+              "reason": "machine-local network address replaced with a bracketed marker"
+            },
+            {
+              "marker": "[redacted route label]",
+              "kind": "route label",
+              "reason": "local provider route alias replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -2726,7 +3377,9 @@
           "span": [
             171,
             283
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1381,
@@ -2736,7 +3389,9 @@
           "span": [
             285,
             360
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "Structured output is still HTTP 400 on Metal GLM",
@@ -2759,7 +3414,9 @@
           "span": [
             1314,
             1371
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 111,
@@ -2769,7 +3426,9 @@
           "span": [
             1372,
             1422
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 483,
@@ -2779,7 +3438,9 @@
           "span": [
             174,
             222
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 484,
@@ -2789,7 +3450,9 @@
           "span": [
             330,
             472
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 558,
@@ -2799,7 +3462,9 @@
           "span": [
             343,
             396
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 559,
@@ -2809,7 +3474,9 @@
           "span": [
             401,
             447
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 576,
@@ -2819,7 +3486,9 @@
           "span": [
             442,
             567
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1212,
@@ -2829,7 +3498,9 @@
           "span": [
             255,
             463
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1244,
@@ -2839,7 +3510,9 @@
           "span": [
             1263,
             1484
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1246,
@@ -2849,16 +3522,26 @@
           "span": [
             182,
             384
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1273,
           "text": "During Phase 8, the user dispatched an coding-agent worker (pid 76780) with bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message, and instructed it to audit 10 of 33 weak_quote rejections and relax the guard if more than 2 of 10 were valid, run all three backends at --limit 2 --questions-per-sample 75 --max-questions 150, and state whether the larger sample confirms, weakens, or overturns phase 7's 78.3%.",
           "source_ref": "session:local-df43f0:456:20",
-          "quote": "DISPATCH Phase 8 coding-agent worker (pid 76780) \u2014 bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message; audit 10 of 33 `weak_quote` rejections and relax the guard if more than 2 of 10 were valid; run all three backends at `--limit 2 --questions-per-sample 75 --max-questions 150`; state whether the larger sample confirms, weakens, or overturns phase 7\u2019s 78.3%",
+          "quote": "DISPATCH Phase 8 [redacted tool name] worker (pid 76780) \u2014 bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message; audit 10 of 33 `weak_quote` rejections and relax the guard if more than 2 of 10 were valid; run all three backends at `--limit 2 --questions-per-sample 75 --max-questions 150`; state whether the larger sample confirms, weakens, or overturns phase 7\u2019s 78.3%",
           "span": [
             11,
             432
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted tool name]",
+              "kind": "tool name",
+              "reason": "external coding-agent harness name replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -2869,7 +3552,9 @@
           "span": [
             792,
             809
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1113,
@@ -2879,7 +3564,9 @@
           "span": [
             11,
             49
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "A flat fact set loses surrounding conversation needed for cross-turn inference",
@@ -2902,7 +3589,9 @@
           "span": [
             354,
             399
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 558,
@@ -2912,7 +3601,9 @@
           "span": [
             343,
             396
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 559,
@@ -2922,7 +3613,9 @@
           "span": [
             401,
             447
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 576,
@@ -2932,7 +3625,9 @@
           "span": [
             442,
             567
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 594,
@@ -2942,7 +3637,9 @@
           "span": [
             315,
             388
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 596,
@@ -2952,7 +3649,9 @@
           "span": [
             669,
             737
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 995,
@@ -2962,7 +3661,9 @@
           "span": [
             258,
             309
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 997,
@@ -2972,7 +3673,9 @@
           "span": [
             362,
             414
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 998,
@@ -2982,7 +3685,9 @@
           "span": [
             415,
             472
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1268,
@@ -2992,16 +3697,26 @@
           "span": [
             1098,
             1232
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1273,
           "text": "During Phase 8, the user dispatched an coding-agent worker (pid 76780) with bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message, and instructed it to audit 10 of 33 weak_quote rejections and relax the guard if more than 2 of 10 were valid, run all three backends at --limit 2 --questions-per-sample 75 --max-questions 150, and state whether the larger sample confirms, weakens, or overturns phase 7's 78.3%.",
           "source_ref": "session:local-df43f0:456:20",
-          "quote": "DISPATCH Phase 8 coding-agent worker (pid 76780) \u2014 bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message; audit 10 of 33 `weak_quote` rejections and relax the guard if more than 2 of 10 were valid; run all three backends at `--limit 2 --questions-per-sample 75 --max-questions 150`; state whether the larger sample confirms, weakens, or overturns phase 7\u2019s 78.3%",
+          "quote": "DISPATCH Phase 8 [redacted tool name] worker (pid 76780) \u2014 bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message; audit 10 of 33 `weak_quote` rejections and relax the guard if more than 2 of 10 were valid; run all three backends at `--limit 2 --questions-per-sample 75 --max-questions 150`; state whether the larger sample confirms, weakens, or overturns phase 7\u2019s 78.3%",
           "span": [
             11,
             432
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted tool name]",
+              "kind": "tool name",
+              "reason": "external coding-agent harness name replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -3012,7 +3727,9 @@
           "span": [
             709,
             840
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1290,
@@ -3022,7 +3739,9 @@
           "span": [
             1262,
             1360
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1493,
@@ -3032,7 +3751,9 @@
           "span": [
             617,
             662
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1494,
@@ -3042,7 +3763,9 @@
           "span": [
             664,
             763
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1571,
@@ -3052,7 +3775,9 @@
           "span": [
             230,
             287
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "67.5% vs 57.3%",
@@ -3075,7 +3800,9 @@
           "span": [
             935,
             1197
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 34,
@@ -3085,7 +3812,9 @@
           "span": [
             1241,
             1331
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 68,
@@ -3095,7 +3824,9 @@
           "span": [
             233,
             370
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 363,
@@ -3105,7 +3836,9 @@
           "span": [
             1019,
             1206
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 515,
@@ -3115,7 +3848,9 @@
           "span": [
             685,
             812
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 620,
@@ -3125,7 +3860,9 @@
           "span": [
             248,
             339
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 736,
@@ -3135,7 +3872,9 @@
           "span": [
             737,
             867
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1022,
@@ -3145,7 +3884,9 @@
           "span": [
             64,
             143
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1085,
@@ -3155,7 +3896,9 @@
           "span": [
             11,
             42
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1087,
@@ -3165,7 +3908,9 @@
           "span": [
             187,
             370
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1089,
@@ -3175,7 +3920,9 @@
           "span": [
             371,
             485
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1105,
@@ -3185,7 +3932,9 @@
           "span": [
             456,
             485
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1139,
@@ -3195,16 +3944,26 @@
           "span": [
             940,
             956
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1152,
           "text": "The user's mandate for the project is: open source, local only, coding agent harness, assistant as PM, fully automated",
           "source_ref": "session:local-df43f0:456:4",
-          "quote": "USER replied with the mandate: open source, local only, coding agent harness, assistant as PM, fully automated",
+          "quote": "USER replied with the mandate: open source, local only, [redacted tool name] harness, assistant as PM, fully automated",
           "span": [
             1101,
             1202
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted tool name]",
+              "kind": "tool name",
+              "reason": "external coding-agent harness name replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -3215,7 +3974,9 @@
           "span": [
             1160,
             1262
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1590,
@@ -3225,7 +3986,9 @@
           "span": [
             1276,
             1437
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "Cairn",
@@ -3248,7 +4011,9 @@
           "span": [
             11,
             36
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 406,
@@ -3258,7 +4023,9 @@
           "span": [
             222,
             260
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 603,
@@ -3268,7 +4035,9 @@
           "span": [
             701,
             918
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1039,
@@ -3278,16 +4047,26 @@
           "span": [
             11,
             75
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1262,
           "text": "Phase 7 coding-agent worker (pid 35013) was dispatched on 2026-11-05 with subject resolution enforced in code via a `subject` field and grammatical-person validation, near-duplicate claim linking via `duplicate_of`, non-numeric categorical contradiction detection including single-vs-married, and a weak-quote guard",
           "source_ref": "session:local-df43f0:456:18",
-          "quote": "DISPATCH Phase 7 coding-agent worker (pid 35013) \u2014 subject resolution enforced in code with a `subject` field and grammatical-person validation, near-duplicate claim linking via `duplicate_of`, non-numeric categorical contradiction detection including single-vs-married, weak-quote guard",
+          "quote": "DISPATCH Phase 7 [redacted tool name] worker (pid 35013) \u2014 subject resolution enforced in code with a `subject` field and grammatical-person validation, near-duplicate claim linking via `duplicate_of`, non-numeric categorical contradiction detection including single-vs-married, weak-quote guard",
           "span": [
             228,
             506
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted tool name]",
+              "kind": "tool name",
+              "reason": "external coding-agent harness name replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -3298,16 +4077,26 @@
           "span": [
             11,
             116
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1371,
           "text": "The publish guard at publish-guard blocks git push and gh commands on PII, secret, and estate patterns; current repo hits were individually allowed with reasons, and future pushes may hit it again",
           "source_ref": "session:local-df43f0:456:31",
-          "quote": "Publish guard: `publish-guard` blocks `git push`/`gh` on PII/secret/estate patterns; current repo hits were individually allowed with reasons. Future pushes may hit it again.",
+          "quote": "Publish guard: `[redacted path]/publish-guard` blocks `git push`/`gh` on PII/secret/estate patterns; current repo hits were individually allowed with reasons. Future pushes may hit it again.",
           "span": [
             96,
             283
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted path]",
+              "kind": "path",
+              "reason": "machine-local filesystem path replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -3318,7 +4107,9 @@
           "span": [
             105,
             228
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1422,
@@ -3328,7 +4119,9 @@
           "span": [
             1270,
             1358
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1424,
@@ -3338,26 +4131,44 @@
           "span": [
             385,
             572
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         },
         {
           "fact_id": 1469,
           "text": "Cairn's publish-guard blocked the first push on 2026-11-05 with 14 hits (a private LAN IP, 'Mac Studio', model names, local provenance paths, machine-local commit emails, false-positive digit runs in JSON); all were audited, none were secrets/PII, eval/inspect_compile.py's hardcoded path was cleaned, each was allowed with a stated reason, and the push succeeded",
           "source_ref": "session:local-df43f0:456:41",
-          "quote": "Publish-guard blocked first push** with 14 hits. Audited each: a private LAN IP, \u201cMac Studio\u201d, model names, local provenance paths, machine-local commit emails, and false-positive card-like digit runs in JSON. None secrets/PII. Cleaned `eval/inspect_compile.py` hardcoded path, allowed each with a stated reason, then pushed successfully.",
+          "quote": "Publish-guard blocked first push** with 14 hits. Audited each: LAN IP `[redacted address]`, \u201cMac Studio\u201d, model names, local provenance paths, machine-local commit emails, and false-positive card-like digit runs in JSON. None secrets/PII. Cleaned `eval/inspect_compile.py` hardcoded path, allowed each with a stated reason, then pushed successfully.",
           "span": [
             421,
             762
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted address]",
+              "kind": "address",
+              "reason": "machine-local network address replaced with a bracketed marker"
+            }
           ]
         },
         {
           "fact_id": 1536,
           "text": "the local publish-guard directory contains a publish hook and audit.log, with allow hits via 'publish-guard allow <fingerprint> --reason \"...\"'",
           "source_ref": "session:local-df43f0:456:48",
-          "quote": "`publish-guard/` \u2014 publish hook and `audit.log`; allow hits with `publish-guard allow <fingerprint> --reason \"...\"`.",
+          "quote": "`[redacted path]/publish-guard/` \u2014 publish hook and `audit.log`; allow hits with `publish-guard allow <fingerprint> --reason \"...\"`.",
           "span": [
             542,
             682
+          ],
+          "redacted": true,
+          "redactions": [
+            {
+              "marker": "[redacted path]",
+              "kind": "path",
+              "reason": "machine-local filesystem path replaced with a bracketed marker"
+            }
           ]
         },
         {
@@ -3368,7 +4179,9 @@
           "span": [
             71,
             94
-          ]
+          ],
+          "redacted": false,
+          "redactions": []
         }
       ],
       "baseline_answer": "14 hits",
