@@ -1,0 +1,6 @@
+<user-site-packages>/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+=== cairnstone: 2 sample(s), 150 question(s) ===
+  compiled conv-26: 419 captures, 421 facts, 6 pages, 0 failed captures, 19 dupes linked, 0 superseded, rejections: {"subject_mismatch": 18, "subject_unresolved": 24, "weak_quote": 20}
+  compiled conv-30: 369 captures, 376 facts, 6 pages, 0 failed captures, 25 dupes linked, 0 superseded, rejections: {"quote not found in capture": 1, "subject_mismatch": 43, "subject_unresolved": 16, "weak_quote": 10}
+wrote eval/results/2026-11-06-cairnstone-b600-ps75-s2-q150-130032Z.json in 2094.7s

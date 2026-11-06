@@ -86,17 +86,20 @@ the Markdown export print it under every claim.
 
 ## Measured results
 
-Phase 9 (150 LoCoMo questions, 2 conversations, 1,276 mean context tokens):
+150 LoCoMo questions across 2 conversations, recompiled and re-measured on the current code
+(2026-11-06; result `eval/results/2026-11-06-cairnstone-b600-ps75-s2-q150-130032Z.json`):
 
 | backend | accuracy | mean context tokens | median latency |
 |---|---|---|---|
-| **cairnstone (compiled memory)** | **77.3%** | **1,276** | 2.83 s |
+| **cairnstone (compiled memory)** | **78.0%** | **1,276** | 2.89 s |
 | full context | 53.3% | 13,278 | 2.73 s |
 | naive chunk-RAG | 45.3% | 932 | 2.71 s |
 
-By category, cairnstone wins temporal questions decisively (88.5% vs 32.8% full context) and multi-hop
-(67.5% vs 57.3%), loses single-hop narrowly (73.7% vs 76.3%) and commonsense (63.6% vs 90.9% for
-naive chunk-RAG).
+The two baselines do not depend on the compiler, so their numbers carry over from the same
+150-question scope. By category, cairnstone wins temporal questions decisively (88.5% vs 32.8%
+full context) and multi-hop (70.0% vs 57.3%), loses single-hop narrowly (73.7% vs 76.3%) and
+commonsense (63.6% vs 90.9% for naive chunk-RAG). 13 questions were retrieval failures and 20
+answering failures; no latency outliers.
 
 **Read this with care.** The numbers are **local-judged** (a local model as judge, not
 GPT-4o), so they are comparable in shape to published LoCoMo figures, not identical to them.
