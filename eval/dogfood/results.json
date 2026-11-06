@@ -1,0 +1,3379 @@
+{
+  "aggregate": {
+    "n": 20,
+    "memory_accuracy": 0.8,
+    "baseline_accuracy": 0.55
+  },
+  "rows": [
+    {
+      "id": "q01",
+      "question": "What accuracy did the compiled-memory backend reach on 150 LoCoMo questions?",
+      "gold": "77.3%",
+      "known_from": "reports/phase9-review.md",
+      "memory_answer": "45.3%",
+      "memory_correct": false,
+      "memory_citations": [
+        {
+          "fact_id": 13,
+          "text": "The competitor claims 92.2% judged accuracy on LoCoMo at ~9.4K context tokens",
+          "source_ref": "session:local-df43f0:7:1",
+          "quote": "Their claims: 92.2% judged accuracy on LoCoMo at ~9.4K context tokens",
+          "span": [
+            252,
+            321
+          ]
+        },
+        {
+          "fact_id": 52,
+          "text": "The worker's run is going to take hours because 3 LoCoMo samples is ~600 questions \u00d7 2 backends",
+          "source_ref": "session:local-df43f0:45:0",
+          "quote": "The worker's run is going to take hours \u2014 3 LoCoMo samples is ~600 questions \u00d7 2 backends",
+          "span": [
+            11,
+            100
+          ]
+        },
+        {
+          "fact_id": 110,
+          "text": "The full_context backend scored 83.3% accuracy on 12 questions with mean latency 3.153s",
+          "source_ref": "session:local-df43f0:67:4",
+          "quote": "| full_context | 83.3% | 12 | 15043.167 | 3.153 | 0.917 |",
+          "span": [
+            1314,
+            1371
+          ]
+        },
+        {
+          "fact_id": 111,
+          "text": "The naive_rag backend scored 66.7% accuracy on 12 questions with mean latency 2.376s",
+          "source_ref": "session:local-df43f0:67:4",
+          "quote": "| naive_rag | 66.7% | 12 | 770.333 | 2.376 | 0.0 |",
+          "span": [
+            1372,
+            1422
+          ]
+        },
+        {
+          "fact_id": 196,
+          "text": "The LoCoMo benchmark defines five question categories: single-hop, multi-hop, temporal, open-domain, and adversarial",
+          "source_ref": "session:local-df43f0:104:9",
+          "quote": "established category definitions (single-hop, multi-hop, temporal, open-domain, adversarial)",
+          "span": [
+            132,
+            224
+          ]
+        },
+        {
+          "fact_id": 197,
+          "text": "LoCoMo paper question counts were probed as 1,986 / 282 / 841 / 446",
+          "source_ref": "session:local-df43f0:104:9",
+          "quote": "probed paper counts 1,986 / 282 / 841 / 446",
+          "span": [
+            229,
+            272
+          ]
+        },
+        {
+          "fact_id": 389,
+          "text": "The full_context backend achieved 83.3% accuracy with 15,043 context tokens, 3.15s latency, and 92% cache hit on the LoCoMo sample",
+          "source_ref": "session:local-df43f0:180:0",
+          "quote": "full_context | 83.3% | 15,043 | 3.15 s | 92%",
+          "span": [
+            407,
+            451
+          ]
+        },
+        {
+          "fact_id": 393,
+          "text": "The naive_rag backend achieved 66.7% accuracy with 770 context tokens, 2.38s latency, and 0% cache hit",
+          "source_ref": "session:local-df43f0:180:0",
+          "quote": "naive_rag | 66.7% | 770 | 2.38 s | 0%",
+          "span": [
+            654,
+            691
+          ]
+        },
+        {
+          "fact_id": 477,
+          "text": "naive_rag backend achieved 36.7% accuracy, 907 context tokens, 2.44 s median latency, and 0% cache hit",
+          "source_ref": "session:local-df43f0:231:0",
+          "quote": "| naive_rag | 36.7% | 907 | 2.44 s | 0% |",
+          "span": [
+            1022,
+            1063
+          ]
+        },
+        {
+          "fact_id": 516,
+          "text": "Compiled DBs and SQLite transients are gitignored in the memory-store evaluation repo",
+          "source_ref": "session:local-df43f0:242:1",
+          "quote": "compiled DBs and SQLite transients ignored",
+          "span": [
+            814,
+            856
+          ]
+        },
+        {
+          "fact_id": 826,
+          "text": "LoCoMo sample 0 benchmark (12 questions, local judge, 2026-11-05): naive_rag scored 66.7% accuracy with 770 mean context tokens, 2.38 s latency, 0% cache",
+          "source_ref": "session:local-df43f0:269:27",
+          "quote": "| naive_rag | 66.7% | 770 | 2.38 s | 0% |",
+          "span": [
+            873,
+            914
+          ]
+        },
+        {
+          "fact_id": 1385,
+          "text": "LoCoMo per-category ground-truth counts of 1,986 / 282 / 841 / 446 candidates from the paper are still not mapped precisely to categories as of 2026-11-05",
+          "source_ref": "session:local-df43f0:456:32",
+          "quote": "LoCoMo per-category ground-truth counts** (1,986 / 282 / 841 / 446 candidates from the paper) are still not mapped precisely to categories",
+          "span": [
+            544,
+            682
+          ]
+        },
+        {
+          "fact_id": 1474,
+          "text": "Living Brain's claimed benchmarks are 92.2% judged accuracy on LoCoMo at ~9.4K tokens, 22.6\u00d7 token reduction and 95% lower cost vs a 116K full-context baseline on LongMemEval-S, and 464 ms median retrieval; these are self-reported and treated as a target, not a fact",
+          "source_ref": "session:local-df43f0:456:42",
+          "quote": "92.2% judged accuracy on LoCoMo at ~9.4K tokens; 22.6\u00d7 token reduction and 95% lower cost vs a 116K full-context baseline on LongMemEval-S; 464 ms median retrieval. Self-reported \u2014 treated as a target, not a fact.",
+          "span": [
+            764,
+            977
+          ]
+        },
+        {
+          "fact_id": 1550,
+          "text": "LoCoMo benchmark (local judge, 2026-11-05/06): naive_rag n=12 accuracy 66.7%, mean context 770 tokens, median latency 2.38 s, cache 0%",
+          "source_ref": "session:local-df43f0:456:49",
+          "quote": "| n=12 | naive_rag | 66.7% | 770 | 2.38 s | 0% |",
+          "span": [
+            932,
+            980
+          ]
+        },
+        {
+          "fact_id": 1568,
+          "text": "Naive RAG achieved 45.3% accuracy on n=150 in phase 8 (evaluated 2026-11-05)",
+          "source_ref": "session:local-df43f0:456:50",
+          "quote": "| n=150 phase 8 | naive_rag | 45.3% | 932 | \u2014 | \u2014 |",
+          "span": [
+            288,
+            339
+          ]
+        },
+        {
+          "fact_id": 1584,
+          "text": "The harness invocation pattern is: PYTHONPATH=src:. python3 -m eval.harness --backend cairn --limit 2 --questions-per-sample 75 --max-questions 150 --brief-budget 600",
+          "source_ref": "session:local-df43f0:456:51",
+          "quote": "`PYTHONPATH=src:. python3 -m eval.harness --backend cairn --limit 2 --questions-per-sample 75 --max-questions 150 --brief-budget 600`",
+          "span": [
+            1116,
+            1249
+          ]
+        }
+      ],
+      "baseline_answer": "75.0%",
+      "baseline_correct": false,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q02",
+      "question": "What accuracy did the full-context baseline reach on the same 150 questions?",
+      "gold": "53.3%",
+      "known_from": "reports/phase9-review.md",
+      "memory_answer": "53.3%",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 110,
+          "text": "The full_context backend scored 83.3% accuracy on 12 questions with mean latency 3.153s",
+          "source_ref": "session:local-df43f0:67:4",
+          "quote": "| full_context | 83.3% | 12 | 15043.167 | 3.153 | 0.917 |",
+          "span": [
+            1314,
+            1371
+          ]
+        },
+        {
+          "fact_id": 117,
+          "text": "The final baseline run completed with full_context at 44.3s and naive_rag at 35.7s.",
+          "source_ref": "session:local-df43f0:81:0",
+          "quote": "Final baseline | Completed: full_context 44.3s, naive_rag 35.7s",
+          "span": [
+            474,
+            537
+          ]
+        },
+        {
+          "fact_id": 245,
+          "text": "Living Brain's self-reported benchmarks: 92.2% judged accuracy on LoCoMo at ~9.4K context tokens; 22.6\u00d7 token reduction and 95% lower cost vs a 116K full-context baseline on LongMemEval-S; 464 ms median retrieval; treated as a target, not a fact.",
+          "source_ref": "session:local-df43f0:104:16",
+          "quote": "92.2% judged accuracy on LoCoMo at ~9.4K context tokens; 22.6\u00d7 token reduction and 95% lower cost vs a 116K full-context baseline on LongMemEval-S; 464 ms median retrieval. All self-reported \u2014 treated as a target, not a fact.",
+          "span": [
+            1015,
+            1240
+          ]
+        },
+        {
+          "fact_id": 370,
+          "text": "The full_context backend scored 83.3% accuracy at 15,043 tokens.",
+          "source_ref": "session:local-df43f0:153:1",
+          "quote": "| full_context | 83.3% | 15,043 |",
+          "span": [
+            686,
+            719
+          ]
+        },
+        {
+          "fact_id": 476,
+          "text": "full_context backend achieved 50.0% accuracy, 13,277 context tokens, 0.32 s median latency, and 97% cache hit",
+          "source_ref": "session:local-df43f0:231:0",
+          "quote": "| full_context | 50.0% | 13,277 | 0.32 s | 97% |",
+          "span": [
+            973,
+            1021
+          ]
+        },
+        {
+          "fact_id": 505,
+          "text": "full_context scored 50.0% at 13,277 tokens",
+          "source_ref": "session:local-df43f0:242:0",
+          "quote": "full_context 50.0% at 13,277",
+          "span": [
+            453,
+            481
+          ]
+        },
+        {
+          "fact_id": 536,
+          "text": "Full context achieved 50.0% accuracy, 13,277 tokens, 75.0% multi-hop, and 29.4% temporal in Phase 6 testing",
+          "source_ref": "session:local-df43f0:253:0",
+          "quote": "full_context | 50.0% | 13,277 | 75.0% | 29.4%",
+          "span": [
+            354,
+            399
+          ]
+        },
+        {
+          "fact_id": 558,
+          "text": "The full_context backend achieved 50.0% accuracy with 13,277 tokens, 75.0% multi-hop, 29.4% temporal, and 75.0% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "full_context | 50.0% | 13,277 | 75.0% | 29.4% | 75.0%",
+          "span": [
+            343,
+            396
+          ]
+        },
+        {
+          "fact_id": 577,
+          "text": "Phase 8 scales the sample from 60 to 150 questions across the same two conversations",
+          "source_ref": "session:local-df43f0:259:1",
+          "quote": "and scales the sample from 60 to **150 questions** across the same two conversations",
+          "span": [
+            683,
+            767
+          ]
+        },
+        {
+          "fact_id": 584,
+          "text": "At n=150 full_context scored 53.3% and naive_rag scored 45.3%",
+          "source_ref": "session:local-df43f0:260:1",
+          "quote": "full_context 53.3%, naive_rag 45.3%",
+          "span": [
+            622,
+            657
+          ]
+        },
+        {
+          "fact_id": 658,
+          "text": "On 2026-11-05, a terminal run of `python3 -m eval.harness --baseline --limit 1 --max-questions 12` timed out at 420 s but the process survived and wrote `2026-11-05-full_context.json`.",
+          "source_ref": "session:local-df43f0:269:9",
+          "quote": "TERMINAL ran `python3 -m eval.harness --baseline --limit 1 --max-questions 12` \u2014 tool timed out at 420 s but process survived and wrote `2026-11-05-full_context.json`",
+          "span": [
+            10,
+            176
+          ]
+        },
+        {
+          "fact_id": 825,
+          "text": "LoCoMo sample 0 benchmark (12 questions, local judge, 2026-11-05): full_context scored 83.3% accuracy with 15,043 mean context tokens, 3.15 s latency, 92% cache",
+          "source_ref": "session:local-df43f0:269:27",
+          "quote": "| full_context | 83.3% | 15,043 | 3.15 s | 92% |",
+          "span": [
+            824,
+            872
+          ]
+        },
+        {
+          "fact_id": 1007,
+          "text": "Cairn is +24 points over full context at 1/10th the tokens and +32 over naive chunk-RAG, measured on 150 questions with a local judge",
+          "source_ref": "session:local-df43f0:336:1",
+          "quote": "Cairn is +24 points over full context at 1/10th the tokens and +32 over naive chunk-RAG, measured on 150 questions with a local judge.",
+          "span": [
+            373,
+            507
+          ]
+        },
+        {
+          "fact_id": 1049,
+          "text": "Cairn's evaluation measured 77.3% accuracy versus 53.3% for full-context and 45.3% for chunk-RAG at n=150, using 1,276 tokens per query",
+          "source_ref": "session:local-df43f0:377:1",
+          "quote": "Measured 77.3% vs 53.3% full-context and 45.3% chunk-RAG at n=150, at 1,276 tokens",
+          "span": [
+            49,
+            131
+          ]
+        },
+        {
+          "fact_id": 1246,
+          "text": "Ran corrected eval with --backend cairn --limit 2 --questions-per-sample 30 --max-questions 60 --brief-budget 600 --recompile, plus full_context and naive_rag at the same scope (background pid 79156)",
+          "source_ref": "session:local-df43f0:456:16",
+          "quote": "RUN corrected eval \u2014 `--backend cairn --limit 2 --questions-per-sample 30 --max-questions 60 --brief-budget 600 --recompile`, plus `full_context` and `naive_rag` at the same scope (background pid 79156)",
+          "span": [
+            182,
+            384
+          ]
+        },
+        {
+          "fact_id": 1571,
+          "text": "Full context achieved 53.3% accuracy on n=150 in phase 8 (evaluated 2026-11-05)",
+          "source_ref": "session:local-df43f0:456:50",
+          "quote": "| n=150 phase 8 | full_context | 53.3% | 13,278 | \u2014 | \u2014 |",
+          "span": [
+            230,
+            287
+          ]
+        }
+      ],
+      "baseline_answer": "83.3%",
+      "baseline_correct": false,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q03",
+      "question": "What accuracy did naive chunk-RAG reach on those 150 questions?",
+      "gold": "45.3%",
+      "known_from": "reports/phase9-review.md",
+      "memory_answer": "45.3%",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 111,
+          "text": "The naive_rag backend scored 66.7% accuracy on 12 questions with mean latency 2.376s",
+          "source_ref": "session:local-df43f0:67:4",
+          "quote": "| naive_rag | 66.7% | 12 | 770.333 | 2.376 | 0.0 |",
+          "span": [
+            1372,
+            1422
+          ]
+        },
+        {
+          "fact_id": 116,
+          "text": "The naive_rag run completed with 12 questions in 22.3 seconds.",
+          "source_ref": "session:local-df43f0:81:0",
+          "quote": "naive_rag run | Completed: 12 questions in 22.3s.",
+          "span": [
+            420,
+            469
+          ]
+        },
+        {
+          "fact_id": 395,
+          "text": "Cairn is not ahead of plain chunk-RAG: at 4,390 tokens it matches naive_rag's 66.7% accuracy at 770 tokens, five times the cost for the same accuracy",
+          "source_ref": "session:local-df43f0:180:0",
+          "quote": "Cairn is not ahead of plain chunk-RAG.** At 4,390 tokens it matches naive_rag's 66.7% at 770 tokens: five times the cost for the same accuracy",
+          "span": [
+            723,
+            865
+          ]
+        },
+        {
+          "fact_id": 469,
+          "text": "The corrected measurement showed 71.7% accuracy at 1,141 tokens across 2 conversations and 60 questions",
+          "source_ref": "session:local-df43f0:227:0",
+          "quote": "Corrected measurement is in: 2 conversations, 60 questions, **71.7% at 1,141 tokens**",
+          "span": [
+            11,
+            96
+          ]
+        },
+        {
+          "fact_id": 477,
+          "text": "naive_rag backend achieved 36.7% accuracy, 907 context tokens, 2.44 s median latency, and 0% cache hit",
+          "source_ref": "session:local-df43f0:231:0",
+          "quote": "| naive_rag | 36.7% | 907 | 2.44 s | 0% |",
+          "span": [
+            1022,
+            1063
+          ]
+        },
+        {
+          "fact_id": 506,
+          "text": "naive_rag scored 36.7% at 907 tokens",
+          "source_ref": "session:local-df43f0:242:0",
+          "quote": "naive_rag 36.7% at 907",
+          "span": [
+            486,
+            508
+          ]
+        },
+        {
+          "fact_id": 537,
+          "text": "Naive RAG achieved 36.7% accuracy, 907 tokens, 50.0% multi-hop, and 17.6% temporal in Phase 6 testing",
+          "source_ref": "session:local-df43f0:253:0",
+          "quote": "naive_rag | 36.7% | 907 | 50.0% | 17.6%",
+          "span": [
+            404,
+            443
+          ]
+        },
+        {
+          "fact_id": 559,
+          "text": "The naive_rag backend achieved 36.7% accuracy with 907 tokens, 50.0% multi-hop, 17.6% temporal, and 100% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "naive_rag | 36.7% | 907 | 50.0% | 17.6% | 100%",
+          "span": [
+            401,
+            447
+          ]
+        },
+        {
+          "fact_id": 584,
+          "text": "At n=150 full_context scored 53.3% and naive_rag scored 45.3%",
+          "source_ref": "session:local-df43f0:260:1",
+          "quote": "full_context 53.3%, naive_rag 45.3%",
+          "span": [
+            622,
+            657
+          ]
+        },
+        {
+          "fact_id": 587,
+          "text": "The n=150 verdict: the larger sample weakens the point estimate slightly (76.0% vs 78.3%) but does not overturn it; 78.3% is inside the \u00b16.8pp binomial interval and the ranking over full_context/naive_rag is decisive",
+          "source_ref": "session:local-df43f0:260:1",
+          "quote": "**Verdict: the larger sample weakens the point estimate slightly (76.0% vs 78.3%) but does not overturn it** \u2014 78.3% is inside the \u00b16.8pp binomial interval at n=150; the ranking over full_context/naive_rag is decisive",
+          "span": [
+            733,
+            950
+          ]
+        },
+        {
+          "fact_id": 697,
+          "text": "reports/phase3-review.md concluded the thesis is NOT yet demonstrated: cairn sat on the same accuracy/cost frontier as naive chunk-RAG; diagnosis was interference + loss of chronology",
+          "source_ref": "session:local-df43f0:269:14",
+          "quote": "WRITE_FILE `reports/phase3-review.md` \u2014 verdict \"the thesis is NOT yet demonstrated\": cairn sat on the same accuracy/cost frontier as naive chunk-RAG; diagnosis was interference + loss of chronology",
+          "span": [
+            482,
+            680
+          ]
+        },
+        {
+          "fact_id": 826,
+          "text": "LoCoMo sample 0 benchmark (12 questions, local judge, 2026-11-05): naive_rag scored 66.7% accuracy with 770 mean context tokens, 2.38 s latency, 0% cache",
+          "source_ref": "session:local-df43f0:269:27",
+          "quote": "| naive_rag | 66.7% | 770 | 2.38 s | 0% |",
+          "span": [
+            873,
+            914
+          ]
+        },
+        {
+          "fact_id": 1007,
+          "text": "Cairn is +24 points over full context at 1/10th the tokens and +32 over naive chunk-RAG, measured on 150 questions with a local judge",
+          "source_ref": "session:local-df43f0:336:1",
+          "quote": "Cairn is +24 points over full context at 1/10th the tokens and +32 over naive chunk-RAG, measured on 150 questions with a local judge.",
+          "span": [
+            373,
+            507
+          ]
+        },
+        {
+          "fact_id": 1049,
+          "text": "Cairn's evaluation measured 77.3% accuracy versus 53.3% for full-context and 45.3% for chunk-RAG at n=150, using 1,276 tokens per query",
+          "source_ref": "session:local-df43f0:377:1",
+          "quote": "Measured 77.3% vs 53.3% full-context and 45.3% chunk-RAG at n=150, at 1,276 tokens",
+          "span": [
+            49,
+            131
+          ]
+        },
+        {
+          "fact_id": 1219,
+          "text": "reports/phase3-review.md concluded the thesis was NOT yet demonstrated: cairn sat on the same accuracy/cost frontier as naive chunk-RAG, with diagnosis being interference plus loss of chronology",
+          "source_ref": "session:local-df43f0:456:13",
+          "quote": "WRITE_FILE `reports/phase3-review.md` \u2014 verdict \u201cthe thesis is NOT yet demonstrated\u201d: cairn sat on the same accuracy/cost frontier as naive chunk-RAG; diagnosis was interference + loss of chronology",
+          "span": [
+            482,
+            680
+          ]
+        },
+        {
+          "fact_id": 1568,
+          "text": "Naive RAG achieved 45.3% accuracy on n=150 in phase 8 (evaluated 2026-11-05)",
+          "source_ref": "session:local-df43f0:456:50",
+          "quote": "| n=150 phase 8 | naive_rag | 45.3% | 932 | \u2014 | \u2014 |",
+          "span": [
+            288,
+            339
+          ]
+        }
+      ],
+      "baseline_answer": "45.3%",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q04",
+      "question": "Why did the MCP server say the mcp package was not installed when it was installed?",
+      "gold": "mcp 2.x renamed FastMCP to MCPServer and the old fastmcp module raises ModuleNotFoundError, which was misreported as not installed",
+      "known_from": "reports/phase10-review.md",
+      "memory_answer": "Because `pip install mcp` now ships mcp 2.x, where `FastMCP` was renamed `MCPServer`, so the old `mcp.server.fastmcp` import raised `ModuleNotFoundError` (an `ImportError` subclass) and cairn misread that as \"not installed.\"",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 37,
+          "text": "coding agent is installed but currently broken as of 2026-11-05, with bun throwing a parse error in its bundle",
+          "source_ref": "session:local-df43f0:15:0",
+          "quote": "coding agent is installed but **currently broken** \u2014 bun throws a parse error in its bundle",
+          "span": [
+            11,
+            93
+          ]
+        },
+        {
+          "fact_id": 1021,
+          "text": "A real MCP session over stdio was the one thing phase 10 left unverified, as of 2026-11-05",
+          "source_ref": "session:local-df43f0:340:0",
+          "quote": "Now the one thing phase 10 left unverified: a real MCP session over stdio",
+          "span": [
+            61,
+            134
+          ]
+        },
+        {
+          "fact_id": 1022,
+          "text": "As of 2026-11-05, `pip install mcp` installs mcp 2.x, where `FastMCP` was renamed to `MCPServer`",
+          "source_ref": "session:local-df43f0:350:0",
+          "quote": "`pip install mcp` now gives mcp 2.x, where `FastMCP` was renamed to `MCPServer`",
+          "span": [
+            64,
+            143
+          ]
+        },
+        {
+          "fact_id": 1023,
+          "text": "The mcp server reports `FastMCP` as \"mcp not installed\", which is misleading",
+          "source_ref": "session:local-df43f0:350:0",
+          "quote": "The server also reports it as \"mcp not installed\", which is misleading",
+          "span": [
+            145,
+            215
+          ]
+        },
+        {
+          "fact_id": 1024,
+          "text": "MCP works live over stdio with 7 tools and real cited results as of 2026-11-05",
+          "source_ref": "session:local-df43f0:356:0",
+          "quote": "MCP now works live over stdio \u2014 7 tools, real cited results.",
+          "span": [
+            11,
+            71
+          ]
+        },
+        {
+          "fact_id": 1087,
+          "text": "The Cairnstone rename is complete: repo, local directory (~/cairnstone), distribution name, Python package, CLI entry point, MCP server name, and env-var prefix (CAIRN_* \u2192 CAIRNSTONE_*) all moved in one pass",
+          "source_ref": "session:local-df43f0:424:0",
+          "quote": "Repo, local directory (`~/cairnstone`), distribution name, Python package, CLI entry point, MCP server name, and the env-var prefix (`CAIRN_*` \u2192 `CAIRNSTONE_*`) all moved in one pass.",
+          "span": [
+            187,
+            370
+          ]
+        },
+        {
+          "fact_id": 1314,
+          "text": "Running cairn's MCP server without the mcp package installed fails with error 'The 'mcp' package is not installed. Install it with: pip install \"cairn[mcp]\"' and exit code 1",
+          "source_ref": "session:local-df43f0:456:23",
+          "quote": "MCP without package: `error: The 'mcp' package is not installed. Install it with: pip install \"cairn[mcp]\"`, exit 1",
+          "span": [
+            1153,
+            1268
+          ]
+        },
+        {
+          "fact_id": 1327,
+          "text": "pip install mcp now gives mcp 2.x, where FastMCP was renamed to MCPServer, so the old mcp.server.fastmcp import raises ModuleNotFoundError and cairn reported 'error: The 'mcp' package is not installed' even though it was installed",
+          "source_ref": "session:local-df43f0:456:24",
+          "quote": "DEBUGGED MCP failure \u2014 `pip install mcp` now gives **mcp 2.x**, where `FastMCP` was renamed to `MCPServer`. The old `mcp.server.fastmcp` import raises `ModuleNotFoundError` (an `ImportError` subclass), so cairn reported `error: The 'mcp' package is not installed` even though it was installed.",
+          "span": [
+            1089,
+            1382
+          ]
+        },
+        {
+          "fact_id": 1330,
+          "text": "Cairn was committed with a fix for mcp 2.x MCPServer rename and misleading 'not installed' error on 2026-11-05",
+          "source_ref": "session:local-df43f0:456:25",
+          "quote": "COMMITTED phase 10 accepted \u2014 fix mcp 2.x `MCPServer` rename and misleading \u201cnot installed\u201d error",
+          "span": [
+            496,
+            593
+          ]
+        },
+        {
+          "fact_id": 1369,
+          "text": "MCP server verified live over stdio with mcp 2.x in a Python 3.12 venv, with 7 tools reachable; the 1.x path is written but untested.",
+          "source_ref": "session:local-df43f0:456:30",
+          "quote": "MCP server verified live over stdio with `mcp` 2.x in a Python 3.12 venv; 7 tools reachable. The 1.x path is written but untested.",
+          "span": [
+            1364,
+            1494
+          ]
+        },
+        {
+          "fact_id": 1416,
+          "text": "The MCP server resolves both `mcp` 2.x `MCPServer` and 1.x `FastMCP`",
+          "source_ref": "session:local-df43f0:456:35",
+          "quote": "MCP server resolves both `mcp` 2.x `MCPServer` and 1.x `FastMCP`",
+          "span": [
+            1088,
+            1152
+          ]
+        },
+        {
+          "fact_id": 1464,
+          "text": "The Phase 10 MCP defect: `pip install mcp` gives mcp 2.x, where `FastMCP` was renamed `MCPServer`; cairn reported `error: The 'mcp' package is not installed` even though it was installed, because `mcp.server.fastmcp` raises `ModuleNotFoundError` (an `ImportError` subclass)",
+          "source_ref": "session:local-df43f0:456:40",
+          "quote": "`pip install mcp` gives mcp 2.x, where `FastMCP` was renamed `MCPServer`; cairn reported `error: The 'mcp' package is not installed` even though it was installed, because `mcp.server.fastmcp` raises `ModuleNotFoundError` (an `ImportError` subclass).",
+          "span": [
+            1122,
+            1371
+          ]
+        },
+        {
+          "fact_id": 1465,
+          "text": "The Phase 10 MCP defect was fixed with `_mcp_server_class()` resolving both `MCPServer` and `FastMCP` via `importlib`; verified live stdio, 7 tools, cited brief",
+          "source_ref": "session:local-df43f0:456:40",
+          "quote": "Fixed with `_mcp_server_class()` resolving both `MCPServer` and `FastMCP` via `importlib`; verified live stdio, 7 tools, cited brief.",
+          "span": [
+            1372,
+            1505
+          ]
+        },
+        {
+          "fact_id": 1590,
+          "text": "A full rename to TensorCairn would cover repo, PyPI distribution, Python package, CLI entry point, MCP server name, and every doc reference",
+          "source_ref": "session:local-df43f0:458:0",
+          "quote": "the full rename, not a half-measure: repo, PyPI distribution, Python package (`cairn` \u2192 `tensorcairn`), CLI entry point, MCP server name, and every doc reference",
+          "span": [
+            1276,
+            1437
+          ]
+        }
+      ],
+      "baseline_answer": "`pip install mcp` gives mcp 2.x, where `FastMCP` was renamed `MCPServer`; the old `mcp.server.fastmcp` shim raises `ModuleNotFoundError` (an `ImportError` subclass), so cairn's handler misreported it as \"not installed.\"",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q05",
+      "question": "Which extraction defect did phase 7 fix?",
+      "gold": "facts were attributed to the speaker instead of the subject, e.g. Caroline is married when Caroline was asking Melanie about her marriage",
+      "known_from": "reports/phase7-review.md",
+      "memory_answer": "The attribution defect (facts about the wrong people)",
+      "memory_correct": false,
+      "memory_citations": [
+        {
+          "fact_id": 358,
+          "text": "Phase 2 was accepted after correction",
+          "source_ref": "session:local-df43f0:153:0",
+          "quote": "## Phase 2 \u2014 accepted after correction",
+          "span": [
+            107,
+            145
+          ]
+        },
+        {
+          "fact_id": 457,
+          "text": "Phase 5 runs for approximately 45 minutes of extraction calls as of 2026-11-05",
+          "source_ref": "session:local-df43f0:199:0",
+          "quote": "While phase 5 runs (~45 min of extraction calls)",
+          "span": [
+            54,
+            102
+          ]
+        },
+        {
+          "fact_id": 517,
+          "text": "The attribution fix (D1) is out of phase 6's scope and is planned for phase 7, where it is considered the most important fix",
+          "source_ref": "session:local-df43f0:242:1",
+          "quote": "The attribution fix (D1) isn't in phase 6's scope \u2014 that's phase 7, and it's the most important one.",
+          "span": [
+            1193,
+            1293
+          ]
+        },
+        {
+          "fact_id": 524,
+          "text": "Phase 6's claims are being verified independently as of 2026-11-05, including tests, the defect fix, and whether the attribution error is gone corpus-wide",
+          "source_ref": "session:local-df43f0:246:0",
+          "quote": "Verifying its claims independently now \u2014 tests, the defect fix, and whether the attribution error is actually gone corpus-wide.",
+          "span": [
+            58,
+            185
+          ]
+        },
+        {
+          "fact_id": 531,
+          "text": "Phase 6 audit found the extraction layer is still producing facts about the wrong people, which became the priority as of 2026-11-05",
+          "source_ref": "session:local-df43f0:253:0",
+          "quote": "but the audit found the extraction layer is still producing facts about the wrong people, and that's now the priority.",
+          "span": [
+            46,
+            164
+          ]
+        },
+        {
+          "fact_id": 551,
+          "text": "Phase 7 was verified with 62 tests passing on 2026-11-05",
+          "source_ref": "session:local-df43f0:257:0",
+          "quote": "Phase 7 verified: 62 tests pass",
+          "span": [
+            11,
+            42
+          ]
+        },
+        {
+          "fact_id": 553,
+          "text": "Phase 7 is verified and accepted",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "Phase 7 is verified and accepted",
+          "span": [
+            11,
+            43
+          ]
+        },
+        {
+          "fact_id": 557,
+          "text": "The cairn backend achieved 78.3% accuracy with 1,109 tokens, 65.0% multi-hop, 88.2% temporal, and 50.0% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "cairn | **78.3%** | 1,109 | 65.0% | 88.2% | 50.0%",
+          "span": [
+            289,
+            338
+          ]
+        },
+        {
+          "fact_id": 558,
+          "text": "The full_context backend achieved 50.0% accuracy with 13,277 tokens, 75.0% multi-hop, 29.4% temporal, and 75.0% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "full_context | 50.0% | 13,277 | 75.0% | 29.4% | 75.0%",
+          "span": [
+            343,
+            396
+          ]
+        },
+        {
+          "fact_id": 559,
+          "text": "The naive_rag backend achieved 36.7% accuracy with 907 tokens, 50.0% multi-hop, 17.6% temporal, and 100% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "naive_rag | 36.7% | 907 | 50.0% | 17.6% | 100%",
+          "span": [
+            401,
+            447
+          ]
+        },
+        {
+          "fact_id": 777,
+          "text": "Phase 5 used a stale DB: the scaled eval reused the cached conv-26.db, so the atomic-fact extraction fix was never exercised",
+          "source_ref": "session:local-df43f0:269:22",
+          "quote": "the scaled eval reused the cached `conv-26.db`, so the atomic-fact extraction fix was never exercised",
+          "span": [
+            629,
+            730
+          ]
+        },
+        {
+          "fact_id": 1106,
+          "text": "reports/phase11-review.md is the authoritative record for phase 11, covering two failed CI runs, the embeddings defect, the root-cause fix, and the rename verification",
+          "source_ref": "session:local-df43f0:427:0",
+          "quote": "That's covered by `reports/phase11-review.md`, which is the authoritative record \u2014 and it's more useful than the worker's version would have been, because it documents what actually happened rather than what was planned: two failed CI runs, the embeddings defect they exposed, the root-cause fix, and the rename verification",
+          "span": [
+            557,
+            881
+          ]
+        },
+        {
+          "fact_id": 1254,
+          "text": "The Melanie defect (\"Melanie is a parent\") in phase 6 was genuinely fixed as of 2026-11-05",
+          "source_ref": "session:local-df43f0:456:17",
+          "quote": "the Melanie defect is genuinely fixed (\u201cMelanie is a parent\u201d)",
+          "span": [
+            377,
+            438
+          ]
+        },
+        {
+          "fact_id": 1281,
+          "text": "The eval corpus was a cached phase-7 compile",
+          "source_ref": "session:local-df43f0:456:21",
+          "quote": "eval corpus was cached phase-7 compile",
+          "span": [
+            134,
+            172
+          ]
+        },
+        {
+          "fact_id": 1454,
+          "text": "The Phase 6 attribution defect was fixed in phase 6 to \u201cMelanie is a parent\u201d, then systemically in phase 7 with code-level subject resolution",
+          "source_ref": "session:local-df43f0:456:39",
+          "quote": "Fixed in phase 6 to \u201cMelanie is a parent\u201d, then systemically in phase 7 with code-level subject resolution",
+          "span": [
+            1232,
+            1338
+          ]
+        },
+        {
+          "fact_id": 1459,
+          "text": "The Phase 6 categorical contradiction bug was fixed in Phase 7 by rejecting mis-attributed facts at extraction as subject_mismatch, with 0 supersessions",
+          "source_ref": "session:local-df43f0:456:40",
+          "quote": "Fixed in phase 7: mis-attributed fact rejected at extraction as `subject_mismatch`; \u201cCaroline is married\u201d no longer exists in any status; 0 supersessions.",
+          "span": [
+            336,
+            490
+          ]
+        },
+        {
+          "fact_id": 1465,
+          "text": "The Phase 10 MCP defect was fixed with `_mcp_server_class()` resolving both `MCPServer` and `FastMCP` via `importlib`; verified live stdio, 7 tools, cited brief",
+          "source_ref": "session:local-df43f0:456:40",
+          "quote": "Fixed with `_mcp_server_class()` resolving both `MCPServer` and `FastMCP` via `importlib`; verified live stdio, 7 tools, cited brief.",
+          "span": [
+            1372,
+            1505
+          ]
+        }
+      ],
+      "baseline_answer": "Subject resolution",
+      "baseline_correct": false,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q06",
+      "question": "What was the single-hop accuracy after phase 9?",
+      "gold": "73.7%",
+      "known_from": "reports/phase9-review.md",
+      "memory_answer": "73.7%",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 557,
+          "text": "The cairn backend achieved 78.3% accuracy with 1,109 tokens, 65.0% multi-hop, 88.2% temporal, and 50.0% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "cairn | **78.3%** | 1,109 | 65.0% | 88.2% | 50.0%",
+          "span": [
+            289,
+            338
+          ]
+        },
+        {
+          "fact_id": 558,
+          "text": "The full_context backend achieved 50.0% accuracy with 13,277 tokens, 75.0% multi-hop, 29.4% temporal, and 75.0% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "full_context | 50.0% | 13,277 | 75.0% | 29.4% | 75.0%",
+          "span": [
+            343,
+            396
+          ]
+        },
+        {
+          "fact_id": 559,
+          "text": "The naive_rag backend achieved 36.7% accuracy with 907 tokens, 50.0% multi-hop, 17.6% temporal, and 100% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "naive_rag | 36.7% | 907 | 50.0% | 17.6% | 100%",
+          "span": [
+            401,
+            447
+          ]
+        },
+        {
+          "fact_id": 598,
+          "text": "Cairn's single-hop accuracy regressed to 68.4% while both baselines scored 76.3%",
+          "source_ref": "session:local-df43f0:265:0",
+          "quote": "**Single-hop regressed** to 68.4% where both baselines get 76.3%.",
+          "span": [
+            947,
+            1012
+          ]
+        },
+        {
+          "fact_id": 603,
+          "text": "Phase 9 is running as of 2026-11-05, recalibrating the refusal rule so any record mentioning the subject counts as answering, combining and listing items rather than picking one, plus refreshing the corpus with the relaxed quote guard",
+          "source_ref": "session:local-df43f0:265:1",
+          "quote": "Phase 9 is running: recalibrating the refusal rule so any record mentioning the subject counts as answering, combining and listing items rather than picking one, plus refreshing the corpus with the relaxed quote guard",
+          "span": [
+            701,
+            918
+          ]
+        },
+        {
+          "fact_id": 604,
+          "text": "Phase 9 re-runs all three backends so comparability holds",
+          "source_ref": "session:local-df43f0:265:1",
+          "quote": "It re-runs all three backends so comparability holds",
+          "span": [
+            920,
+            972
+          ]
+        },
+        {
+          "fact_id": 994,
+          "text": "Phase 9 is verified with 69 tests passing as of 2026-11-05",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "Phase 9 is verified and the accuracy work is now at the point of diminishing returns.",
+          "span": [
+            11,
+            96
+          ]
+        },
+        {
+          "fact_id": 995,
+          "text": "Phase 9 achieved 77.3% overall accuracy, up from 76.0% in phase 8",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "| **overall** | 76.0% | **77.3%** | 53.3% | 45.3% |",
+          "span": [
+            258,
+            309
+          ]
+        },
+        {
+          "fact_id": 996,
+          "text": "Phase 9 temporal accuracy was 88.5%, down 1.7 points from phase 8's 90.2%",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "| temporal (n=61) | 90.2% | 88.5% | 32.8% | 26.2% |",
+          "span": [
+            310,
+            361
+          ]
+        },
+        {
+          "fact_id": 997,
+          "text": "Phase 9 multi-hop accuracy was 67.5%, unchanged from phase 8",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "| multi-hop (n=40) | 67.5% | 67.5% | 57.3% | 33.3% |",
+          "span": [
+            362,
+            414
+          ]
+        },
+        {
+          "fact_id": 998,
+          "text": "Phase 9 single-hop accuracy was 73.7%, up 5.3 points from phase 8's 68.4%",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "| single-hop (n=38) | 68.4% | **73.7%** | 76.3% | 76.3% |",
+          "span": [
+            415,
+            472
+          ]
+        },
+        {
+          "fact_id": 999,
+          "text": "Phase 9 commonsense accuracy was 63.6%, up 9.1 points from phase 8's 54.5%",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "| commonsense (n=11) | 54.5% | **63.6%** | 72.7% | 90.9% |",
+          "span": [
+            473,
+            531
+          ]
+        },
+        {
+          "fact_id": 1000,
+          "text": "Not recorded answers fell to 9/150 in phase 9",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "\"Not recorded\" answers fell to 9/150",
+          "span": [
+            583,
+            619
+          ]
+        },
+        {
+          "fact_id": 1001,
+          "text": "Answers in phase 9 averaged 40 characters, so the accuracy gain was not from verbosity",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "answers are still terse \u2014 mean 40 characters \u2014 so the gain isn't verbosity flattering the judge.",
+          "span": [
+            625,
+            721
+          ]
+        },
+        {
+          "fact_id": 1002,
+          "text": "Phase 9 re-ran the identical scope as phase 8, causing the harness to overwrite phase 8's evidence files",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "Phase 9 re-ran the identical scope as phase 8, so the harness **overwrote phase 8's evidence files**.",
+          "span": [
+            857,
+            958
+          ]
+        },
+        {
+          "fact_id": 1268,
+          "text": "Phase 7 accuracy results: cairn 78.3% (temporal 88.2%, multi-hop 65.0%, commonsense 50.0%, single-hop 100%) vs full_context 50.0% and naive_rag 36.7%",
+          "source_ref": "session:local-df43f0:456:18",
+          "quote": "Accuracy: cairn **78.3%** (temporal 88.2%, multi-hop 65.0%, commonsense 50.0%, single-hop 100%) vs full_context 50.0%, naive_rag 36.7%",
+          "span": [
+            1098,
+            1232
+          ]
+        },
+        {
+          "fact_id": 1449,
+          "text": "After the Phase 5 recompile, \u201cCaroline is single\u201d was verified to exist",
+          "source_ref": "session:local-df43f0:456:39",
+          "quote": "verified \u201cCaroline is single\u201d now exists",
+          "span": [
+            720,
+            760
+          ]
+        },
+        {
+          "fact_id": 1493,
+          "text": "Phase 7 multi-hop accuracy was 65.0% vs full_context 75.0%",
+          "source_ref": "session:local-df43f0:456:44",
+          "quote": "Phase 7 multi-hop 65.0% vs full_context 75.0%",
+          "span": [
+            617,
+            662
+          ]
+        },
+        {
+          "fact_id": 1496,
+          "text": "Phase 9 calibrated the refusal instruction and single-hop recovered to 73.7%, still 2.6 points behind baselines",
+          "source_ref": "session:local-df43f0:456:44",
+          "quote": "Phase 9 calibrated the refusal instruction; single-hop recovered to 73.7%, still 2.6 points behind baselines.",
+          "span": [
+            987,
+            1096
+          ]
+        }
+      ],
+      "baseline_answer": "73.7%",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q07",
+      "question": "What did the weak_quote audit find and what was done about it?",
+      "gold": "8 of 10 sampled rejections were valid facts lost, so the guard was relaxed, but only 3 of 33 facts were recovered",
+      "known_from": "reports/phase9-review.md",
+      "memory_answer": "8 of 10 were valid facts lost, so the guard was relaxed (weak_quote 33\u219230, facts 807\u2192810).",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 574,
+          "text": "33 of the rejections were weak_quote rejections, the riskiest category",
+          "source_ref": "session:local-df43f0:259:1",
+          "quote": "But 33 of those were `weak_quote` rejections, and that's the riskiest category",
+          "span": [
+            146,
+            224
+          ]
+        },
+        {
+          "fact_id": 586,
+          "text": "Audit of 10 regenerated weak_quote rejections found 8 of 10 were valid facts lost, so the guard was relaxed",
+          "source_ref": "session:local-df43f0:260:1",
+          "quote": "(B) Audit of 10 regenerated `weak_quote` rejections (fresh compile reproduced exactly 33, matching phase 7): **8 of 10 were valid facts lost** \u2192 guard relaxed.",
+          "span": [
+            269,
+            428
+          ]
+        },
+        {
+          "fact_id": 582,
+          "text": "Relaxed guard saves 3 of 33 deterministically; re-run compile changed weak_quote from 33 to 30 and facts from 807 to 810",
+          "source_ref": "session:local-df43f0:260:1",
+          "quote": "Relaxed guard saves 3/33 deterministically; re-run compile: weak_quote 33\u219230, facts 807\u2192810",
+          "span": [
+            429,
+            520
+          ]
+        },
+        {
+          "fact_id": 609,
+          "text": "Recompile rejections in the run: subject_mismatch 61, weak_quote 30, subject_unresolved 27, quote-not-found 1, with 0 failed captures",
+          "source_ref": "session:local-df43f0:266:2",
+          "quote": "Recompile rejections: subject_mismatch 61, weak_quote 30 (was 33), subject_unresolved 27, quote-not-found 1; 0 failed captures",
+          "span": [
+            215,
+            341
+          ]
+        },
+        {
+          "fact_id": 1012,
+          "text": "Relaxing the weak-quote guard was still the right call but low-value",
+          "source_ref": "session:local-df43f0:336:1",
+          "quote": "Relaxing was still right, but low-value",
+          "span": [
+            221,
+            260
+          ]
+        },
+        {
+          "fact_id": 1266,
+          "text": "Phase 7 compile of conv-30 produced 381 facts from 369 captures with 0 failed and 25 dupes linked; rejections were quote not found: 1, subject_mismatch: 43, subject_unresolved: 10, weak_quote: 11",
+          "source_ref": "session:local-df43f0:456:18",
+          "quote": "conv-30: 369 captures \u2192 381 facts, 0 failed, 25 dupes linked, rejections `{quote not found: 1, subject_mismatch: 43, subject_unresolved: 10, weak_quote: 11}`",
+          "span": [
+            836,
+            993
+          ]
+        },
+        {
+          "fact_id": 1273,
+          "text": "During Phase 8, the user dispatched an coding-agent worker (pid 76780) with bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message, and instructed it to audit 10 of 33 weak_quote rejections and relax the guard if more than 2 of 10 were valid, run all three backends at --limit 2 --questions-per-sample 75 --max-questions 150, and state whether the larger sample confirms, weakens, or overturns phase 7's 78.3%.",
+          "source_ref": "session:local-df43f0:456:20",
+          "quote": "DISPATCH Phase 8 coding-agent worker (pid 76780) \u2014 bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message; audit 10 of 33 `weak_quote` rejections and relax the guard if more than 2 of 10 were valid; run all three backends at `--limit 2 --questions-per-sample 75 --max-questions 150`; state whether the larger sample confirms, weakens, or overturns phase 7\u2019s 78.3%",
+          "span": [
+            11,
+            432
+          ]
+        },
+        {
+          "fact_id": 1278,
+          "text": "An audit of 10 regenerated weak_quote rejections found 8 of 10 were valid facts lost, so the guard was relaxed.",
+          "source_ref": "session:local-df43f0:456:20",
+          "quote": "Audit of 10 regenerated `weak_quote` rejections: **8 of 10 were valid facts lost** \u2192 guard relaxed;",
+          "span": [
+            515,
+            614
+          ]
+        },
+        {
+          "fact_id": 1307,
+          "text": "The eval corpus was recompiled with a relaxed weak_quote guard",
+          "source_ref": "session:local-df43f0:456:22",
+          "quote": "recompile eval corpus with relaxed weak_quote guard",
+          "span": [
+            255,
+            306
+          ]
+        },
+        {
+          "fact_id": 1402,
+          "text": "A fact whose quote cannot be located verbatim is rejected",
+          "source_ref": "session:local-df43f0:456:34",
+          "quote": "a fact whose quote cannot be located verbatim is rejected",
+          "span": [
+            282,
+            339
+          ]
+        },
+        {
+          "fact_id": 1412,
+          "text": "The weak-quote guard rejects only when the quote overlaps neither the fact's text nor the subject's name",
+          "source_ref": "session:local-df43f0:456:35",
+          "quote": "rejects only when the quote overlaps neither the fact\u2019s text nor the subject\u2019s name",
+          "span": [
+            241,
+            324
+          ]
+        },
+        {
+          "fact_id": 1463,
+          "text": "The Phase 8 weak-quote audit sample was unrepresentative: audit said 8/10 rejections were valid facts lost, but actual relaxation recovered only 3/33; relaxing was still right but low-value, and it was recorded honestly",
+          "source_ref": "session:local-df43f0:456:40",
+          "quote": "audit said 8/10 rejections were valid facts lost, but actual relaxation recovered only 3/33. Relaxing was still right but low-value; recorded honestly.",
+          "span": [
+            943,
+            1094
+          ]
+        },
+        {
+          "fact_id": 1577,
+          "text": "Phase 8 relaxed guard reduced weak_quote rejections from 33 to 30 and increased facts from 807 to 810",
+          "source_ref": "session:local-df43f0:456:51",
+          "quote": "Phase 8 relaxed guard: weak_quote 33\u219230, facts 807\u2192810",
+          "span": [
+            490,
+            544
+          ]
+        },
+        {
+          "fact_id": 1578,
+          "text": "Phase 9 recompile resulted in 61 subject_mismatch, 30 weak_quote, 27 subject_unresolved, 1 quote-not-found, and 0 failed captures",
+          "source_ref": "session:local-df43f0:456:51",
+          "quote": "Phase 9 recompile: subject_mismatch 61, weak_quote 30, subject_unresolved 27, quote-not-found 1; 0 failed captures",
+          "span": [
+            548,
+            662
+          ]
+        }
+      ],
+      "baseline_answer": "8 of 10 rejections were valid facts lost \u2192 guard relaxed",
+      "baseline_correct": false,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q08",
+      "question": "How does TensorFold reuse prompt prefixes?",
+      "gold": "only at a message boundary: stable content must be its own leading system message",
+      "known_from": "docs/tensorfold-integration.md",
+      "memory_answer": "At message boundaries, not arbitrary text prefixes",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 46,
+          "text": "TensorFold is Ash Hart's open-source inference engine",
+          "source_ref": "session:local-df43f0:29:0",
+          "quote": "TensorFold is Ash Hart's open-source inference engine",
+          "span": [
+            11,
+            64
+          ]
+        },
+        {
+          "fact_id": 48,
+          "text": "TensorFold supports prompt reuse",
+          "source_ref": "session:local-df43f0:30:0",
+          "quote": "TensorFold has features that matter directly to a memory compiler \u2014 prompt reuse, 8 parallel streams, and an experimental \"Living Weights\" path that writes facts into the model itself.",
+          "span": [
+            11,
+            195
+          ]
+        },
+        {
+          "fact_id": 56,
+          "text": "As of 2026-11-05, it needs to be checked whether TensorFold reuses prefixes or only exact prompts",
+          "source_ref": "session:local-df43f0:50:0",
+          "quote": "I need to know whether TensorFold reuses *prefixes* or only *exact prompts*",
+          "span": [
+            166,
+            241
+          ]
+        },
+        {
+          "fact_id": 57,
+          "text": "TensorFold shares prefixes across different questions, with 3,037 of 3,047 tokens cached and TTFT improving from 9.8s to 0.09s",
+          "source_ref": "session:local-df43f0:51:0",
+          "quote": "TensorFold **does** share prefixes across different questions (3,037 of 3,047 tokens cached, TTFT 9.8s \u2192 0.09s)",
+          "span": [
+            11,
+            122
+          ]
+        },
+        {
+          "fact_id": 59,
+          "text": "TensorFold's reuse operates at message boundaries: a stable leading message gets cached, while content buried inside one big user message only ever matches exactly.",
+          "source_ref": "session:local-df43f0:53:0",
+          "quote": "TensorFold's reuse operates at **message boundaries**. A stable leading message gets cached; content buried inside one big user message only ever matches exactly.",
+          "span": [
+            39,
+            201
+          ]
+        },
+        {
+          "fact_id": 84,
+          "text": "Prompt reuse is keyed at a message boundary, not on text prefixes",
+          "source_ref": "session:local-df43f0:66:1",
+          "quote": "**Prompt reuse is keyed at a message boundary, not on text prefixes.**",
+          "span": [
+            779,
+            849
+          ]
+        },
+        {
+          "fact_id": 182,
+          "text": "TensorFold features include prompt reuse, 8 parallel streams, and experimental Living Weights (--slide)",
+          "source_ref": "session:local-df43f0:104:7",
+          "quote": "features include prompt reuse, 8 parallel streams, experimental \"Living Weights\" (`--slide`)",
+          "span": [
+            1336,
+            1428
+          ]
+        },
+        {
+          "fact_id": 184,
+          "text": "Python probes against 127.0.0.1:8460 tested response_format json_object, enable_thinking false, chat_template_kwargs enable_thinking false, and prefix-reuse shapes, recording tensorfold telemetry (tokens_per_second, prefill_seconds, time_to_first_token) and usage.prompt_tokens_details.cached_tokens",
+          "source_ref": "session:local-df43f0:104:8",
+          "quote": "Python probes against `127.0.0.1:8460` \u2014 tested `response_format: {\"type\":\"json_object\"}`, `enable_thinking: false`, `chat_template_kwargs: {\"enable_thinking\": false}`, and prefix-reuse shapes; recorded `tensorfold.*` telemetry (`tokens_per_second`, `prefill_seconds`, `time_to_first_token`) and `usage.prompt_tokens_details.cached_tokens`",
+          "span": [
+            234,
+            573
+          ]
+        },
+        {
+          "fact_id": 248,
+          "text": "TensorFold supports prefix reuse only at message boundaries, not on arbitrary text prefixes",
+          "source_ref": "session:local-df43f0:104:17",
+          "quote": "Yes, but only at message boundaries \u2014 not on arbitrary text prefixes",
+          "span": [
+            330,
+            398
+          ]
+        },
+        {
+          "fact_id": 538,
+          "text": "TensorFold does not cache at ~100-token prefixes; the cache threshold sits somewhere between 92 and 2,666 prompt tokens",
+          "source_ref": "session:local-df43f0:253:0",
+          "quote": "TensorFold simply doesn't cache at ~100-token prefixes; the threshold sits somewhere between 92 and 2,666 prompt tokens.",
+          "span": [
+            1117,
+            1237
+          ]
+        },
+        {
+          "fact_id": 755,
+          "text": "A 0% prompt cache hit rate was root-caused to TensorFold keying reuse at message boundaries; fixed by splitting the stable context into a leading `system` message.",
+          "source_ref": "session:local-df43f0:269:20",
+          "quote": "0% prompt cache hit rate** root-caused to TensorFold keying reuse at message boundaries; fixed by splitting the stable context into a leading `system` message.",
+          "span": [
+            817,
+            976
+          ]
+        },
+        {
+          "fact_id": 1029,
+          "text": "TensorFold 1.2.3 still supports message-boundary reuse",
+          "source_ref": "session:local-df43f0:361:1",
+          "quote": "message-boundary reuse still holds",
+          "span": [
+            295,
+            329
+          ]
+        },
+        {
+          "fact_id": 1169,
+          "text": "TensorFold is licensed under Apache-2.0 and supports prompt reuse, 8 parallel streams, and an experimental 'Living Weights' feature via the `--slide` flag",
+          "source_ref": "session:local-df43f0:456:7",
+          "quote": "Apache-2.0; prompt reuse, 8 parallel streams, experimental \u201cLiving Weights\u201d (`--slide`)",
+          "span": [
+            72,
+            159
+          ]
+        },
+        {
+          "fact_id": 1429,
+          "text": "A 0% prompt cache hit rate was root-caused to TensorFold keying reuse at message boundaries; fixed by splitting the stable context into a leading system message. Later measurements showed a ~92-token prefix cached nothing while a ~2,666-token prompt cached 2,650.",
+          "source_ref": "session:local-df43f0:456:36",
+          "quote": "**0% prompt cache hit rate** root-caused to TensorFold keying reuse at message boundaries; fixed by splitting the stable context into a leading `system` message. Later measured a size threshold: ~92-token prefix cached nothing; ~2,666-token prompt cached 2,650.",
+          "span": [
+            1018,
+            1279
+          ]
+        },
+        {
+          "fact_id": 1478,
+          "text": "TensorFold supports prefix reuse, but only at message boundaries and only above a prompt-size threshold (~2,666 tokens cached 2,650; ~92 tokens cached nothing)",
+          "source_ref": "session:local-df43f0:456:42",
+          "quote": "Yes, but only at message boundaries, and only above a prompt-size threshold (~2,666 tokens cached 2,650; ~92 tokens cached nothing).",
+          "span": [
+            1308,
+            1440
+          ]
+        }
+      ],
+      "baseline_answer": "At message boundaries",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q09",
+      "question": "Which model judged the LoCoMo answers?",
+      "gold": "local-judge",
+      "known_from": "eval/README.md",
+      "memory_answer": "local-judge",
+      "memory_correct": false,
+      "memory_citations": [
+        {
+          "fact_id": 13,
+          "text": "The competitor claims 92.2% judged accuracy on LoCoMo at ~9.4K context tokens",
+          "source_ref": "session:local-df43f0:7:1",
+          "quote": "Their claims: 92.2% judged accuracy on LoCoMo at ~9.4K context tokens",
+          "span": [
+            252,
+            321
+          ]
+        },
+        {
+          "fact_id": 19,
+          "text": "LoCoMo and LongMemEval are public datasets, so their headline numbers are reproducible and an eval harness can be built on day one",
+          "source_ref": "session:local-df43f0:7:2",
+          "quote": "LoCoMo and LongMemEval are public datasets. Their headline numbers are therefore reproducible \u2014 you can build the eval harness on day one",
+          "span": [
+            26,
+            163
+          ]
+        },
+        {
+          "fact_id": 196,
+          "text": "The LoCoMo benchmark defines five question categories: single-hop, multi-hop, temporal, open-domain, and adversarial",
+          "source_ref": "session:local-df43f0:104:9",
+          "quote": "established category definitions (single-hop, multi-hop, temporal, open-domain, adversarial)",
+          "span": [
+            132,
+            224
+          ]
+        },
+        {
+          "fact_id": 197,
+          "text": "LoCoMo paper question counts were probed as 1,986 / 282 / 841 / 446",
+          "source_ref": "session:local-df43f0:104:9",
+          "quote": "probed paper counts 1,986 / 282 / 841 / 446",
+          "span": [
+            229,
+            272
+          ]
+        },
+        {
+          "fact_id": 226,
+          "text": "The evaluation harness uses a local judge model called local-judge instead of GPT, with results labelled LOCAL-JUDGED.",
+          "source_ref": "session:local-df43f0:104:14",
+          "quote": "Local judge (`local-judge`), not GPT.** Results are labelled LOCAL-JUDGED",
+          "span": [
+            16,
+            95
+          ]
+        },
+        {
+          "fact_id": 262,
+          "text": "the maintainer downloaded the LoCoMo dataset to /tmp/locomo10.json for category inspection",
+          "source_ref": "session:local-df43f0:104:18",
+          "quote": "/tmp/locomo10.json` \u2014 downloaded LoCoMo dataset used for category inspection.",
+          "span": [
+            376,
+            453
+          ]
+        },
+        {
+          "fact_id": 274,
+          "text": "LoCoMo dataset available at https://raw.githubusercontent.com/snap-research/locomo/main/data/locomo10.json with categories single-hop / multi-hop / temporal / open-domain / adversarial.",
+          "source_ref": "session:local-df43f0:104:19",
+          "quote": "LoCoMo: `https://raw.githubusercontent.com/snap-research/locomo/main/data/locomo10.json`; categories single-hop / multi-hop / temporal / open-domain / adversarial.",
+          "span": [
+            1140,
+            1303
+          ]
+        },
+        {
+          "fact_id": 732,
+          "text": "LoCoMo per-category ground-truth counts (1,986 / 282 / 841 / 446 candidates from the paper) are still not mapped precisely to categories",
+          "source_ref": "session:local-df43f0:269:18",
+          "quote": "LoCoMo per-category ground-truth counts (1,986 / 282 / 841 / 446 candidates from the paper) are still not mapped precisely to categories.",
+          "span": [
+            343,
+            480
+          ]
+        },
+        {
+          "fact_id": 781,
+          "text": "Living Brain's self-reported benchmarks: 92.2% judged accuracy on LoCoMo at ~9.4K tokens; 22.6\u00d7 token reduction and 95% lower cost vs a 116K full-context baseline on LongMemEval-S; 464 ms median retrieval",
+          "source_ref": "session:local-df43f0:269:23",
+          "quote": "92.2% judged accuracy on LoCoMo at ~9.4K tokens; 22.6\u00d7 token reduction and 95% lower cost vs a 116K full-context baseline on LongMemEval-S; 464 ms median retrieval. Self-reported \u2014 treated as a target, not a fact",
+          "span": [
+            742,
+            954
+          ]
+        },
+        {
+          "fact_id": 840,
+          "text": "The LoCoMo dataset is at eval/datasets/locomo10.json with 10 conversations and 1,986 QA across single-hop, multi-hop, temporal, open-domain, and adversarial categories",
+          "source_ref": "session:local-df43f0:269:28",
+          "quote": "LoCoMo: `eval/datasets/locomo10.json` (10 conversations, 1,986 QA); categories single-hop / multi-hop / temporal / open-domain / adversarial",
+          "span": [
+            772,
+            912
+          ]
+        },
+        {
+          "fact_id": 1243,
+          "text": "On 2026-11-05 the user patched src/cairn/retrieve.py gold_support_in_brief so list-like gold answers are scored per item (at least half the items covered anywhere in the brief) rather than as one token bag, with single-item scoring unchanged and no model call",
+          "source_ref": "session:local-df43f0:456:15",
+          "quote": "PATCH `src/cairn/retrieve.py` `gold_support_in_brief` \u2014 list-like gold answers are now scored per item (at least half the items covered anywhere in the brief), rather than as one token bag; single-item scoring unchanged; purely lexical, no model call",
+          "span": [
+            977,
+            1227
+          ]
+        },
+        {
+          "fact_id": 1385,
+          "text": "LoCoMo per-category ground-truth counts of 1,986 / 282 / 841 / 446 candidates from the paper are still not mapped precisely to categories as of 2026-11-05",
+          "source_ref": "session:local-df43f0:456:32",
+          "quote": "LoCoMo per-category ground-truth counts** (1,986 / 282 / 841 / 446 candidates from the paper) are still not mapped precisely to categories",
+          "span": [
+            544,
+            682
+          ]
+        },
+        {
+          "fact_id": 1551,
+          "text": "LoCoMo benchmark (local judge, 2026-11-05/06): cairn phase 3 whole brain n=12 accuracy 75.0%, mean context 4,341 tokens, median latency 1.66 s, cache 100%",
+          "source_ref": "session:local-df43f0:456:49",
+          "quote": "| n=12 | cairn phase 3 whole brain | 75.0% | 4,341 | 1.66 s | 100% |",
+          "span": [
+            981,
+            1049
+          ]
+        },
+        {
+          "fact_id": 1634,
+          "text": "The model sometimes paraphrases its quote, and the validator only ever understood people as subjects; both need fixing at the source",
+          "source_ref": "session:local-df43f0:528:0",
+          "quote": "the model sometimes paraphrases its quote, and the validator only ever understood *people* as subjects. Both need fixing at the source.",
+          "span": [
+            49,
+            184
+          ]
+        }
+      ],
+      "baseline_answer": "`local-judge` (local model)",
+      "baseline_correct": false,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q10",
+      "question": "What did the first CI failure expose about the retriever?",
+      "gold": "briefs and search called the embedding endpoint unconditionally and failed when it was down; embeddings became optional",
+      "known_from": "reports/phase11-review.md",
+      "memory_answer": "The workflow didn't install pytest",
+      "memory_correct": false,
+      "memory_citations": [
+        {
+          "fact_id": 441,
+          "text": "The phase-3 retrieval failure was the phase-3 trimmer dropping the sunrise fact because the full brain renders at ~14.2k estimated tokens, making the whole-brain brief lossy",
+          "source_ref": "session:local-df43f0:198:1",
+          "quote": "The retrieval failure was the phase-3 trimmer dropping the sunrise fact (full brain renders at ~14.2k estimated tokens, so the \"whole-brain\" brief was already lossy)",
+          "span": [
+            166,
+            331
+          ]
+        },
+        {
+          "fact_id": 444,
+          "text": "After the selection rewrite, answering failures went to 0 at every budget, with 1 retrieval failure at 600/1200 and 0 at 4000",
+          "source_ref": "session:local-df43f0:198:1",
+          "quote": "After the selection rewrite** (answer prompt unchanged): answering failures \u2192 0 at every budget; the split is 1 retrieval failure at 600/1200 and 0 at 4000",
+          "span": [
+            337,
+            492
+          ]
+        },
+        {
+          "fact_id": 445,
+          "text": "The remaining retrieval failure is a compile-layer gap because the brain holds no atomic 'Caroline is single' fact, only 'plans to become a single parent'",
+          "source_ref": "session:local-df43f0:198:1",
+          "quote": "The remaining failure is a compile-layer gap \u2014 the brain holds no atomic \"Caroline is single\" fact, only \"plans to become a single parent\u2026\"",
+          "span": [
+            494,
+            633
+          ]
+        },
+        {
+          "fact_id": 470,
+          "text": "The diagnostic's failure breakdown after corrected measurement is 15 answering failures vs 2 retrieval failures",
+          "source_ref": "session:local-df43f0:227:0",
+          "quote": "the diagnostic now points somewhere different \u2014 15 answering failures vs 2 retrieval failures",
+          "span": [
+            102,
+            195
+          ]
+        },
+        {
+          "fact_id": 834,
+          "text": "After the selection rewrite, answering failures were 0 at all budgets, with 1 retrieval failure at 600/1200 and 0 at 4000",
+          "source_ref": "session:local-df43f0:269:28",
+          "quote": "after selection rewrite answering failures 0 at all budgets, 1 retrieval failure at 600/1200, 0 at 4000",
+          "span": [
+            125,
+            228
+          ]
+        },
+        {
+          "fact_id": 1018,
+          "text": "Cairn's search degrades to FTS when the local embedding endpoint is down, leaving the retriever untouched",
+          "source_ref": "session:local-df43f0:337:2",
+          "quote": "`search` degrades to FTS when the local embedding endpoint is down (retriever untouched)",
+          "span": [
+            269,
+            357
+          ]
+        },
+        {
+          "fact_id": 1063,
+          "text": "Cairn's credibility phase includes CI that executes 81 tests offline, a real v0.1.0 tag, CONTRIBUTING/SECURITY files, and issue templates",
+          "source_ref": "session:local-df43f0:384:1",
+          "quote": "CI that genuinely executes the 81 tests offline, a real `v0.1.0` tag, CONTRIBUTING/SECURITY, issue templates",
+          "span": [
+            55,
+            163
+          ]
+        },
+        {
+          "fact_id": 1079,
+          "text": "The worker is now pushing and waiting on CI runs",
+          "source_ref": "session:local-df43f0:392:0",
+          "quote": "the worker is now pushing and waiting on runs",
+          "span": [
+            31,
+            76
+          ]
+        },
+        {
+          "fact_id": 1080,
+          "text": "The first CI run for Cairnstone failed",
+          "source_ref": "session:local-df43f0:395:0",
+          "quote": "the first CI run failed",
+          "span": [
+            71,
+            94
+          ]
+        },
+        {
+          "fact_id": 1081,
+          "text": "The CI failure was caused by the workflow installing the package but not installing pytest",
+          "source_ref": "session:local-df43f0:396:0",
+          "quote": "CI failed for a mundane reason \u2014 the workflow installs the package but never installs pytest",
+          "span": [
+            11,
+            103
+          ]
+        },
+        {
+          "fact_id": 1093,
+          "text": "The first CI failure for Cairnstone was mundane: the workflow didn't install pytest; the second run had four tests fail with URLError: Connection refused",
+          "source_ref": "session:local-df43f0:424:0",
+          "quote": "The first was mundane (workflow didn't install pytest). The second was not: four tests failed with `URLError: Connection refused`.",
+          "span": [
+            870,
+            1000
+          ]
+        },
+        {
+          "fact_id": 1318,
+          "text": "Cairn's compiler, retriever, and eval prompt were unchanged in Phase 10",
+          "source_ref": "session:local-df43f0:456:23",
+          "quote": "compiler/retriever/eval prompt unchanged",
+          "span": [
+            1423,
+            1463
+          ]
+        },
+        {
+          "fact_id": 1113,
+          "text": "The compile aborted after two captures",
+          "source_ref": "session:local-df43f0:450:0",
+          "quote": "The compile aborted after two captures",
+          "span": [
+            11,
+            49
+          ]
+        },
+        {
+          "fact_id": 1592,
+          "text": "Phase 11 was still running as of 2026-11-06, with no CI files or tag yet",
+          "source_ref": "session:local-df43f0:459:0",
+          "quote": "Phase 11 is still running \u2014 no CI files or tag yet",
+          "span": [
+            11,
+            61
+          ]
+        },
+        {
+          "fact_id": 1597,
+          "text": "Four tests call the embedding endpoint and crash instead of skipping, which is a genuine isolation defect since the retriever can't work without embeddings even though search already degrades",
+          "source_ref": "session:local-df43f0:473:0",
+          "quote": "four tests call the embedding endpoint and crash instead of skipping. That's a genuine isolation defect \u2014 the retriever can't work without embeddings even though search already degrades",
+          "span": [
+            52,
+            237
+          ]
+        },
+        {
+          "fact_id": 1598,
+          "text": "83 tests pass as of 2026-11-06, including two new offline-degradation tests, proving the CI scenario works",
+          "source_ref": "session:local-df43f0:484:0",
+          "quote": "83 tests pass, including the two new offline-degradation tests \u2014 that proves the CI scenario now works",
+          "span": [
+            11,
+            113
+          ]
+        },
+        {
+          "fact_id": 1600,
+          "text": "CI is green on the renamed repo as of 2026-11-06",
+          "source_ref": "session:local-df43f0:491:0",
+          "quote": "CI is green on the renamed repo",
+          "span": [
+            11,
+            42
+          ]
+        },
+        {
+          "fact_id": 1606,
+          "text": "The second CI failure was four tests failing with URLError: Connection refused",
+          "source_ref": "session:local-df43f0:495:0",
+          "quote": "The second was not: four tests failed with `URLError: Connection refused`.",
+          "span": [
+            926,
+            1000
+          ]
+        }
+      ],
+      "baseline_answer": "A genuine isolation defect \u2014 the retriever can't work without embeddings even though search already degrades.",
+      "baseline_correct": false,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q11",
+      "question": "What is the citation chain that every fact must support?",
+      "gold": "claim to capture to span to verbatim quote",
+      "known_from": "README.md",
+      "memory_answer": "claim \u2192 capture \u2192 span \u2192 verbatim quote",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 121,
+          "text": "supersede_fact(fact_id, by_fact_id) validated the replacement and then threw it away \u2014 nothing recorded what replaced a fact",
+          "source_ref": "session:local-df43f0:81:1",
+          "quote": "supersede_fact(fact_id, by_fact_id)` validated the replacement and then **threw it away** \u2014 nothing recorded *what* replaced a fact",
+          "span": [
+            154,
+            285
+          ]
+        },
+        {
+          "fact_id": 123,
+          "text": "The supersede_fact bug was fixed plus three more integrity gaps",
+          "source_ref": "session:local-df43f0:81:1",
+          "quote": "Fixed, plus three more integrity gaps:",
+          "span": [
+            493,
+            531
+          ]
+        },
+        {
+          "fact_id": 124,
+          "text": "A facts.superseded_by column was added, now populated, with a fact.superseded change event",
+          "source_ref": "session:local-df43f0:81:1",
+          "quote": "`facts.superseded_by` column, now populated, with a `fact.superseded` change event",
+          "span": [
+            534,
+            616
+          ]
+        },
+        {
+          "fact_id": 126,
+          "text": "A fact must cite a page version belonging to its own page; whitespace-only spans are rejected",
+          "source_ref": "session:local-df43f0:81:1",
+          "quote": "A fact must cite a page version belonging to its own page; whitespace-only spans are rejected",
+          "span": [
+            838,
+            931
+          ]
+        },
+        {
+          "fact_id": 142,
+          "text": "Cairn ingests conversations, notes, documents and agent session logs and compiles them into Markdown pages about people, projects, decisions and customers where every fact carries a citation to its exact source.",
+          "source_ref": "session:local-df43f0:104:2",
+          "quote": "Cairn ingests conversations, notes, documents and agent session logs and compiles them into Markdown pages about people, projects, decisions and customers where **every fact carries a citation to its exact source**",
+          "span": [
+            210,
+            424
+          ]
+        },
+        {
+          "fact_id": 698,
+          "text": "docs/phase4-brief.md planned gold_support_in_brief diagnostic first, then fact-level FTS+embeddings, entity/slot scoring, 3-per-page diversity cap, chronological ordering, near-duplicate collapse; measure at 600/1200/4000 budgets",
+          "source_ref": "session:local-df43f0:269:14",
+          "quote": "WRITE_FILE `docs/phase4-brief.md` \u2014 `gold_support_in_brief` diagnostic first, then fact-level FTS+embeddings, entity/slot scoring, 3-per-page diversity cap, chronological ordering, near-duplicate collapse; measure at 600/1200/4000 budgets",
+          "span": [
+            717,
+            955
+          ]
+        },
+        {
+          "fact_id": 700,
+          "text": "reports/phase4-report.md showed 46 tests; diagnostic on the phase-3 backend: 11/12 rows had gold support, 3 answering failures, 1 retrieval failure; after rewrite answering failures \u2192 0 at every budget",
+          "source_ref": "session:local-df43f0:269:14",
+          "quote": "READ `reports/phase4-report.md` \u2014 46 tests; diagnostic on the phase-3 backend: 11/12 rows had gold support, 3 answering failures, 1 retrieval failure; after rewrite answering failures \u2192 0 at every budget",
+          "span": [
+            1080,
+            1283
+          ]
+        },
+        {
+          "fact_id": 744,
+          "text": "Citation integrity is prioritized over extraction fluency: a fact whose quote cannot be located verbatim is rejected, and a reject rate above max_reject_rate (0.25) fails the compile run rather than writing a thin brain",
+          "source_ref": "session:local-df43f0:269:19",
+          "quote": "Citation integrity over extraction fluency**: a fact whose quote cannot be located verbatim is rejected, and reject rate above `max_reject_rate` (0.25) fails the compile run rather than writing a thin brain",
+          "span": [
+            389,
+            595
+          ]
+        },
+        {
+          "fact_id": 1052,
+          "text": "Cairn's evaluation traces every fact through claim \u2192 capture \u2192 span \u2192 verbatim quote, and wrong attributions are rejected at extraction rather than repaired",
+          "source_ref": "session:local-df43f0:377:1",
+          "quote": "Every fact traces claim \u2192 capture \u2192 span \u2192 verbatim quote, and wrong attributions are rejected at extraction rather than repaired",
+          "span": [
+            176,
+            305
+          ]
+        },
+        {
+          "fact_id": 1220,
+          "text": "docs/phase4-brief.md was written covering gold_support_in_brief diagnostic, fact-level FTS+embeddings, entity/slot scoring, 3-per-page diversity cap, chronological ordering, near-duplicate collapse, and measurement at 600/1200/4000 budgets",
+          "source_ref": "session:local-df43f0:456:13",
+          "quote": "WRITE_FILE `docs/phase4-brief.md` \u2014 `gold_support_in_brief` diagnostic first, then fact-level FTS+embeddings, entity/slot scoring, 3-per-page diversity cap, chronological ordering, near-duplicate collapse; measure at 600/1200/4000 budgets",
+          "span": [
+            717,
+            955
+          ]
+        },
+        {
+          "fact_id": 1241,
+          "text": "On 2026-11-05 the user searched eval/harness.py for gold_support|brief_fact_texts|questions_per_sample|def run_backend and found 43 matches",
+          "source_ref": "session:local-df43f0:456:15",
+          "quote": "SEARCH `eval/harness.py` for `gold_support|brief_fact_texts|questions_per_sample|def run_backend` \u2014 43 matches",
+          "span": [
+            710,
+            820
+          ]
+        },
+        {
+          "fact_id": 1525,
+          "text": "the maintainer's cairn project has a retrieve.py at ~/cairn/src/cairn/retrieve.py with hybrid fact-level search, an embedding cache, prefix-stable build_brief, citation rendering, selection scoring, and gold_support_in_brief scores that treat list-like gold per item",
+          "source_ref": "session:local-df43f0:456:47",
+          "quote": "~/cairn/src/cairn/retrieve.py` \u2014 hybrid fact-level search, embedding cache, prefix-stable `build_brief`, citation rendering, selection scoring; `gold_support_in_brief` scores list-like gold per item",
+          "span": [
+            473,
+            682
+          ]
+        }
+      ],
+      "baseline_answer": "Speaker as subject",
+      "baseline_correct": false,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q12",
+      "question": "Which inference engine serves glm-5.3-flash on the Mac Studio?",
+      "gold": "TensorFold",
+      "known_from": "docs/tensorfold-integration.md",
+      "memory_answer": "TensorFold",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 46,
+          "text": "TensorFold is Ash Hart's open-source inference engine",
+          "source_ref": "session:local-df43f0:29:0",
+          "quote": "TensorFold is Ash Hart's open-source inference engine",
+          "span": [
+            11,
+            64
+          ]
+        },
+        {
+          "fact_id": 75,
+          "text": "glm-5.3-flash maps to glm-5.3-flash at 127.0.0.1:8460.",
+          "source_ref": "session:local-df43f0:66:0",
+          "quote": "`glm-5.3-flash` \u2192 `glm-5.3-flash` at 127.0.0.1:8460",
+          "span": [
+            927,
+            971
+          ]
+        },
+        {
+          "fact_id": 147,
+          "text": "The assistant committed to a constraint of no cloud inference; every model call goes to http://127.0.0.1:8460/v1 (glm-5.3-flash) or http://127.0.0.1:8889/v1 (local-judge), with embeddings at http://127.0.0.1:1234/v1",
+          "source_ref": "session:local-df43f0:104:3",
+          "quote": "No cloud inference.** Every model call goes to `http://127.0.0.1:8460/v1` (`glm-5.3-flash`) or `http://127.0.0.1:8889/v1` (`local-judge`). Embeddings at `http://127.0.0.1:1234/v1`.",
+          "span": [
+            63,
+            250
+          ]
+        },
+        {
+          "fact_id": 185,
+          "text": "The TensorFold engine config is GLM-5.3-Flash-MLX-4bit-MTP with --context 262144, --max-tokens 32768, --parallel 4, --temperature 0, on Apple M3 Metal, served on 127.0.0.1:8460",
+          "source_ref": "session:local-df43f0:104:8",
+          "quote": "records measured engine config (GLM-5.3-Flash-MLX-4bit-MTP, `--context 262144`, `--max-tokens 32768`, `--parallel 4`, `--temperature 0`, Apple M3 Metal, served on 127.0.0.1:8460)",
+          "span": [
+            660,
+            838
+          ]
+        },
+        {
+          "fact_id": 250,
+          "text": "coding agent was verified to drive both local models with real tool calls via the hello.txt smoke test on glm-5.3-flash/glm-5.3-flash and local-judge",
+          "source_ref": "session:local-df43f0:104:17",
+          "quote": "Yes, verified by the hello.txt smoke test on both `glm-5.3-flash/glm-5.3-flash` and `local-judge`",
+          "span": [
+            553,
+            667
+          ]
+        },
+        {
+          "fact_id": 257,
+          "text": "The glm-5.3-flash endpoint is at http://127.0.0.1:8460/v1 with model id glm-5.3-flash using the OpenAI-completions API",
+          "source_ref": "session:local-df43f0:104:18",
+          "quote": "`glm-5.3-flash`: `http://127.0.0.1:8460/v1`, model id `glm-5.3-flash`, OpenAI-completions API.",
+          "span": [
+            626,
+            713
+          ]
+        },
+        {
+          "fact_id": 417,
+          "text": "Cairn was measured on 12 questions with a local judge using TensorFold/GLM-5.3-Flash.",
+          "source_ref": "session:local-df43f0:197:0",
+          "quote": "## Measured \u2014 12 questions, local judge, TensorFold/GLM-5.3-Flash",
+          "span": [
+            290,
+            355
+          ]
+        },
+        {
+          "fact_id": 619,
+          "text": "All model inference must stay local: every model call goes to http://127.0.0.1:8460/v1 (glm-5.3-flash) or http://127.0.0.1:8889/v1 (local-judge), with embeddings at http://127.0.0.1:1234/v1",
+          "source_ref": "session:local-df43f0:269:4",
+          "quote": "No cloud inference.** Every model call goes to `http://127.0.0.1:8460/v1` (`glm-5.3-flash`) or `http://127.0.0.1:8889/v1` (`local-judge`). Embeddings at `http://127.0.0.1:1234/v1`.",
+          "span": [
+            58,
+            245
+          ]
+        },
+        {
+          "fact_id": 811,
+          "text": "The glm-5.3-flash local endpoint runs at http://127.0.0.1:8460/v1 with model glm-5.3-flash via OpenAI-completions",
+          "source_ref": "session:local-df43f0:269:26",
+          "quote": "`glm-5.3-flash`: `http://127.0.0.1:8460/v1`, model `glm-5.3-flash`, OpenAI-completions.",
+          "span": [
+            709,
+            789
+          ]
+        },
+        {
+          "fact_id": 812,
+          "text": "The glm-5.3-flash endpoint is backed by tensorfold-native 1.0.7 serving GLM-5.3-Flash-MLX-4bit-MTP weights with --context 262144, --max-tokens 32768, --parallel 4, --temperature 0 on Apple M3 Metal",
+          "source_ref": "session:local-df43f0:269:26",
+          "quote": "Backed by `tensorfold-native 1.0.7`, weights `GLM-5.3-Flash-MLX-4bit-MTP`, `--context 262144`, `--max-tokens 32768`, `--parallel 4`, `--temperature 0`, Apple M3 Metal.",
+          "span": [
+            790,
+            957
+          ]
+        },
+        {
+          "fact_id": 1140,
+          "text": "The assistant committed to no cloud inference: every model call goes to http://127.0.0.1:8460/v1 (glm-5.3-flash) or http://127.0.0.1:8889/v1 (local-judge), with embeddings at http://127.0.0.1:1234/v1",
+          "source_ref": "session:local-df43f0:456:3",
+          "quote": "No cloud inference.** Every model call goes to `http://127.0.0.1:8460/v1` (`glm-5.3-flash`) or `http://127.0.0.1:8889/v1` (`local-judge`). Embeddings at `http://127.0.0.1:1234/v1`.",
+          "span": [
+            58,
+            245
+          ]
+        },
+        {
+          "fact_id": 1368,
+          "text": "Endpoints live: 127.0.0.1:8460 serving glm-5.3-flash via TensorFold, 127.0.0.1:8889 (local-judge), and 127.0.0.1:1234 for nomic embeddings.",
+          "source_ref": "session:local-df43f0:456:30",
+          "quote": "Endpoints live: `127.0.0.1:8460` (TensorFold serving `glm-5.3-flash`), `127.0.0.1:8889` (`local-judge`), `127.0.0.1:1234` (nomic embeddings).",
+          "span": [
+            1213,
+            1361
+          ]
+        },
+        {
+          "fact_id": 1538,
+          "text": "The glm-5.3-flash local endpoint serves model glm-5.3-flash at http://127.0.0.1:8460/v1 with OpenAI-completions",
+          "source_ref": "session:local-df43f0:456:48",
+          "quote": "`glm-5.3-flash`: `http://127.0.0.1:8460/v1`, model `glm-5.3-flash`, OpenAI-completions.",
+          "span": [
+            835,
+            915
+          ]
+        },
+        {
+          "fact_id": 1539,
+          "text": "glm-5.3-flash is backed by tensorfold-native 1.0.7 with weights GLM-5.3-Flash-MLX-4bit-MTP, context 262144, max-tokens 32768, parallel 4, temperature 0, on Apple M3 Metal",
+          "source_ref": "session:local-df43f0:456:48",
+          "quote": "Backed by `tensorfold-native 1.0.7`, weights `GLM-5.3-Flash-MLX-4bit-MTP`, `--context 262144`, `--max-tokens 32768`, `--parallel 4`, `--temperature 0`, Apple M3 Metal.",
+          "span": [
+            916,
+            1083
+          ]
+        }
+      ],
+      "baseline_answer": "TensorFold",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q13",
+      "question": "What release tag was published?",
+      "gold": "v0.1.0",
+      "known_from": "reports/phase11-review.md",
+      "memory_answer": "v0.1.0",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 153,
+          "text": "The assistant parsed /tmp/lb.html in the terminal on 2026-11-05, stripping scripts/styles and extracting the title, meta tags, 200 text lines, and a Counter of outbound links",
+          "source_ref": "session:local-df43f0:104:3",
+          "quote": "TERMINAL parsed `/tmp/lb.html` \u2014 stripped scripts/styles, extracted title, meta tags, 200 text lines, and a Counter of outbound links",
+          "span": [
+            918,
+            1051
+          ]
+        },
+        {
+          "fact_id": 406,
+          "text": "There is an open question about where to publish as of 2026-11-05",
+          "source_ref": "session:local-df43f0:180:2",
+          "quote": "Still open for later: where to publish",
+          "span": [
+            222,
+            260
+          ]
+        },
+        {
+          "fact_id": 625,
+          "text": "On 2026-11-05 /tmp/lb.html was parsed: scripts/styles stripped, title, meta tags, 200 text lines, and a Counter of outbound links extracted",
+          "source_ref": "session:local-df43f0:269:4",
+          "quote": "TERMINAL parsed `/tmp/lb.html` \u2014 stripped scripts/styles, extracted title, meta tags, 200 text lines, and a Counter of outbound links",
+          "span": [
+            913,
+            1046
+          ]
+        },
+        {
+          "fact_id": 1039,
+          "text": "A publish-guard hook blocked a push on 2026-11-05",
+          "source_ref": "session:local-df43f0:366:0",
+          "quote": "A publish-guard hook blocked the push. Checking what it flagged.",
+          "span": [
+            11,
+            75
+          ]
+        },
+        {
+          "fact_id": 1094,
+          "text": "gh api repos/Boscoeuk/cairnstone/tags returns v0.1.0",
+          "source_ref": "session:local-df43f0:424:0",
+          "quote": "`gh api repos/Boscoeuk/cairnstone/tags` returns `v0.1.0`.",
+          "span": [
+            486,
+            543
+          ]
+        },
+        {
+          "fact_id": 1146,
+          "text": "On 2026-11-05 the assistant parsed /tmp/lb.html, stripping scripts/styles and extracting the title, meta tags, 200 text lines, and a Counter of outbound links",
+          "source_ref": "session:local-df43f0:456:3",
+          "quote": "TERMINAL parsed `/tmp/lb.html` \u2014 stripped scripts/styles, extracted title, meta tags, 200 text lines, and a Counter of outbound links",
+          "span": [
+            912,
+            1045
+          ]
+        },
+        {
+          "fact_id": 1352,
+          "text": "Phase 11 plan: push the v0.1.0 tag only after CI is green, then push and poll gh run list/gh run view and paste real run ids/conclusions and remote tag list in reports/phase11-report.md",
+          "source_ref": "session:local-df43f0:456:28",
+          "quote": "push `v0.1.0` tag only after CI is green; `CONTRIBUTING.md`, `SECURITY.md`, issue templates, PR template; push and poll `gh run list`/`gh run view`, paste real run ids/conclusions and remote tag list in `reports/phase11-report.md`",
+          "span": [
+            434,
+            664
+          ]
+        },
+        {
+          "fact_id": 1356,
+          "text": "As of 2026-11-05, the cairn Phase 11 coding-agent worker (pid 98234, session proc_dfd215ee32cd) is running, building CI, release metadata/tag, CHANGELOG, CONTRIBUTING/SECURITY/templates, with no Phase 11 report yet",
+          "source_ref": "session:local-df43f0:456:29",
+          "quote": "Phase 11 coding-agent worker is **currently running** (pid 98234, session `proc_dfd215ee32cd`) building CI, release metadata/tag, CHANGELOG, CONTRIBUTING/SECURITY/templates. No Phase 11 report yet.",
+          "span": [
+            222,
+            410
+          ]
+        },
+        {
+          "fact_id": 1373,
+          "text": "Phase 11 CI/release is not yet verified; the worker is running and the v0.1.0 tag must only be pushed after CI is green",
+          "source_ref": "session:local-df43f0:456:31",
+          "quote": "Phase 11 CI/release not yet verified** \u2014 worker running; `v0.1.0` tag must only be pushed after CI is green.",
+          "span": [
+            864,
+            972
+          ]
+        },
+        {
+          "fact_id": 1421,
+          "text": "The project is published to GitHub public under the personal account `Boscoeuk`, not an org; the user chose this explicitly",
+          "source_ref": "session:local-df43f0:456:35",
+          "quote": "Publish to GitHub public under personal account** (`Boscoeuk`), not an org; user chose this explicitly",
+          "span": [
+            1160,
+            1262
+          ]
+        },
+        {
+          "fact_id": 1423,
+          "text": "Phase 11 is the next stage, covering CI, release metadata/tag, CHANGELOG, CONTRIBUTING/SECURITY/templates, with no accuracy tuning; after that come PyPI naming, Hermes MCP wiring, and LongMemEval.",
+          "source_ref": "session:local-df43f0:456:36",
+          "quote": "**Phase 11 is the next stage** \u2014 CI, release metadata/tag, CHANGELOG, CONTRIBUTING/SECURITY/templates; no accuracy tuning. After that: PyPI naming, Hermes MCP wiring, LongMemEval.",
+          "span": [
+            10,
+            189
+          ]
+        },
+        {
+          "fact_id": 1536,
+          "text": "the local publish-guard directory contains a publish hook and audit.log, with allow hits via 'publish-guard allow <fingerprint> --reason \"...\"'",
+          "source_ref": "session:local-df43f0:456:48",
+          "quote": "`publish-guard/` \u2014 publish hook and `audit.log`; allow hits with `publish-guard allow <fingerprint> --reason \"...\"`.",
+          "span": [
+            542,
+            682
+          ]
+        },
+        {
+          "fact_id": 1591,
+          "text": "Phase 11 is mid-flight as of 2026-11-06, creating CI and tagging v0.1.0",
+          "source_ref": "session:local-df43f0:458:1",
+          "quote": "phase 11 is mid-flight right now, creating CI and tagging `v0.1.0`",
+          "span": [
+            32,
+            98
+          ]
+        },
+        {
+          "fact_id": 1592,
+          "text": "Phase 11 was still running as of 2026-11-06, with no CI files or tag yet",
+          "source_ref": "session:local-df43f0:459:0",
+          "quote": "Phase 11 is still running \u2014 no CI files or tag yet",
+          "span": [
+            11,
+            61
+          ]
+        },
+        {
+          "fact_id": 1613,
+          "text": "Cairnstone has no PyPI release as of 2026-11-06 because the machine has no PyPI credentials",
+          "source_ref": "session:local-df43f0:495:1",
+          "quote": "**No PyPI release.** `cairnstone` is unclaimed on PyPI, but this machine has no PyPI credentials \u2014 no `~/.pypirc`, no `TWINE_*` or `PYPI_*` variables.",
+          "span": [
+            504,
+            654
+          ]
+        },
+        {
+          "fact_id": 1619,
+          "text": "v0.1.0 was tagged and pushed as of 2026-11-06",
+          "source_ref": "session:local-df43f0:498:0",
+          "quote": "`v0.1.0` tagged and pushed",
+          "span": [
+            426,
+            452
+          ]
+        }
+      ],
+      "baseline_answer": "v0.1.0",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q14",
+      "question": "How many tests pass in the suite after the rename?",
+      "gold": "83",
+      "known_from": "reports/phase11-review.md",
+      "memory_answer": "83",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 137,
+          "text": "Phase 2 has 26 tests and a clean live smoke run",
+          "source_ref": "session:local-df43f0:88:0",
+          "quote": "Phase 2 reports 26 tests and a clean live smoke run",
+          "span": [
+            11,
+            62
+          ]
+        },
+        {
+          "fact_id": 443,
+          "text": "The test suite result was 46 passed, 0 failed",
+          "source_ref": "session:local-df43f0:198:1",
+          "quote": "pytest: **46 passed, 0 failed",
+          "span": [
+            736,
+            765
+          ]
+        },
+        {
+          "fact_id": 556,
+          "text": "Phase 7 has 62 tests passing",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "Phase 7 result (verified \u2014 62 tests pass)",
+          "span": [
+            149,
+            190
+          ]
+        },
+        {
+          "fact_id": 686,
+          "text": "After running the test suite with 26 passing, additional tests were added; one test was wrong (it assumed two extraction calls from one capture) and was fixed; the final count was 33 passing",
+          "source_ref": "session:local-df43f0:269:12",
+          "quote": "TEST `PYTHONPATH=src python3 -m pytest -q` \u2014 26 passed; then added tests; one test was wrong (assumed two extraction calls from one capture) and was fixed; final **33 passed**",
+          "span": [
+            813,
+            988
+          ]
+        },
+        {
+          "fact_id": 700,
+          "text": "reports/phase4-report.md showed 46 tests; diagnostic on the phase-3 backend: 11/12 rows had gold support, 3 answering failures, 1 retrieval failure; after rewrite answering failures \u2192 0 at every budget",
+          "source_ref": "session:local-df43f0:269:14",
+          "quote": "READ `reports/phase4-report.md` \u2014 46 tests; diagnostic on the phase-3 backend: 11/12 rows had gold support, 3 answering failures, 1 retrieval failure; after rewrite answering failures \u2192 0 at every budget",
+          "span": [
+            1080,
+            1283
+          ]
+        },
+        {
+          "fact_id": 1073,
+          "text": "Cairn has 81 tests that serve as a guard against breakage during a rename",
+          "source_ref": "session:local-df43f0:387:0",
+          "quote": "The 81 tests are the guard that nothing breaks.",
+          "span": [
+            1439,
+            1486
+          ]
+        },
+        {
+          "fact_id": 1087,
+          "text": "The Cairnstone rename is complete: repo, local directory (~/cairnstone), distribution name, Python package, CLI entry point, MCP server name, and env-var prefix (CAIRN_* \u2192 CAIRNSTONE_*) all moved in one pass",
+          "source_ref": "session:local-df43f0:424:0",
+          "quote": "Repo, local directory (`~/cairnstone`), distribution name, Python package, CLI entry point, MCP server name, and the env-var prefix (`CAIRN_*` \u2192 `CAIRNSTONE_*`) all moved in one pass.",
+          "span": [
+            187,
+            370
+          ]
+        },
+        {
+          "fact_id": 1089,
+          "text": "83 tests pass after the Cairnstone rename, including a fresh clone of the renamed repo tested from scratch",
+          "source_ref": "session:local-df43f0:424:0",
+          "quote": "83 tests pass after it, and a **fresh clone of the renamed repo** \u2014 cloned and tested from scratch \u2014 passes 83/83.",
+          "span": [
+            371,
+            485
+          ]
+        },
+        {
+          "fact_id": 1193,
+          "text": "the maintainer wrote 7 independent tests (supersede records replacement + `fact.superseded` change event, self-supersede rejected, quote immutability, version/page integrity) \u2014 15 tests pass",
+          "source_ref": "session:local-df43f0:456:10",
+          "quote": "Wrote 7 independent tests (supersede records replacement + `fact.superseded` change event, self-supersede rejected, quote immutability, version/page integrity) \u2014 15 tests pass",
+          "span": [
+            10,
+            185
+          ]
+        },
+        {
+          "fact_id": 1208,
+          "text": "The test suite for the project reached 33 passing tests after fixes, up from 26",
+          "source_ref": "session:local-df43f0:456:11",
+          "quote": "TEST `PYTHONPATH=src python3 -m pytest -q` \u2014 26 passed; then added tests; one test was wrong (assumed two extraction calls from one capture) and was fixed; final **33 passed**",
+          "span": [
+            813,
+            988
+          ]
+        },
+        {
+          "fact_id": 1222,
+          "text": "reports/phase4-report.md covered 46 tests; the diagnostic on the phase-3 backend showed 11/12 rows had gold support, 3 answering failures, 1 retrieval failure; after rewrite answering failures dropped to 0 at every budget",
+          "source_ref": "session:local-df43f0:456:13",
+          "quote": "READ `reports/phase4-report.md` \u2014 46 tests; diagnostic on the phase-3 backend: 11/12 rows had gold support, 3 answering failures, 1 retrieval failure; after rewrite answering failures \u2192 0 at every budget",
+          "span": [
+            1080,
+            1283
+          ]
+        },
+        {
+          "fact_id": 1264,
+          "text": "reports/phase7-report.md shows 62 tests passing",
+          "source_ref": "session:local-df43f0:456:18",
+          "quote": "READ `reports/phase7-report.md` \u2014 62 tests pass",
+          "span": [
+            640,
+            687
+          ]
+        },
+        {
+          "fact_id": 1274,
+          "text": "The Phase 8 report (reports/phase8-report.md) shows 69 tests pass.",
+          "source_ref": "session:local-df43f0:456:20",
+          "quote": "READ `reports/phase8-report.md` \u2014 69 tests pass.",
+          "span": [
+            466,
+            514
+          ]
+        },
+        {
+          "fact_id": 1514,
+          "text": "The cairn test suite has 81 tests",
+          "source_ref": "session:local-df43f0:456:46",
+          "quote": "part of 81-test suite",
+          "span": [
+            904,
+            925
+          ]
+        },
+        {
+          "fact_id": 1585,
+          "text": "The test invocation pattern is: PYTHONPATH=src python3 -m pytest -q, with 81 tests passing after phase 10",
+          "source_ref": "session:local-df43f0:456:51",
+          "quote": "`PYTHONPATH=src python3 -m pytest -q` (81 passing after phase 10)",
+          "span": [
+            1250,
+            1315
+          ]
+        },
+        {
+          "fact_id": 1598,
+          "text": "83 tests pass as of 2026-11-06, including two new offline-degradation tests, proving the CI scenario works",
+          "source_ref": "session:local-df43f0:484:0",
+          "quote": "83 tests pass, including the two new offline-degradation tests \u2014 that proves the CI scenario now works",
+          "span": [
+            11,
+            113
+          ]
+        },
+        {
+          "fact_id": 1599,
+          "text": "83 tests pass after the rename as of 2026-11-06",
+          "source_ref": "session:local-df43f0:486:0",
+          "quote": "83 tests pass after the rename",
+          "span": [
+            11,
+            41
+          ]
+        },
+        {
+          "fact_id": 1612,
+          "text": "Cairnstone's test suite passed CI with 83 tests on 2026-11-06",
+          "source_ref": "session:local-df43f0:495:1",
+          "quote": "**83 tests, CI green.**",
+          "span": [
+            450,
+            473
+          ]
+        }
+      ],
+      "baseline_answer": "83",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q15",
+      "question": "What was wrong with phase 5's claim of measuring two conversations?",
+      "gold": "all 60 questions came from conv-26 because the question cap was global, so the second conversation was never reached",
+      "known_from": "reports/phase5-review.md",
+      "memory_answer": "All 60 rows were from conv-26 \u2014 the second conversation was never actually measured.",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 358,
+          "text": "Phase 2 was accepted after correction",
+          "source_ref": "session:local-df43f0:153:0",
+          "quote": "## Phase 2 \u2014 accepted after correction",
+          "span": [
+            107,
+            145
+          ]
+        },
+        {
+          "fact_id": 433,
+          "text": "Phase 5 of the project involves scaling to 2 conversations / 60 questions across all three backends",
+          "source_ref": "session:local-df43f0:197:2",
+          "quote": "Phase 5: scale to 2 conversations / 60 questions across all three backends",
+          "span": [
+            11,
+            85
+          ]
+        },
+        {
+          "fact_id": 436,
+          "text": "Phase 5 includes closing the atomic-fact gap",
+          "source_ref": "session:local-df43f0:197:2",
+          "quote": "close the atomic-fact gap",
+          "span": [
+            198,
+            223
+          ]
+        },
+        {
+          "fact_id": 457,
+          "text": "Phase 5 runs for approximately 45 minutes of extraction calls as of 2026-11-05",
+          "source_ref": "session:local-df43f0:199:0",
+          "quote": "While phase 5 runs (~45 min of extraction calls)",
+          "span": [
+            54,
+            102
+          ]
+        },
+        {
+          "fact_id": 459,
+          "text": "Phase 5's result is coherent but admits the 12 retrieval failures weren't audited",
+          "source_ref": "session:local-df43f0:205:0",
+          "quote": "Phase 5's result is coherent but it admits the 12 retrieval failures weren't audited",
+          "span": [
+            11,
+            95
+          ]
+        },
+        {
+          "fact_id": 467,
+          "text": "Phase 5's headline claim was wrong in a way that matters",
+          "source_ref": "session:local-df43f0:216:0",
+          "quote": "phase 5's headline claim was wrong in a way that matters",
+          "span": [
+            93,
+            149
+          ]
+        },
+        {
+          "fact_id": 499,
+          "text": "The phase 5 report claimed 2 conversations but its files held 60 rows all from conv-26",
+          "source_ref": "session:local-df43f0:242:0",
+          "quote": "Phase 5's report** claimed 2 conversations; its files held 60 rows all from `conv-26",
+          "span": [
+            111,
+            195
+          ]
+        },
+        {
+          "fact_id": 577,
+          "text": "Phase 8 scales the sample from 60 to 150 questions across the same two conversations",
+          "source_ref": "session:local-df43f0:259:1",
+          "quote": "and scales the sample from 60 to **150 questions** across the same two conversations",
+          "span": [
+            683,
+            767
+          ]
+        },
+        {
+          "fact_id": 777,
+          "text": "Phase 5 used a stale DB: the scaled eval reused the cached conv-26.db, so the atomic-fact extraction fix was never exercised",
+          "source_ref": "session:local-df43f0:269:22",
+          "quote": "the scaled eval reused the cached `conv-26.db`, so the atomic-fact extraction fix was never exercised",
+          "span": [
+            629,
+            730
+          ]
+        },
+        {
+          "fact_id": 1249,
+          "text": "Wrote reports/phase5-review.md documenting that phase 5's '2 conversations' claim was false (all 60 rows were conv-26), that the cached DB meant the atomic-fact fix was never exercised, and that the diagnostic mislabelled aggregation questions as retrieval failures",
+          "source_ref": "session:local-df43f0:456:16",
+          "quote": "WRITE `reports/phase5-review.md` \u2014 documented that phase 5\u2019s \u201c2 conversations\u201d claim was false (all 60 rows were `conv-26`), that the cached DB meant the atomic-fact fix was never exercised, and that the diagnostic mislabelled aggregation questions as retrieval failures",
+          "span": [
+            624,
+            894
+          ]
+        },
+        {
+          "fact_id": 1445,
+          "text": "Phase 5 false scope: the worker reported 2 conversations, 60 questions, but both result files contained 60 rows all from conv-26 because --max-questions 60 was a global cap and conv-26 alone had more than 60 questions",
+          "source_ref": "session:local-df43f0:456:39",
+          "quote": "the worker reported \u201c2 conversations, 60 questions\u201d; both result files contained 60 rows all from `conv-26` because `--max-questions 60` was a global cap and conv-26 alone had more than 60 questions",
+          "span": [
+            33,
+            231
+          ]
+        },
+        {
+          "fact_id": 1452,
+          "text": "Phase 5 false scope was fixed by adding --questions-per-sample",
+          "source_ref": "session:local-df43f0:456:39",
+          "quote": "Fixed by adding `--questions-per-sample`",
+          "span": [
+            233,
+            273
+          ]
+        },
+        {
+          "fact_id": 1446,
+          "text": "The corrected Phase 5 run produced conv-26 with 419 captures and 528 facts, and conv-30 with 369 captures and 410 facts, with 60 questions split 30/30",
+          "source_ref": "session:local-df43f0:456:39",
+          "quote": "corrected run produced conv-26 (419 captures \u2192 528 facts) and conv-30 (369 captures \u2192 410 facts), 60 questions split 30/30",
+          "span": [
+            275,
+            397
+          ]
+        },
+        {
+          "fact_id": 1447,
+          "text": "The corrected Phase 5 result was cairn 71.7% @ 1,141 tokens vs full_context 50.0% @ 13,277 and naive_rag 36.7% @ 907",
+          "source_ref": "session:local-df43f0:456:39",
+          "quote": "Corrected result: cairn 71.7% @ 1,141 tokens vs full_context 50.0% @ 13,277 and naive_rag 36.7% @ 907",
+          "span": [
+            399,
+            500
+          ]
+        },
+        {
+          "fact_id": 1453,
+          "text": "The Phase 5 stale DB issue was fixed with --recompile",
+          "source_ref": "session:local-df43f0:456:39",
+          "quote": "Fixed with `--recompile`",
+          "span": [
+            694,
+            718
+          ]
+        },
+        {
+          "fact_id": 1449,
+          "text": "After the Phase 5 recompile, \u201cCaroline is single\u201d was verified to exist",
+          "source_ref": "session:local-df43f0:456:39",
+          "quote": "verified \u201cCaroline is single\u201d now exists",
+          "span": [
+            720,
+            760
+          ]
+        },
+        {
+          "fact_id": 1451,
+          "text": "The Phase 5 diagnostic mislabel was fixed by scoring list-like gold per item; the corrected diagnostic was 53/60 gold support, 2 retrieval, 15 answering",
+          "source_ref": "session:local-df43f0:456:39",
+          "quote": "Fixed by scoring list-like gold per item; corrected diagnostic 53/60 gold support, 2 retrieval, 15 answering",
+          "span": [
+            855,
+            963
+          ]
+        },
+        {
+          "fact_id": 1485,
+          "text": "Phase 5's '2 conversations, 60 questions' claim was false; all 60 rows were conv-26",
+          "source_ref": "session:local-df43f0:456:43",
+          "quote": "Its \u201c2 conversations, 60 questions\u201d claim was false; all 60 rows were `conv-26`",
+          "span": [
+            1108,
+            1187
+          ]
+        }
+      ],
+      "baseline_answer": "The headline claim was wrong in a way that mattered.",
+      "baseline_correct": false,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q16",
+      "question": "What did the reviewer find about structured output in TensorFold 1.2.3?",
+      "gold": "still unsupported: response_format and guided fields return HTTP 400 on Metal GLM",
+      "known_from": "reports/tf-canary-1.2.3.md",
+      "memory_answer": "the reviewer found that structured output in TensorFold 1.2.3 still returns HTTP 400 on Metal GLM.",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 133,
+          "text": "TensorFold has no structured output, so invalid JSON gets one strict retry then a recorded failure",
+          "source_ref": "session:local-df43f0:81:2",
+          "quote": "TensorFold has no structured output, so invalid JSON gets one strict retry then a recorded failure \u2014 never a half-parsed object.",
+          "span": [
+            391,
+            519
+          ]
+        },
+        {
+          "fact_id": 185,
+          "text": "The TensorFold engine config is GLM-5.3-Flash-MLX-4bit-MTP with --context 262144, --max-tokens 32768, --parallel 4, --temperature 0, on Apple M3 Metal, served on 127.0.0.1:8460",
+          "source_ref": "session:local-df43f0:104:8",
+          "quote": "records measured engine config (GLM-5.3-Flash-MLX-4bit-MTP, `--context 262144`, `--max-tokens 32768`, `--parallel 4`, `--temperature 0`, Apple M3 Metal, served on 127.0.0.1:8460)",
+          "span": [
+            660,
+            838
+          ]
+        },
+        {
+          "fact_id": 216,
+          "text": "json_object response_format support on TensorFold 1.0.7 was probed but the conclusion was never stated explicitly as of 2026-11-05; the compile pipeline's structured-output design should not assume it works until confirmed.",
+          "source_ref": "session:local-df43f0:104:12",
+          "quote": "`json_object` response_format support on TensorFold 1.0.7 was probed but the conclusion was never stated explicitly; the compile pipeline's structured-output design should not assume it works until confirmed.",
+          "span": [
+            459,
+            667
+          ]
+        },
+        {
+          "fact_id": 407,
+          "text": "TensorFold is missing structured output as of 2026-11-05",
+          "source_ref": "session:local-df43f0:180:2",
+          "quote": "whether to raise TensorFold's missing structured output with Ash Hart",
+          "span": [
+            266,
+            335
+          ]
+        },
+        {
+          "fact_id": 733,
+          "text": "TensorFold has no structured output in version 1.0.7 and rejects response_format and guided_* parameters",
+          "source_ref": "session:local-df43f0:269:18",
+          "quote": "**TensorFold has no structured output in 1.0.7** \u2014 rejects `response_format`/`guided_*`.",
+          "span": [
+            142,
+            230
+          ]
+        },
+        {
+          "fact_id": 784,
+          "text": "TensorFold binary is at runtimes/tensorfold-1.0.7/tensorfold-1.0.7-macos-arm64/bin/tensorfold-native, version 1.0.7, Apache-2.0",
+          "source_ref": "session:local-df43f0:269:23",
+          "quote": "binary `runtimes/tensorfold-1.0.7/tensorfold-1.0.7-macos-arm64/bin/tensorfold-native`, version 1.0.7, Apache-2.0",
+          "span": [
+            1104,
+            1240
+          ]
+        },
+        {
+          "fact_id": 1027,
+          "text": "TensorFold 1.2.3 was tested by the reviewer while the speaker's eval runs had the GPU",
+          "source_ref": "session:local-df43f0:361:1",
+          "quote": "the reviewer tested the new release while my eval runs had the GPU",
+          "span": [
+            68,
+            125
+          ]
+        },
+        {
+          "fact_id": 1029,
+          "text": "TensorFold 1.2.3 still supports message-boundary reuse",
+          "source_ref": "session:local-df43f0:361:1",
+          "quote": "message-boundary reuse still holds",
+          "span": [
+            295,
+            329
+          ]
+        },
+        {
+          "fact_id": 1036,
+          "text": "No upgrade to TensorFold 1.2.3 is needed for cairn's sake",
+          "source_ref": "session:local-df43f0:361:1",
+          "quote": "No upgrade needed for cairn's sake",
+          "span": [
+            367,
+            401
+          ]
+        },
+        {
+          "fact_id": 1171,
+          "text": "TensorFold's version is 1.0.7",
+          "source_ref": "session:local-df43f0:456:7",
+          "quote": "`capabilities --json` and `--version` \u2192 **1.0.7**",
+          "span": [
+            318,
+            367
+          ]
+        },
+        {
+          "fact_id": 1255,
+          "text": "TensorFold cache threshold measured directly on 2026-11-05: a ~110-token stable prefix showed 92/93 prompt tokens, 0 cached, TTFT improving 3.26 s \u2192 0.44 s; a ~1,500-token prefix showed 2,666/2,667 prompt tokens, 2,650 cached, TTFT improving 5.42 s \u2192 0.22 s",
+          "source_ref": "session:local-df43f0:456:17",
+          "quote": "MEASURED TensorFold cache threshold directly \u2014 ~110-token stable prefix: 92/93 prompt tokens, cached 0, TTFT 3.26 \u2192 0.44 s; ~1,500-token prefix: 2,666/2,667 prompt tokens, cached 2,650, TTFT 5.42 \u2192 0.22 s",
+          "span": [
+            474,
+            678
+          ]
+        },
+        {
+          "fact_id": 1335,
+          "text": "TensorFold 1.2.3 canary report by the reviewer found structured output still returns HTTP 400 on Metal GLM",
+          "source_ref": "session:local-df43f0:456:25",
+          "quote": "READ `reports/tf-canary-1.2.3.md` \u2014 TensorFold 1.2.3 canary by the reviewer: structured output is still HTTP 400 on Metal GLM",
+          "span": [
+            616,
+            732
+          ]
+        },
+        {
+          "fact_id": 1331,
+          "text": "Cairn's validate-and-repair path remains necessary because TensorFold 1.2.3 structured output still fails on Metal GLM",
+          "source_ref": "session:local-df43f0:456:25",
+          "quote": "structured output is still HTTP 400 on Metal GLM, so cairn\u2019s validate-and-repair path remains necessary",
+          "span": [
+            684,
+            787
+          ]
+        },
+        {
+          "fact_id": 1368,
+          "text": "Endpoints live: 127.0.0.1:8460 serving glm-5.3-flash via TensorFold, 127.0.0.1:8889 (local-judge), and 127.0.0.1:1234 for nomic embeddings.",
+          "source_ref": "session:local-df43f0:456:30",
+          "quote": "Endpoints live: `127.0.0.1:8460` (TensorFold serving `glm-5.3-flash`), `127.0.0.1:8889` (`local-judge`), `127.0.0.1:1234` (nomic embeddings).",
+          "span": [
+            1213,
+            1361
+          ]
+        },
+        {
+          "fact_id": 1380,
+          "text": "TensorFold 1.2.3 rejects response_format and guided_* parameters on Metal GLM with HTTP 400 and has no structured output support",
+          "source_ref": "session:local-df43f0:456:32",
+          "quote": "TensorFold 1.2.3 still has no structured output** \u2014 rejects `response_format`/`guided_*` on Metal GLM (HTTP 400)",
+          "span": [
+            171,
+            283
+          ]
+        },
+        {
+          "fact_id": 1381,
+          "text": "Cairn must validate and repair structured output since TensorFold 1.2.3 lacks it, making a candidate upstream contribution to Ash Hart",
+          "source_ref": "session:local-df43f0:456:32",
+          "quote": "Cairn must validate and repair; candidate upstream contribution to Ash Hart",
+          "span": [
+            285,
+            360
+          ]
+        }
+      ],
+      "baseline_answer": "Structured output is still HTTP 400 on Metal GLM",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q17",
+      "question": "Why does the compiled backend lose on commonsense questions?",
+      "gold": "a flat fact set loses the surrounding conversation that inference needs",
+      "known_from": "reports/phase8-review.md",
+      "memory_answer": "Design constraint of the compiled representation \u2014 cross-turn inference needs surrounding conversation that a flat fact set loses",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 110,
+          "text": "The full_context backend scored 83.3% accuracy on 12 questions with mean latency 3.153s",
+          "source_ref": "session:local-df43f0:67:4",
+          "quote": "| full_context | 83.3% | 12 | 15043.167 | 3.153 | 0.917 |",
+          "span": [
+            1314,
+            1371
+          ]
+        },
+        {
+          "fact_id": 111,
+          "text": "The naive_rag backend scored 66.7% accuracy on 12 questions with mean latency 2.376s",
+          "source_ref": "session:local-df43f0:67:4",
+          "quote": "| naive_rag | 66.7% | 12 | 770.333 | 2.376 | 0.0 |",
+          "span": [
+            1372,
+            1422
+          ]
+        },
+        {
+          "fact_id": 483,
+          "text": "Cairn scores 50.0% on commonsense questions, behind naive_rag's 100%",
+          "source_ref": "session:local-df43f0:231:1",
+          "quote": "| commonsense (n=4) | 50.0% | 75.0% | **100%** |",
+          "span": [
+            174,
+            222
+          ]
+        },
+        {
+          "fact_id": 484,
+          "text": "Cairn's weakness on multi-hop and commonsense questions is a design constraint of the compiled representation, since cross-turn inference needs surrounding conversation that a flat fact set loses",
+          "source_ref": "session:local-df43f0:231:1",
+          "quote": "That's a genuine limitation of the compiled representation: cross-turn inference needs surrounding conversation, and a flat fact set loses it.",
+          "span": [
+            330,
+            472
+          ]
+        },
+        {
+          "fact_id": 558,
+          "text": "The full_context backend achieved 50.0% accuracy with 13,277 tokens, 75.0% multi-hop, 29.4% temporal, and 75.0% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "full_context | 50.0% | 13,277 | 75.0% | 29.4% | 75.0%",
+          "span": [
+            343,
+            396
+          ]
+        },
+        {
+          "fact_id": 559,
+          "text": "The naive_rag backend achieved 36.7% accuracy with 907 tokens, 50.0% multi-hop, 17.6% temporal, and 100% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "naive_rag | 36.7% | 907 | 50.0% | 17.6% | 100%",
+          "span": [
+            401,
+            447
+          ]
+        },
+        {
+          "fact_id": 576,
+          "text": "Phase 8 adds bounded dialogue-context windows around cited facts for multi-hop and commonsense questions",
+          "source_ref": "session:local-df43f0:259:1",
+          "quote": "Phase 8 does two things: adds bounded **dialogue-context windows** around cited facts for multi-hop and commonsense questions",
+          "span": [
+            442,
+            567
+          ]
+        },
+        {
+          "fact_id": 1212,
+          "text": "On 2026-11-05, Phase 3 added src/cairn/retrieve.py with hybrid search, embedding cache, prefix-stable build_brief, and citation rendering, plus a cairn backend in the harness with per-sample compiled DB cache and superseded_used flagging",
+          "source_ref": "session:local-df43f0:456:12",
+          "quote": "`src/cairn/retrieve.py` (hybrid search, embedding cache, prefix-stable `build_brief`, citation rendering) plus a `cairn` backend in the harness with per-sample compiled DB cache and `superseded_used` flagging",
+          "span": [
+            255,
+            463
+          ]
+        },
+        {
+          "fact_id": 1244,
+          "text": "On 2026-11-05 the user patched eval/harness.py run_backend to add a questions_per_sample per-conversation cap because the global --max-questions alone let conv-26 consume the entire 60-question budget",
+          "source_ref": "session:local-df43f0:456:15",
+          "quote": "PATCH `eval/harness.py` `run_backend` \u2014 added `questions_per_sample` per-conversation cap; global `--max-questions` alone let conv-26 consume the entire 60-question budget, so a run labelled \u201c2 conversations\u201d measured one",
+          "span": [
+            1263,
+            1484
+          ]
+        },
+        {
+          "fact_id": 1246,
+          "text": "Ran corrected eval with --backend cairn --limit 2 --questions-per-sample 30 --max-questions 60 --brief-budget 600 --recompile, plus full_context and naive_rag at the same scope (background pid 79156)",
+          "source_ref": "session:local-df43f0:456:16",
+          "quote": "RUN corrected eval \u2014 `--backend cairn --limit 2 --questions-per-sample 30 --max-questions 60 --brief-budget 600 --recompile`, plus `full_context` and `naive_rag` at the same scope (background pid 79156)",
+          "span": [
+            182,
+            384
+          ]
+        },
+        {
+          "fact_id": 1273,
+          "text": "During Phase 8, the user dispatched an coding-agent worker (pid 76780) with bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message, and instructed it to audit 10 of 33 weak_quote rejections and relax the guard if more than 2 of 10 were valid, run all three backends at --limit 2 --questions-per-sample 75 --max-questions 150, and state whether the larger sample confirms, weakens, or overturns phase 7's 78.3%.",
+          "source_ref": "session:local-df43f0:456:20",
+          "quote": "DISPATCH Phase 8 coding-agent worker (pid 76780) \u2014 bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message; audit 10 of 33 `weak_quote` rejections and relax the guard if more than 2 of 10 were valid; run all three backends at `--limit 2 --questions-per-sample 75 --max-questions 150`; state whether the larger sample confirms, weakens, or overturns phase 7\u2019s 78.3%",
+          "span": [
+            11,
+            432
+          ]
+        },
+        {
+          "fact_id": 1296,
+          "text": "Cairn's phase 9 evaluation scored 63.6% on commonsense questions",
+          "source_ref": "session:local-df43f0:456:22",
+          "quote": "Commonsense 63.6%",
+          "span": [
+            792,
+            809
+          ]
+        },
+        {
+          "fact_id": 1113,
+          "text": "The compile aborted after two captures",
+          "source_ref": "session:local-df43f0:450:0",
+          "quote": "The compile aborted after two captures",
+          "span": [
+            11,
+            49
+          ]
+        }
+      ],
+      "baseline_answer": "A flat fact set loses surrounding conversation needed for cross-turn inference",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q18",
+      "question": "What was phase 8 multi-hop accuracy against full context?",
+      "gold": "67.5% versus 57.3%",
+      "known_from": "reports/phase8-review.md",
+      "memory_answer": "67.5% vs 57.3%",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 536,
+          "text": "Full context achieved 50.0% accuracy, 13,277 tokens, 75.0% multi-hop, and 29.4% temporal in Phase 6 testing",
+          "source_ref": "session:local-df43f0:253:0",
+          "quote": "full_context | 50.0% | 13,277 | 75.0% | 29.4%",
+          "span": [
+            354,
+            399
+          ]
+        },
+        {
+          "fact_id": 558,
+          "text": "The full_context backend achieved 50.0% accuracy with 13,277 tokens, 75.0% multi-hop, 29.4% temporal, and 75.0% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "full_context | 50.0% | 13,277 | 75.0% | 29.4% | 75.0%",
+          "span": [
+            343,
+            396
+          ]
+        },
+        {
+          "fact_id": 559,
+          "text": "The naive_rag backend achieved 36.7% accuracy with 907 tokens, 50.0% multi-hop, 17.6% temporal, and 100% commonsense in Phase 7",
+          "source_ref": "session:local-df43f0:259:0",
+          "quote": "naive_rag | 36.7% | 907 | 50.0% | 17.6% | 100%",
+          "span": [
+            401,
+            447
+          ]
+        },
+        {
+          "fact_id": 576,
+          "text": "Phase 8 adds bounded dialogue-context windows around cited facts for multi-hop and commonsense questions",
+          "source_ref": "session:local-df43f0:259:1",
+          "quote": "Phase 8 does two things: adds bounded **dialogue-context windows** around cited facts for multi-hop and commonsense questions",
+          "span": [
+            442,
+            567
+          ]
+        },
+        {
+          "fact_id": 594,
+          "text": "Cairn achieved 76.0% accuracy at 1,204 tokens on the Phase 8 evaluation",
+          "source_ref": "session:local-df43f0:265:0",
+          "quote": "| **cairn** | **76.0%** | **1,204** | 90.2% | **67.5%** | 68.4% | 54.5% |",
+          "span": [
+            315,
+            388
+          ]
+        },
+        {
+          "fact_id": 596,
+          "text": "Cairn won multi-hop (67.5% vs 57.3%) in Phase 8, where Phase 7 lost it",
+          "source_ref": "session:local-df43f0:265:0",
+          "quote": "cairn now **wins** multi-hop (67.5% vs 57.3%) where phase 7 lost it.",
+          "span": [
+            669,
+            737
+          ]
+        },
+        {
+          "fact_id": 995,
+          "text": "Phase 9 achieved 77.3% overall accuracy, up from 76.0% in phase 8",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "| **overall** | 76.0% | **77.3%** | 53.3% | 45.3% |",
+          "span": [
+            258,
+            309
+          ]
+        },
+        {
+          "fact_id": 997,
+          "text": "Phase 9 multi-hop accuracy was 67.5%, unchanged from phase 8",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "| multi-hop (n=40) | 67.5% | 67.5% | 57.3% | 33.3% |",
+          "span": [
+            362,
+            414
+          ]
+        },
+        {
+          "fact_id": 998,
+          "text": "Phase 9 single-hop accuracy was 73.7%, up 5.3 points from phase 8's 68.4%",
+          "source_ref": "session:local-df43f0:336:0",
+          "quote": "| single-hop (n=38) | 68.4% | **73.7%** | 76.3% | 76.3% |",
+          "span": [
+            415,
+            472
+          ]
+        },
+        {
+          "fact_id": 1268,
+          "text": "Phase 7 accuracy results: cairn 78.3% (temporal 88.2%, multi-hop 65.0%, commonsense 50.0%, single-hop 100%) vs full_context 50.0% and naive_rag 36.7%",
+          "source_ref": "session:local-df43f0:456:18",
+          "quote": "Accuracy: cairn **78.3%** (temporal 88.2%, multi-hop 65.0%, commonsense 50.0%, single-hop 100%) vs full_context 50.0%, naive_rag 36.7%",
+          "span": [
+            1098,
+            1232
+          ]
+        },
+        {
+          "fact_id": 1273,
+          "text": "During Phase 8, the user dispatched an coding-agent worker (pid 76780) with bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message, and instructed it to audit 10 of 33 weak_quote rejections and relax the guard if more than 2 of 10 were valid, run all three backends at --limit 2 --questions-per-sample 75 --max-questions 150, and state whether the larger sample confirms, weakens, or overturns phase 7's 78.3%.",
+          "source_ref": "session:local-df43f0:456:20",
+          "quote": "DISPATCH Phase 8 coding-agent worker (pid 76780) \u2014 bounded Dialogue context windows from cited captures for multi-hop/commonsense without changing the stable system message; audit 10 of 33 `weak_quote` rejections and relax the guard if more than 2 of 10 were valid; run all three backends at `--limit 2 --questions-per-sample 75 --max-questions 150`; state whether the larger sample confirms, weakens, or overturns phase 7\u2019s 78.3%",
+          "span": [
+            11,
+            432
+          ]
+        },
+        {
+          "fact_id": 1276,
+          "text": "With n=150, cairn scored 76.0% (temporal 90.2%, multi-hop 67.5%, commonsense 54.5%, single-hop 68.4%), full_context 53.3%, and naive_rag 45.3%.",
+          "source_ref": "session:local-df43f0:456:20",
+          "quote": "n=150: cairn **76.0%** (temporal 90.2%, multi-hop 67.5%, commonsense 54.5%, single-hop 68.4%), full_context 53.3%, naive_rag 45.3%;",
+          "span": [
+            709,
+            840
+          ]
+        },
+        {
+          "fact_id": 1290,
+          "text": "Dialogue context worked on multi-hop: cairn 67.5% vs full_context 57.3%, reversing phase 7's loss",
+          "source_ref": "session:local-df43f0:456:21",
+          "quote": "dialogue context worked on multi-hop (cairn 67.5% vs full_context 57.3%, reversing phase 7\u2019s loss)",
+          "span": [
+            1262,
+            1360
+          ]
+        },
+        {
+          "fact_id": 1493,
+          "text": "Phase 7 multi-hop accuracy was 65.0% vs full_context 75.0%",
+          "source_ref": "session:local-df43f0:456:44",
+          "quote": "Phase 7 multi-hop 65.0% vs full_context 75.0%",
+          "span": [
+            617,
+            662
+          ]
+        },
+        {
+          "fact_id": 1494,
+          "text": "Phase 8 multi-hop accuracy was 67.5% vs full_context 57.3%, so cairn wins multi-hop at ~95 extra brief tokens",
+          "source_ref": "session:local-df43f0:456:44",
+          "quote": "phase 8 multi-hop 67.5% vs full_context 57.3% \u2014 cairn now wins multi-hop, at ~95 extra brief tokens",
+          "span": [
+            664,
+            763
+          ]
+        },
+        {
+          "fact_id": 1571,
+          "text": "Full context achieved 53.3% accuracy on n=150 in phase 8 (evaluated 2026-11-05)",
+          "source_ref": "session:local-df43f0:456:50",
+          "quote": "| n=150 phase 8 | full_context | 53.3% | 13,278 | \u2014 | \u2014 |",
+          "span": [
+            230,
+            287
+          ]
+        }
+      ],
+      "baseline_answer": "67.5% vs 57.3%",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q19",
+      "question": "What was the project's working name before it was renamed?",
+      "gold": "cairn",
+      "known_from": "CHANGELOG.md",
+      "memory_answer": "Cairn",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 18,
+          "text": "The actual moat of the project is the compile policy set and the retrieval ranking, which require a measured loop of judgement calls rather than CRUD work",
+          "source_ref": "session:local-df43f0:7:1",
+          "quote": "The actual moat (~the whole project):** the compile policy set and the retrieval ranking. \"What to keep, where to put it, what to link it to, when to resurface it\" is not a CRUD problem \u2014 it's a pile of judgement calls that only get right through a measured loop",
+          "span": [
+            935,
+            1197
+          ]
+        },
+        {
+          "fact_id": 34,
+          "text": "The key open question before assigning the work is whether the team is cloning the product or the capability, a fork that changes the estimate by 5\u00d7",
+          "source_ref": "session:local-df43f0:7:3",
+          "quote": "The fork that changes the estimate by 5\u00d7: **are we cloning the product, or the capability?",
+          "span": [
+            1241,
+            1331
+          ]
+        },
+        {
+          "fact_id": 68,
+          "text": "Cairn's working name is Cairn (a stack of stones marking a path), provisional and cheap to change before publishing.",
+          "source_ref": "session:local-df43f0:66:0",
+          "quote": "**Working name:** *Cairn* (a stack of stones marking a path, built one stone at a time). Provisional \u2014 cheap to change before publishing.",
+          "span": [
+            233,
+            370
+          ]
+        },
+        {
+          "fact_id": 363,
+          "text": "Phase 2's contradiction detection was too coarse: keying on \"text before the last number\" made \"Alice has 2 cats\" and \"Alice has 3 dogs\" contradictory and missed month-name dates entirely",
+          "source_ref": "session:local-df43f0:153:0",
+          "quote": "**Contradiction detection was too coarse.** Keying on \"text before the last number\" made *\"Alice has 2 cats\"* and *\"Alice has 3 dogs\"* contradictory, and missed month-name dates entirely.",
+          "span": [
+            1019,
+            1206
+          ]
+        },
+        {
+          "fact_id": 515,
+          "text": "Result JSONs were being excluded from git by the project's own .gitignore; they are now committed",
+          "source_ref": "session:local-df43f0:242:1",
+          "quote": "Result JSONs were being excluded from git by the project's own `.gitignore` \u2014 the actual evidence wasn't tracked. Now committed",
+          "span": [
+            685,
+            812
+          ]
+        },
+        {
+          "fact_id": 620,
+          "text": "The project has no commercial surface: no selling, no billing; Console UI, Slack, and billing are out of scope",
+          "source_ref": "session:local-df43f0:269:4",
+          "quote": "No selling, no billing, no commercial surface. Console UI, Slack, billing are out of scope.",
+          "span": [
+            248,
+            339
+          ]
+        },
+        {
+          "fact_id": 736,
+          "text": "The decision was made to use Cairn as the working name, positioned as an independent reimplementation of the capability, not a clone of code, UI, or pricing",
+          "source_ref": "session:local-df43f0:269:18",
+          "quote": "**Cairn as working name**, positioned as an independent reimplementation of the *capability*, not a clone of code, UI, or pricing.",
+          "span": [
+            737,
+            867
+          ]
+        },
+        {
+          "fact_id": 1022,
+          "text": "As of 2026-11-05, `pip install mcp` installs mcp 2.x, where `FastMCP` was renamed to `MCPServer`",
+          "source_ref": "session:local-df43f0:350:0",
+          "quote": "`pip install mcp` now gives mcp 2.x, where `FastMCP` was renamed to `MCPServer`",
+          "span": [
+            64,
+            143
+          ]
+        },
+        {
+          "fact_id": 1085,
+          "text": "CI is green on the renamed repo as of 2026-11-05",
+          "source_ref": "session:local-df43f0:420:0",
+          "quote": "CI is green on the renamed repo",
+          "span": [
+            11,
+            42
+          ]
+        },
+        {
+          "fact_id": 1087,
+          "text": "The Cairnstone rename is complete: repo, local directory (~/cairnstone), distribution name, Python package, CLI entry point, MCP server name, and env-var prefix (CAIRN_* \u2192 CAIRNSTONE_*) all moved in one pass",
+          "source_ref": "session:local-df43f0:424:0",
+          "quote": "Repo, local directory (`~/cairnstone`), distribution name, Python package, CLI entry point, MCP server name, and the env-var prefix (`CAIRN_*` \u2192 `CAIRNSTONE_*`) all moved in one pass.",
+          "span": [
+            187,
+            370
+          ]
+        },
+        {
+          "fact_id": 1089,
+          "text": "83 tests pass after the Cairnstone rename, including a fresh clone of the renamed repo tested from scratch",
+          "source_ref": "session:local-df43f0:424:0",
+          "quote": "83 tests pass after it, and a **fresh clone of the renamed repo** \u2014 cloned and tested from scratch \u2014 passes 83/83.",
+          "span": [
+            371,
+            485
+          ]
+        },
+        {
+          "fact_id": 1105,
+          "text": "The project was renamed to Cairnstone as of 2026-11-05",
+          "source_ref": "session:local-df43f0:427:0",
+          "quote": "Rename to Cairnstone complete",
+          "span": [
+            456,
+            485
+          ]
+        },
+        {
+          "fact_id": 1139,
+          "text": "The user chose the name Cairnstone for the project.",
+          "source_ref": "session:local-df43f0:456:2",
+          "quote": "Cairnstone it is",
+          "span": [
+            940,
+            956
+          ]
+        },
+        {
+          "fact_id": 1152,
+          "text": "The user's mandate for the project is: open source, local only, coding agent harness, assistant as PM, fully automated",
+          "source_ref": "session:local-df43f0:456:4",
+          "quote": "USER replied with the mandate: open source, local only, coding agent harness, assistant as PM, fully automated",
+          "span": [
+            1101,
+            1202
+          ]
+        },
+        {
+          "fact_id": 1421,
+          "text": "The project is published to GitHub public under the personal account `Boscoeuk`, not an org; the user chose this explicitly",
+          "source_ref": "session:local-df43f0:456:35",
+          "quote": "Publish to GitHub public under personal account** (`Boscoeuk`), not an org; user chose this explicitly",
+          "span": [
+            1160,
+            1262
+          ]
+        },
+        {
+          "fact_id": 1590,
+          "text": "A full rename to TensorCairn would cover repo, PyPI distribution, Python package, CLI entry point, MCP server name, and every doc reference",
+          "source_ref": "session:local-df43f0:458:0",
+          "quote": "the full rename, not a half-measure: repo, PyPI distribution, Python package (`cairn` \u2192 `tensorcairn`), CLI entry point, MCP server name, and every doc reference",
+          "span": [
+            1276,
+            1437
+          ]
+        }
+      ],
+      "baseline_answer": "Cairn",
+      "baseline_correct": true,
+      "baseline_chunks": 3
+    },
+    {
+      "id": "q20",
+      "question": "What did the publish guard flag when the first push was blocked?",
+      "gold": "a LAN IP, local paths, model names, long digit runs and machine-local git emails; each was allowed with a stated reason",
+      "known_from": "reports/phase11-review.md",
+      "memory_answer": "LAN IP 127.0.0.1, 'Mac Studio', model names, local provenance paths, machine-local commit emails, false-positive digit runs in JSON \u2014 14 hits",
+      "memory_correct": true,
+      "memory_citations": [
+        {
+          "fact_id": 136,
+          "text": "Phase 2 is still working as of 2026-11-05",
+          "source_ref": "session:local-df43f0:84:0",
+          "quote": "Phase 2 is still working.",
+          "span": [
+            11,
+            36
+          ]
+        },
+        {
+          "fact_id": 406,
+          "text": "There is an open question about where to publish as of 2026-11-05",
+          "source_ref": "session:local-df43f0:180:2",
+          "quote": "Still open for later: where to publish",
+          "span": [
+            222,
+            260
+          ]
+        },
+        {
+          "fact_id": 603,
+          "text": "Phase 9 is running as of 2026-11-05, recalibrating the refusal rule so any record mentioning the subject counts as answering, combining and listing items rather than picking one, plus refreshing the corpus with the relaxed quote guard",
+          "source_ref": "session:local-df43f0:265:1",
+          "quote": "Phase 9 is running: recalibrating the refusal rule so any record mentioning the subject counts as answering, combining and listing items rather than picking one, plus refreshing the corpus with the relaxed quote guard",
+          "span": [
+            701,
+            918
+          ]
+        },
+        {
+          "fact_id": 1039,
+          "text": "A publish-guard hook blocked a push on 2026-11-05",
+          "source_ref": "session:local-df43f0:366:0",
+          "quote": "A publish-guard hook blocked the push. Checking what it flagged.",
+          "span": [
+            11,
+            75
+          ]
+        },
+        {
+          "fact_id": 1262,
+          "text": "Phase 7 coding-agent worker (pid 35013) was dispatched on 2026-11-05 with subject resolution enforced in code via a `subject` field and grammatical-person validation, near-duplicate claim linking via `duplicate_of`, non-numeric categorical contradiction detection including single-vs-married, and a weak-quote guard",
+          "source_ref": "session:local-df43f0:456:18",
+          "quote": "DISPATCH Phase 7 coding-agent worker (pid 35013) \u2014 subject resolution enforced in code with a `subject` field and grammatical-person validation, near-duplicate claim linking via `duplicate_of`, non-numeric categorical contradiction detection including single-vs-married, weak-quote guard",
+          "span": [
+            228,
+            506
+          ]
+        },
+        {
+          "fact_id": 1336,
+          "text": "the maintainer ran `gh repo create cairn --public --source=. --remote=origin --push` which was blocked by the publish-guard hook",
+          "source_ref": "session:local-df43f0:456:26",
+          "quote": "RAN `gh repo create cairn --public --source=. --remote=origin --push` \u2014 **blocked by publish-guard hook**",
+          "span": [
+            11,
+            116
+          ]
+        },
+        {
+          "fact_id": 1371,
+          "text": "The publish guard at publish-guard blocks git push and gh commands on PII, secret, and estate patterns; current repo hits were individually allowed with reasons, and future pushes may hit it again",
+          "source_ref": "session:local-df43f0:456:31",
+          "quote": "Publish guard: `publish-guard` blocks `git push`/`gh` on PII/secret/estate patterns; current repo hits were individually allowed with reasons. Future pushes may hit it again.",
+          "span": [
+            96,
+            283
+          ]
+        },
+        {
+          "fact_id": 1396,
+          "text": "The system supports a --questions-per-sample flag so multi-conversation coverage is real rather than a global cap consumed by the first conversation",
+          "source_ref": "session:local-df43f0:456:34",
+          "quote": "`--questions-per-sample` so multi-conversation coverage is real rather than a global cap consumed by the first conversation",
+          "span": [
+            105,
+            228
+          ]
+        },
+        {
+          "fact_id": 1422,
+          "text": "Publish-guard hits are allowed individually with stated reasons, never blanket-allowed",
+          "source_ref": "session:local-df43f0:456:35",
+          "quote": "Publish-guard hits are allowed individually with stated reasons**, never blanket-allowed",
+          "span": [
+            1270,
+            1358
+          ]
+        },
+        {
+          "fact_id": 1424,
+          "text": "execute_code's terminal helper ignored the background flag, so the first worker launch silently ran foreground/no-op; fixed by calling terminal directly with background: true, notify: true.",
+          "source_ref": "session:local-df43f0:456:36",
+          "quote": "**`execute_code`\u2019s `terminal` helper ignores `background`**: first worker launch silently ran foreground/no-op. Fixed by calling `terminal` directly with `background: true, notify: true`.",
+          "span": [
+            385,
+            572
+          ]
+        },
+        {
+          "fact_id": 1469,
+          "text": "Cairn's publish-guard blocked the first push on 2026-11-05 with 14 hits (LAN IP 127.0.0.1, 'Mac Studio', model names, local provenance paths, machine-local commit emails, false-positive digit runs in JSON); all were audited, none were secrets/PII, eval/inspect_compile.py's hardcoded path was cleaned, each was allowed with a stated reason, and the push succeeded",
+          "source_ref": "session:local-df43f0:456:41",
+          "quote": "Publish-guard blocked first push** with 14 hits. Audited each: LAN IP `127.0.0.1`, \u201cMac Studio\u201d, model names, local provenance paths, machine-local commit emails, and false-positive card-like digit runs in JSON. None secrets/PII. Cleaned `eval/inspect_compile.py` hardcoded path, allowed each with a stated reason, then pushed successfully.",
+          "span": [
+            421,
+            762
+          ]
+        },
+        {
+          "fact_id": 1536,
+          "text": "the local publish-guard directory contains a publish hook and audit.log, with allow hits via 'publish-guard allow <fingerprint> --reason \"...\"'",
+          "source_ref": "session:local-df43f0:456:48",
+          "quote": "`publish-guard/` \u2014 publish hook and `audit.log`; allow hits with `publish-guard allow <fingerprint> --reason \"...\"`.",
+          "span": [
+            542,
+            682
+          ]
+        },
+        {
+          "fact_id": 1595,
+          "text": "The first CI run for Cairnstone failed as of 2026-11-06",
+          "source_ref": "session:local-df43f0:466:0",
+          "quote": "the first CI run failed",
+          "span": [
+            71,
+            94
+          ]
+        }
+      ],
+      "baseline_answer": "14 hits",
+      "baseline_correct": false,
+      "baseline_chunks": 3
+    }
+  ]
+}
