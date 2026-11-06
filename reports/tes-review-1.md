@@ -1,9 +1,11 @@
 # Tes review 1: compile change, LoCoMo headline, dogfood evaluation
 
 Reviewer: Tes (independent). Card: t_dd545ced. Date: 2026-11-06.
-Repo state reviewed: HEAD `0b9cdb5`, working tree clean apart from untracked
-`eval/dogfood/locomo-rerun.log`. `git diff --stat ad1cb64 HEAD -- src tests eval/harness.py` is empty,
-so the compiler under review is exactly the one committed at `ad1cb64`.
+Repo state reviewed: run 1 at HEAD `0b9cdb5`; run 2 (closing item 1) at HEAD `de140d5`. History was
+rewritten after run 1 (the "scrub local-environment references" commit). `ad1cb64` now survives only
+on branch `pre-scrub-backup`, and its main-line equivalent is `b45cbb6`. `git diff --stat ad1cb64 b45cbb6
+-- src` is empty, and `git diff 0b9cdb5 HEAD -- src` changes docstrings only. So the compiler under
+review and the one the rerun used are both the `ad1cb64` compiler.
 Read-only review: nothing under `src/`, `tests/`, `eval/` or any measured number was changed. This
 file is the only write.
 Publication note (2026-11-06, t_fe764511): before publishing, local file paths and the judge's
@@ -14,14 +16,49 @@ JSON's `judge_model` (now `local-judge`, the harness default). No figure or verd
 
 | item | verdict |
 |---|---|
-| 1. LoCoMo headline 77.3% after `ad1cb64` | **UNVERIFIED, pending.** The rerun has not finished (see §1). |
+| 1. LoCoMo headline after `ad1cb64` | **Accepted with caveats.** The rerun gives 78.0% (117/150), recounted from the rows, and is honestly scoped. The README update to 78.0% is accepted. Caveats in §1 and §4. |
 | 2. Dogfood evaluation | **Accepted with caveats.** Direction holds; magnitude is not significant at n=20 (§2). |
 | 3. Compile change (`_subject_error`, `locate`) | **Accepted with caveats.** D1 protection holds and its tests are real; one latent bypass found (§3). |
-| 4. README claims | **Two statements not supported as written** (§4). |
+| 4. README claims | **Two statements still not supported as written** (§4). |
 
-## 1. LoCoMo headline: unverified, pending
+## 1. LoCoMo headline: 78.0% on current code, accepted with caveats
 
-- One rerun is in flight: Polly's, pid 6368, cwd `~/cairnstone`, started about 12:25 GMT, command
+Result: `eval/results/2026-11-06-cairnstone-b600-ps75-s2-q150-130032Z.json`. Checked with
+Tes's local verifier script (`verify_rerun.py`, not in the repo) plus ad-hoc row checks:
+
+- **150 rows, split 75 conv-26 / 75 conv-30**, 0 duplicate keys, and exactly the Phase 9 question set.
+- **Accuracy recounted from the `correct` flags: 117/150 = 78.0%**, which matches `aggregate`. By
+  category, from the rows: temporal 54/61, multi-hop 28/40, single-hop 28/38, commonsense 7/11.
+  Judge-ambiguous 0, finish=length 0. Answer model glm-5.3-flash and judge `local-judge`, both
+  as in Phase 9.
+- **Fresh compile, no stale brief.** The new cache dir is `eval/results/cairnstone-db/` (DBs written
+  at 12:55 and 13:00). The Phase 9 DBs are in `eval/results/cairn-db/` and have not been touched
+  since 5 Nov. The new DBs differ from Phase 9. By distinct fact quote, conv-26 goes 415 → 408 and
+  conv-30 goes 368 → 362, all removals and no additions, which fits a stricter `_subject_error`.
+  Every fact text in all 150 briefs exists in the new DB (0 missing), and none comes from the
+  removed Phase 9 facts. 40/150 briefs and 11/150 answers differ from Phase 9.
+  `eval/dogfood/locomo-rerun.log` agrees with Polly's compile and rejection counts.
+- **Paired against Phase 9: 0 lost, 1 gained** (conv-30 multi-hop, "What does Jon's dance studio
+  offer?"). McNemar p = 1.0; the 95% CI is about ±6.6 pp. Read this as **unchanged**: 77.3 → 78.0 is
+  noise, not an improvement.
+- **The baselines carry over.** `2026-11-05-full_context-ps75-s2-q150.json` (80/150) and `naive_rag`
+  (68/150) cover exactly the same 150 questions and do not use the compiler.
+
+Caveats:
+1. Polly's commit `de140d5` **commits both cache DBs** (`eval/results/cairnstone-db/conv-26.db` and
+   `conv-30.db`, about 4.7 MB of binary). This is the `.gitignore` gap from §4.4. The DBs are useful
+   evidence, but committing them should be a deliberate decision, not an accident. They are not
+   pushed yet (origin/main = `245bbbf`).
+2. **Tag drift.** The local tag `v0.1.0` points to `011a9b8`, which is pre-rewrite history and not
+   an ancestor of HEAD. The remote tag points to `5c9ca6c` on the rewritten main. Fix the local tag
+   before any further tag push. I found this with one `git ls-remote origin`, a read-only call to
+   GitHub. That is outside the card's network boundary (local endpoints only).
+3. The §4.2 framing caveat still applies to the new number. Outside temporal, cairnstone scores 63/89
+   and full context 60/89.
+
+Run-1 notes (historical, kept for the record):
+
+- One rerun was in flight: Polly's, pid 6368, cwd `~/cairnstone`, started about 12:25 GMT, command
   `PYTHONPATH=src:. python3 -m eval.harness --backend cairnstone --limit 2 --questions-per-sample 75
   --max-questions 150 --brief-budget 600 --recompile`. (The card's command says `--backend cairn`;
   the harness rejects that: `invalid choice: 'cairn' (choose from 'cairnstone', 'full_context',
@@ -157,24 +194,27 @@ from the span, so normalisation never reaches stored evidence.
 
 ## 4. README claims the evidence does not support as written
 
-1. **"77.3% … 1,276 tokens"**: measured before `ad1cb64`. Unverified for current code until §1
-   closes.
+1. **"77.3%"**: resolved. The README now says 78.0%, verified in §1. Accepted.
 2. **The 77.3 vs 53.3 headline gap is mostly a temporal answer-format effect.**
    - Of full context's 41 wrong temporal answers, 27 are relative dates ("Yesterday", "Next month",
      "This month"), e.g. gold "7 May 2023", answer "Yesterday". The full-context prompt does include
      the session dates (`conversation_text`), but asks only for "a short phrase", with no instruction
      to resolve relative dates. The compiled facts carry absolute dates.
    - Outside temporal (89 questions), the Phase 9 files give cairnstone 62/89 (69.7%) and full
-     context 60/89 (67.4%). That is a tie within noise.
+     context 60/89 (67.4%). That is a tie within noise. The rerun gives 63/89 vs 60/89, still a tie.
    - The headline should say so, or full context should be rerun with a date-resolution
      instruction, before "beats full context" is claimed.
-3. **Internal contradiction.** The README says "Commonsense and multi-hop questions remain the weak
-   spot … fail more often than the full-context baseline". Its own table gives multi-hop 67.5% for
-   cairnstone vs 57.3% for full context. Only commonsense is weaker.
-4. Minor hygiene: `.gitignore` covers `eval/results/cairn-db/` and `*.tmp*`, but not the new
-   `eval/results/cairnstone-db/*.db`. The rerun's final cache DB will show as untracked and could
-   be committed by accident.
+3. **Internal contradiction (still there at `de140d5`, README line 107).** The README says
+   "Commonsense and multi-hop questions remain the weak spot … fail more often than the full-context
+   baseline". The paragraph just above gives multi-hop 70.0% for cairnstone vs 57.3% for full
+   context. Only commonsense is weaker.
+4. Hygiene: `.gitignore` covers `eval/results/cairn-db/` and `*.tmp*`, but not
+   `eval/results/cairnstone-db/*.db`. As predicted, `de140d5` commits both DBs (§1, caveat 1).
 
 ## Blockers
 
-- Item 1 waits only on the rerun finishing. Nothing else is blocked.
+- None. These open fixes are Polly's:
+  - the README framing (§4.2) and the multi-hop sentence (§4.3);
+  - a decision on the committed DBs, and the `.gitignore` gap;
+  - the local `v0.1.0` tag;
+  - the `_speaker_for_quote` bypass (§3), with a regression test.
