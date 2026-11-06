@@ -337,6 +337,21 @@ def _is_role_label(name):
     return bool(name) and name.strip().lower() in _ROLE_LABELS
 
 
+def _same_entity(a, b):
+    """True when two subject labels name the same thing ("user" / "The user" / "User")."""
+    if not a or not b:
+        return False
+
+    def canon(value):
+        text = _norm(str(value)).strip().strip(".,;:").lower()
+        for prefix in ("the ", "a ", "an "):
+            if text.startswith(prefix):
+                text = text[len(prefix):]
+        return text
+
+    return canon(a) == canon(b)
+
+
 def _grounded_in_quote(subject, quote):
     """True when the quote actually mentions the subject (by name or content token)."""
     if _subject_named(subject, quote):
@@ -371,7 +386,7 @@ def _subject_error(subject, speaker, quote, capture_text):
             return ("subject_mismatch: quote is about %s, not subject %r"
                     % (mentioned, subj))
         # Otherwise: a quote inside the subject's own turn belongs to the subject.
-        if speaker_l and subj_l == speaker_l:
+        if _same_entity(subj, speaker):
             return None
         if speaker_l and not _is_role_label(speaker):
             # A real person spoke this turn and the subject is somebody else, with
@@ -383,8 +398,14 @@ def _subject_error(subject, speaker, quote, capture_text):
         # requires the quote to support the claim.
         return None
     if speaker_l is None or _is_role_label(speaker):
-        # A transcript role ('assistant', 'user') cannot tell us who 'I' or 'you' is, so
-        # the model's subject is the only identity signal available. Require grounding.
+        # Phase 13 (LongMemEval): a transcript role cannot tell us who 'I' is, but when the
+        # model names that role as the subject ("the user", "assistant") the quote is
+        # definitionally about the speaker of its own turn. Treating role labels as
+        # unusable subjects rejected 100% of LongMemEval captures, so accept them here.
+        if _same_entity(subj, speaker):
+            return None
+        # Otherwise the model's subject is the only identity signal available, and it has
+        # to be grounded in the quote rather than invented.
         if _grounded_in_quote(subj, quote):
             return None
         return ("subject_unresolved: no person-level speaker and subject %r is not "

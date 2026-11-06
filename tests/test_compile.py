@@ -2,7 +2,7 @@
 
 import pytest
 
-from cairnstone import store
+from cairnstone import compile, store
 from cairnstone.compile import (ExtractError, compile_all, dedupe, extract, locate,
                            supersede_contradictions, uncited_facts, upsert_page,
                            write_facts)
@@ -670,3 +670,27 @@ def test_entity_subject_rejected_by_grounding_branch(db):
     assert reason.startswith("subject_unresolved"), reason
     assert "is not mentioned in the quote" in reason, reason
 
+
+
+def test_role_label_subject_accepted_for_its_own_turn():
+    """LongMemEval transcripts use role labels. 'user' as the subject of a user turn is
+    correct, and rejecting it dropped every fact (reject rate 1.0)."""
+    capture = ("Session date: 2023/04/01 (Sat) 10:37\n\n"
+               "user: I just canceled my Forbes magazine subscription in early March.\n"
+               "assistant: That sounds sensible.")
+    assert compile._subject_error("user", "user",
+                                  "I just canceled my Forbes magazine subscription in early March.",
+                                  capture) is None
+    assert compile._subject_error("The user", "user",
+                                  "I just canceled my Forbes magazine subscription in early March.",
+                                  capture) is None
+
+
+def test_role_label_subject_does_not_ground_an_invented_person():
+    """A named subject still needs grounding in the quote when the speaker is a role."""
+    capture = ("Session date: 2023/04/01 (Sat) 10:37\n\n"
+               "user: I just canceled my Forbes magazine subscription in early March.")
+    reason = compile._subject_error("Caroline", "user",
+                                    "I just canceled my Forbes magazine subscription in early March.",
+                                    capture)
+    assert reason and reason.startswith("subject_unresolved")
