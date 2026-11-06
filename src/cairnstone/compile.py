@@ -506,6 +506,32 @@ def dedupe(conn, brain_id):
 
 _CLAUSE_CUT_RE = re.compile(r"\s+(?:by|through|via)\s+", re.IGNORECASE)
 
+# Phase 14: near-duplicate detection was exact-text only, so 'favourite' and
+# 'favorite' never linked. Common British/American spelling variants fold to
+# one American form; the claim key is also reduced to word tokens so case and
+# punctuation cannot split a duplicate pair.
+_SPELLING_VARIANTS = {
+    "favourite": "favorite", "favourites": "favorites", "favour": "favor",
+    "favours": "favors", "colour": "color", "colours": "colors",
+    "colourful": "colorful", "honour": "honor", "honours": "honors",
+    "behaviour": "behavior", "centre": "center", "centres": "centers",
+    "metre": "meter", "theatre": "theater", "organise": "organize",
+    "organised": "organized", "organiser": "organizer", "realise": "realize",
+    "realised": "realized", "recognise": "recognize", "apologise": "apologize",
+    "analyse": "analyze", "catalogue": "catalog", "dialogue": "dialog",
+    "programme": "program", "travelling": "traveling", "traveller": "traveler",
+    "cancelled": "canceled", "labelled": "labeled", "modelled": "modeled",
+    "defence": "defense", "licence": "license", "practise": "practice",
+    "grey": "gray", "whisky": "whiskey",
+}
+
+
+def _fold_spelling(text):
+    """Lowercase word tokens with punctuation dropped and British/American
+    spelling variants folded to one form."""
+    tokens = [t for t in re.findall(r"[a-z0-9]+", text.lower())]
+    return " ".join(_SPELLING_VARIANTS.get(t, t) for t in tokens)
+
 
 def _claim_key(text):
     """A claim's evidence key: the slot-key base (value tokens removed) with trailing
@@ -514,13 +540,16 @@ def _claim_key(text):
     Two facts are duplicates only when the same claim holds with the same value:
     '...in March' and '...in April' share a base but differ in values, so they stay
     distinct for the contradiction pass, while '...by adopting kids' and
-    '...through adoption' collapse to one claim."""
+    '...through adoption' collapse to one claim. The base is compared on folded
+    word tokens (phase 14): case, punctuation and British/American spellings
+    ('favourite'/'favorite') no longer split a duplicate pair."""
     base, values = _split_subject_slot(text)
     if base is None:
         base = _norm(text).lower()
     base = _CLAUSE_CUT_RE.split(base)[0].strip()
-    cat = tuple(sorted(m.group(0).lower()
-                       for _, rx in _CATEGORY_SLOTS
+    base = _fold_spelling(base)
+    cat = tuple(sorted(_fold_spelling(m.group(0))
+                       for _, rx, _advisory in _CATEGORY_SLOTS
                        for m in rx.finditer(_norm(text))))
     return (base, cat, values)
 
@@ -531,50 +560,169 @@ def supersede_contradictions(conn, brain_id):
     """Supersede older facts whose subject/slot matches but value differs.
 
     Phase 7C: slots come from two sources — the numeric/date machinery (a fact's
-    text with its value tokens removed) and a small explicit categorical lexicon
-    (relationship status). Two active facts on the same page with the same key but
-    different values contradict. The newer capture wins; the older fact is
-    superseded via store.supersede_fact, never deleted.
+    text with its value tokens removed) and a small explicit categorical lexicon.
+    Two active facts on the same page with the same key but different values
+    contradict. The newer capture wins; the older fact is superseded via
+    store.supersede_fact, never deleted.
+
+    Phase 14 fixes:
+    - D1: the scan is restricted to canonical rows (`duplicate_of IS NULL`), so a
+      duplicate can no longer replace the canonical fact in the comparison map
+      and hide a contradiction from it. One pass converges.
+    - D3: "newer" is a later `captures.captured_at`, then a higher capture id
+      (insert order within the same timestamp) — never a higher fact id. A
+      capture with no timestamp cannot occur (the column is NOT NULL); the
+      documented tie-break for equal timestamps is capture id order.
+    - D4: when the comparison swaps the rows so the older capture loses, the
+      value stored in the comparison map is swapped along with the row, so the
+      stored value and stored row always agree.
+    - D5(b): a contradiction on an advisory slot (location, occupation) is not
+      decidable by this pass; it is recorded as a `fact.contradiction_flagged`
+      change event and both facts stay active.
+
+    Returns the number of facts superseded. See _supersede_contradictions for
+    the full (superseded, flagged) result.
     """
+    return _supersede_contradictions(conn, brain_id)[0]
+
+
+def _supersede_contradictions(conn, brain_id):
+    """Core contradiction pass. Returns (superseded, flagged)."""
     rows = conn.execute(
-        "SELECT f.id, f.page_id, f.text, f.capture_id FROM facts f JOIN pages p"
-        " ON p.id = f.page_id WHERE p.brain_id = ? AND f.status = 'active'"
+        "SELECT f.id, f.page_id, f.text, f.capture_id, c.captured_at FROM facts f"
+        " JOIN pages p ON p.id = f.page_id"
+        " JOIN captures c ON c.id = f.capture_id"
+        " WHERE p.brain_id = ? AND f.status = 'active' AND f.duplicate_of IS NULL"
         " ORDER BY f.id",
         (brain_id,),
     ).fetchall()
-    superseded = 0
     by_page = {}
     for r in rows:
         by_page.setdefault(r["page_id"], []).append(r)
     superseded_ids = set()
+    superseded = flagged = 0
     for page_id, facts in by_page.items():
-        seen = {}  # slot key -> (value, row)
+        seen = {}  # slot key -> (value, row); value always belongs to row
         for r in facts:
             for key, value in _fact_slots(r["text"]):
                 prev = seen.get(key)
                 if prev is not None and prev[0] != value:
                     old, new = prev[1], r
-                    # Newer capture id wins (captures are inserted in order).
-                    if new["capture_id"] < old["capture_id"]:
+                    old_value, new_value = prev[0], value
+                    # D3: later captured_at wins; equal timestamps fall back to
+                    # capture id (insert order). Fact id is never the clock.
+                    if ((new["captured_at"], new["capture_id"])
+                            < (old["captured_at"], old["capture_id"])):
                         old, new = new, old
-                    if old["id"] not in superseded_ids:
+                        # D4: the swap moves the rows, so the stored values move
+                        # with them — value and row must keep agreeing.
+                        old_value, new_value = new_value, old_value
+                    if _is_advisory_slot(key):
+                        if _write_contradiction_flag(conn, old["id"], new["id"],
+                                                     key, old_value, new_value):
+                            flagged += 1
+                    elif old["id"] not in superseded_ids:
                         store.supersede_fact(conn, old["id"], new["id"])
                         superseded += 1
                         superseded_ids.add(old["id"])
-                    seen[key] = (value, new)
-                elif prev is None or r["id"] > prev[1]["id"]:
+                    seen[key] = (new_value, new)
+                elif prev is None or ((r["captured_at"], r["capture_id"])
+                                      > (prev[1]["captured_at"],
+                                         prev[1]["capture_id"])):
                     seen[key] = (value, r)
-    return superseded
+    return superseded, flagged
 
 
-# Explicit categorical lexicon (phase 7C, defect D4). Deliberately small: each
-# entry is a slot name and the word set that fills it. The slot key keeps the
-# text BEFORE the matched word, so 'plans to become a single parent' (a plan)
-# never conflicts with 'is married' (a status).
+def _write_contradiction_flag(conn, old_id, new_id, key, old_value, new_value):
+    """Record an advisory contradiction between two active facts (phase 14 D5b).
+
+    Writes one `fact.contradiction_flagged` change event, keyed on the older
+    fact. Neither fact is retracted: the flag is advisory. Writing is idempotent
+    — an identical event is not duplicated, so repeated consolidation passes do
+    not grow the event log. Returns True when a new event was written.
+    """
+    payload = json.dumps({
+        "contradicts": new_id,
+        "slot": key,
+        "values": [
+            list(v) if isinstance(v, tuple) else v
+            for v in (old_value, new_value)
+        ],
+    })
+    already = conn.execute(
+        "SELECT 1 FROM change_events WHERE kind = 'fact.contradiction_flagged'"
+        " AND subject_id = ? AND payload_json = ? LIMIT 1",
+        (old_id, payload),
+    ).fetchone()
+    if already:
+        return False
+    brain_id = conn.execute(
+        "SELECT p.brain_id FROM pages p JOIN facts f ON f.page_id = p.id"
+        " WHERE f.id = ?", (old_id,),
+    ).fetchone()["brain_id"]
+    conn.execute(
+        "INSERT INTO change_events(brain_id, kind, subject_id, created_at,"
+        " payload_json) VALUES (?, 'fact.contradiction_flagged', ?, ?, ?)",
+        (brain_id, old_id, store._now(), payload),
+    )
+    conn.commit()
+    return True
+
+
+def consolidate(conn, brain_id):
+    """Run the whole consolidation pass over a brain without touching the model.
+
+    The nightly entry point behind `cairnstone consolidate` (phase 14, D2):
+    dedupe, then supersede contradictions and flag undecidable ones. Idempotent
+    on an unchanged brain: duplicates are already linked, superseded facts have
+    left the active set, and a contradiction flag is written only once.
+    """
+    linked = dedupe(conn, brain_id)
+    superseded, flagged = _supersede_contradictions(conn, brain_id)
+    return {"duplicates_linked": linked, "superseded": superseded,
+            "flagged": flagged}
+
+
+# Explicit categorical lexicon (phase 7C, defect D4; extended phase 14 D5).
+# Each entry is (slot name, value regex, advisory). The regex's first group is
+# always the slot's value; the slot key keeps the text BEFORE the match, so
+# 'plans to become a single parent' (a plan) never conflicts with 'is married'
+# (a status). Advisory slots (location, occupation) are contradictions this pass
+# cannot decide: they are flagged, never superseded (phase 14 D5b).
 _CATEGORY_SLOTS = (
     ("relationship_status",
-     re.compile(r"\b(single|married|divorced|widowed|engaged|dating)\b", re.I)),
+     re.compile(r"\b(single|married|divorced|widowed|engaged|dating)\b", re.I),
+     False),
+    ("location",
+     re.compile(r"\b(?:lives in|lived in|moved to|is moving to)\b\s+(.+)$", re.I),
+     True),
+    ("occupation",
+     re.compile(r"\b(?:works as|work as|working as|is a|is an)\b\s+(.+)$", re.I),
+     True),
 )
+
+_ADVISORY_SLOTS = frozenset(slot for slot, _rx, advisory in _CATEGORY_SLOTS
+                            if advisory)
+
+
+def _is_advisory_slot(key):
+    """True when a slot key belongs to an advisory (flag-only) lexicon entry."""
+    return key.split(":")[1] in _ADVISORY_SLOTS if key.startswith("cat:") else False
+
+
+def _slot_value(slot, raw):
+    """The comparable value for a lexicon match.
+
+    Relationship status keeps its matched word. Location and occupation fold the
+    tail of the sentence to content tokens with dates/numbers removed, so 'moved
+    to Lisbon on 2023-05-25' and 'lives in Lisbon' carry the same value ('lisbon')
+    and rewordings of the same occupation compare equal. Returns None when
+    nothing comparable remains.
+    """
+    if slot == "relationship_status":
+        return raw.lower()
+    tokens = [t for t in _content_tokens(raw) if not _VALUE_RE.fullmatch(t)]
+    return tuple(tokens) or None
 
 
 def _fact_slots(text):
@@ -585,12 +733,13 @@ def _fact_slots(text):
     if key is not None:
         slots.append((key, value))
     norm = _norm(text)
-    for slot, rx in _CATEGORY_SLOTS:
+    for slot, rx, _advisory in _CATEGORY_SLOTS:
         m = rx.search(norm)
         if m:
             prefix = _norm(norm[:m.start()]).lower()
-            if prefix:
-                slots.append(("cat:%s:%s" % (slot, prefix), m.group(1).lower()))
+            value = _slot_value(slot, m.group(1))
+            if prefix and value is not None:
+                slots.append(("cat:%s:%s" % (slot, prefix), value))
     return slots
 
 
@@ -650,6 +799,9 @@ def compile_capture(conn, brain_id, capture_id, client):
         acc, rej = write_facts(conn, page_id, version_id, capture_id, group)
         accepted.extend(acc)
         rejected.extend(rej)
+    # Phase 14, D2: record that this capture has been extracted, so a nightly
+    # `compile` never re-processes it (no duplicate facts, no extra model calls).
+    store.mark_capture_compiled(conn, capture_id)
     return {"capture_id": capture_id, "ok": True, "reason": None,
             "accepted": len(accepted), "rejected": rejected}
 

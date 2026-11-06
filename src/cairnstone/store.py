@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS captures (
     content TEXT NOT NULL,
     sha256 TEXT NOT NULL,
     captured_at TEXT NOT NULL,
-    source_ref TEXT NOT NULL
+    source_ref TEXT NOT NULL,
+    compiled_at TEXT
 );
 
 CREATE TABLE IF NOT EXISTS buckets (
@@ -144,7 +145,11 @@ def init_db(path):
     conn.execute("PRAGMA foreign_keys=ON")
     conn.execute("PRAGMA journal_mode=WAL")
     conn.executescript(SCHEMA)
-    conn.commit()
+    # Migration: databases created before phase 14 lack captures.compiled_at.
+    cols = {r[1] for r in conn.execute("PRAGMA table_info(captures)")}
+    if "compiled_at" not in cols:
+        conn.execute("ALTER TABLE captures ADD COLUMN compiled_at TEXT")
+        conn.commit()
     return conn
 
 
@@ -185,6 +190,13 @@ def add_capture(conn, brain_id, kind, content, source_ref, captured_at=None):
     )
     conn.commit()
     return capture_id
+
+
+def mark_capture_compiled(conn, capture_id):
+    """Record that a capture has been through extraction (phase 14, D2)."""
+    conn.execute("UPDATE captures SET compiled_at = ? WHERE id = ?",
+                 (_now(), capture_id))
+    conn.commit()
 
 
 def get_capture(conn, capture_id):

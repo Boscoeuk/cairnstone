@@ -1,9 +1,10 @@
 """Phase 10 CLI: the `cairnstone` console script.
 
-Subcommands: init, ingest, compile, search, brief, page, history, export.
+Subcommands: init, ingest, compile, consolidate, search, brief, page, history,
+export.
 
-`init`, `ingest`, `search`, `page`, `history` and `export` need no inference
-model. `compile` and `brief` call the local endpoint configured by CAIRN_BASE_URL
+`init`, `ingest`, `consolidate`, `search`, `page`, `history` and `export` need
+no inference model. `compile` and `brief` call the local endpoint configured by CAIRN_BASE_URL
 (default http://127.0.0.1:8460/v1) and CAIRN_MODEL (default glm-5.3-flash).
 There is no cloud fallback: an unreachable endpoint exits non-zero (policy P12).
 
@@ -18,7 +19,7 @@ import sys
 import urllib.error
 
 from . import retrieve, store
-from .compile import compile_capture, dedupe, supersede_contradictions
+from .compile import compile_capture, consolidate, dedupe, supersede_contradictions
 from .llm import DEFAULT_BASE_URL, DEFAULT_MODEL, LLMClient, LLMError
 
 DEFAULT_BRAIN = ("default", "default")  # (workspace name, brain slug)
@@ -119,38 +120,55 @@ def cmd_ingest(args):
 def cmd_compile(args):
     conn = _open_db(args.db)
     brain_id = _brain_id(conn)
-    capture_ids = [r["id"] for r in conn.execute(
-        "SELECT id FROM captures WHERE brain_id = ? ORDER BY id", (brain_id,))]
-    if not capture_ids:
+    if not conn.execute("SELECT 1 FROM captures WHERE brain_id = ? LIMIT 1",
+                        (brain_id,)).fetchone():
         raise CliError("no captures to compile; run `cairnstone ingest` first")
-    client = _client()
-    _require_endpoint(client)
+    # Phase 14, D2: only captures that have never been through extraction are
+    # compiled; everything else is left to the model-free consolidation below.
+    capture_ids = [r["id"] for r in conn.execute(
+        "SELECT id FROM captures WHERE brain_id = ? AND compiled_at IS NULL"
+        " ORDER BY id", (brain_id,))]
     accepted = 0
     rejected = 0
     failed = []
-    # Policy P2: a run rejecting more than max_reject_rate is an extractor
-    # failure; stop rather than writing a thin brain.
-    for cid in capture_ids:
-        result = compile_capture(conn, brain_id, cid, client)
-        if not result["ok"]:
-            failed.append(cid)
-            continue
-        accepted += result["accepted"]
-        rejected += len(result["rejected"])
-        rate = rejected / (accepted + rejected) if (accepted + rejected) else 0.0
-        if rate > args.max_reject_rate:
-            raise CliError(
-                "reject rate %.2f exceeds max_reject_rate %.2f after capture %d; "
-                "stopped without dedupe/supersede (policy P2)"
-                % (rate, args.max_reject_rate, cid))
-    if accepted + rejected == 0:
-        raise CliError("extraction produced no facts for any capture "
-                       "(failed captures: %s)" % failed)
+    if capture_ids:
+        client = _client()
+        _require_endpoint(client)
+        # Policy P2: a run rejecting more than max_reject_rate is an extractor
+        # failure; stop rather than writing a thin brain.
+        for cid in capture_ids:
+            result = compile_capture(conn, brain_id, cid, client)
+            if not result["ok"]:
+                failed.append(cid)
+                continue
+            accepted += result["accepted"]
+            rejected += len(result["rejected"])
+            rate = rejected / (accepted + rejected) if (accepted + rejected) else 0.0
+            if rate > args.max_reject_rate:
+                raise CliError(
+                    "reject rate %.2f exceeds max_reject_rate %.2f after capture %d; "
+                    "stopped without dedupe/supersede (policy P2)"
+                    % (rate, args.max_reject_rate, cid))
+        if accepted + rejected == 0:
+            raise CliError("extraction produced no facts for any capture "
+                           "(failed captures: %s)" % failed)
     duplicates = dedupe(conn, brain_id)
     superseded = supersede_contradictions(conn, brain_id)
     print("ok: compiled captures=%d accepted=%d rejected=%d duplicates_linked=%d "
           "superseded=%d failed_captures=%s"
           % (len(capture_ids), accepted, rejected, duplicates, superseded, failed))
+    return 0
+
+
+def cmd_consolidate(args):
+    """Nightly consolidation pass (phase 14, D2): dedupe + supersede contradictions
+    + contradiction flagging over the whole brain, with no model calls."""
+    conn = _open_db(args.db)
+    brain_id = _brain_id(conn)
+    summary = consolidate(conn, brain_id)
+    print("ok: consolidated duplicates_linked=%d superseded=%d flagged=%d"
+          % (summary["duplicates_linked"], summary["superseded"],
+             summary["flagged"]))
     return 0
 
 
@@ -282,6 +300,11 @@ def build_parser():
     p.add_argument("--db", required=True)
     p.add_argument("--max-reject-rate", type=float, default=MAX_REJECT_RATE_DEFAULT)
     p.set_defaults(func=cmd_compile)
+
+    p = sub.add_parser("consolidate",
+                       help="run the nightly consolidation pass (no model calls)")
+    p.add_argument("--db", required=True)
+    p.set_defaults(func=cmd_consolidate)
 
     p = sub.add_parser("search", help="hybrid search over facts and pages")
     p.add_argument("--db", required=True)

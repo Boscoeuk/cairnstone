@@ -39,6 +39,7 @@ Requires Python 3.10+. After install, the `cairnstone` console script is on your
 cairnstone init --db brain.db
 cairnstone ingest --db brain.db --kind note --source "chat-log-1" --file notes.txt
 cairnstone compile --db brain.db                       # calls the local model endpoint
+cairnstone consolidate --db brain.db                   # nightly pass: dedupe + supersede + flag (no model)
 cairnstone search --db brain.db "Caroline" --limit 5
 cairnstone brief --db brain.db "Where does Caroline live?" --budget 4000
 cairnstone page --db brain.db people/caroline
@@ -46,7 +47,9 @@ cairnstone history --db brain.db 42                    # one fact's citation + c
 cairnstone export --db brain.db --out ./export         # one Markdown file per page
 ```
 
-`init`, `ingest`, `search`, `page`, `history` and `export` need no model. `compile` and
+`init`, `ingest`, `consolidate`, `search`, `page`, `history` and `export` need no model.
+`compile` compiles only captures that have not been compiled before (`consolidate` re-runs
+the model-free merge/supersede/flag pass over the whole brain at any time). `compile` and
 `brief` call the local endpoint configured by `CAIRNSTONE_BASE_URL` (default
 `http://127.0.0.1:8460/v1`) and `CAIRNSTONE_MODEL` (default `glm-5.3-flash`); if it is
 unreachable they exit non-zero with a clear message — there is no cloud fallback.

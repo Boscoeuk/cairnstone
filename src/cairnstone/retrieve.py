@@ -471,6 +471,28 @@ def _jaccard(a, b):
     return len(sa & sb) / len(sa | sb)
 
 
+def _cluster_disagrees(cluster):
+    """True when two facts in a near-duplicate cluster share a slot key but
+    disagree on its value — an undetected contradiction (phase 14, D6)."""
+    from .compile import _fact_slots  # deferred: compile imports this module
+
+    def _slot_map(f):
+        slots = {}
+        for key, value in _fact_slots(f["text"]):
+            norm = value if isinstance(value, tuple) else (value,)
+            slots.setdefault(key, set()).add(norm)
+        return slots
+
+    maps = [_slot_map(f) for _s, f in cluster]
+    for i in range(len(maps)):
+        for j in range(i + 1, len(maps)):
+            for key, values in maps[i].items():
+                other = maps[j].get(key)
+                if other is not None and values != other:
+                    return True
+    return False
+
+
 def select_facts(conn, brain_id, question, budget_tokens):
     """Question-conditioned fact selection (phase 4).
 
@@ -526,6 +548,10 @@ def select_facts(conn, brain_id, question, budget_tokens):
     for score, f in scored:
         by_page.setdefault(f["page_id"], []).append((score, f))
     q_time = _time_frame_tokens(question)
+    # Capture timestamps, needed both for the stale-side fix below and for the
+    # final chronological ordering.
+    stamps = {r["id"]: r["captured_at"] for r in
+              conn.execute("SELECT id, captured_at FROM captures")}
     winners = []
     for page_id in sorted(by_page):
         items = by_page[page_id]
@@ -550,7 +576,17 @@ def select_facts(conn, brain_id, question, budget_tokens):
                                       for m in _DATE_RE.finditer(f["text"])})
                 return (-frame, -s, f["id"])
 
-            winners.append(sorted(cluster, key=_keep)[0])
+            if _cluster_disagrees(cluster):
+                # Phase 14, D6: when a near-duplicate cluster's members disagree
+                # on a slot value (an undetected contradiction), the stale side
+                # must not win — prefer the fact from the latest capture
+                # timestamp, falling back to capture id, then fact id.
+                winner = max(cluster, key=lambda t: (
+                    stamps.get(t[1]["capture_id"], ""), t[1]["capture_id"],
+                    t[1]["id"]))
+            else:
+                winner = sorted(cluster, key=_keep)[0]
+            winners.append(winner)
     winners.sort(key=lambda t: (-t[0], t[1]["id"]))
 
     # Diversity cap + budget packing, in score order. The "### Records" header is
@@ -571,8 +607,6 @@ def select_facts(conn, brain_id, question, budget_tokens):
         per_page[f["page_id"]] = per_page.get(f["page_id"], 0) + 1
 
     # Chronological order: capture timestamp, then capture id, then span.
-    stamps = {r["id"]: r["captured_at"] for r in
-              conn.execute("SELECT id, captured_at FROM captures")}
     selected.sort(key=lambda f: (stamps.get(f["capture_id"], ""), f["capture_id"],
                                  f["span_start"]))
     return selected
