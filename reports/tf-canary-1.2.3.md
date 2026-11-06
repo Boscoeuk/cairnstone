@@ -1,4 +1,4 @@
-# TF 1.2.3 canary probes (the reviewer, t_4a185253, 2026-11-05)
+# TF 1.2.3 canary probes (independent review, t_4a185253, 2026-11-05)
 
 Host: Mac Studio M3 Ultra, 512 GB. Model: `GLM-5.3-Flash-MLX-4bit-MTP@76add2a3` (stock), same files as prod.
 Candidate: `tensorfold-native 1.2.3` on `127.0.0.1:8461` (`/health`: `"version": "1.2.3", "backend": "metal", "device": "Apple M3 Ultra"`).
@@ -11,7 +11,7 @@ Raw evidence (every request/response pair, `/health` + `/metrics` before and aft
 ## Timing and window
 
 - The window had already closed when this card was claimed (21:30 UTC): the Phase 9 coding-agent worker (pid 41551) and the
-  `eval.harness` (pid 42599) were running against `:8460`. the reviewer waited, and loaded 1.2.3 only once both had exited
+  `eval.harness` (pid 42599) were running against `:8460`. The reviewer waited, and loaded 1.2.3 only once both had exited
   (22:06 UTC, two consecutive idle checks, `:8460` `live.connections 0`).
 - Caveat: from about 22:13 to 22:23 an unidentified short-lived Python client (pid 85459, from a Hermes shell session)
   held one stream on `:8460`. Every probe's `other_port_before/after` field shows `:8460` at `connections 1` and

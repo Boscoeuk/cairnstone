@@ -1,7 +1,7 @@
 """Phase 0 evaluation harness: full-context baseline vs naive RAG over LoCoMo.
 
-the maintainer owns this file. It was first drafted by an coding-agent worker and then corrected on
-independent review for four defects: a judge that substring-matched "correct" inside
+This file was first drafted by a coding agent and then corrected on independent review
+for four defects: a judge that substring-matched "correct" inside
 "INCORRECT", thinking left on (which empties `content` on TensorFold), no cap on the
 number of questions (a 3-sample run was ~600 questions), and no engine telemetry.
 
@@ -9,7 +9,7 @@ Usage:
     python -m eval.harness --baseline --limit 1 --max-questions 12
     python -m eval.harness --backend naive_rag --limit 2 --max-questions 40
 
-Numbers produced here are LOCAL-JUDGED (local-judge), not GPT-judged. They are
+Numbers produced here are LOCAL-JUDGED (a local model as judge), not GPT-judged. They are
 comparable in shape to published LoCoMo figures, not identical in judge.
 """
 from __future__ import annotations
@@ -19,6 +19,7 @@ import statistics
 import argparse
 import datetime as dt
 import json
+import os
 import re
 import time
 from pathlib import Path
@@ -33,12 +34,13 @@ from cairnstone.llm import LLMClient
 DATASET = Path(__file__).parent / "datasets" / "locomo10.json"
 RESULTS_DIR = Path(__file__).parent / "results"
 
-ANSWER_URL = "http://127.0.0.1:8460/v1/chat/completions"
-JUDGE_URL = "http://127.0.0.1:8889/v1/chat/completions"
-EMBED_URL = "http://127.0.0.1:1234/v1/embeddings"
-ANSWER_MODEL = "glm-5.3-flash"
-JUDGE_MODEL = "local-judge"
-EMBED_MODEL = "text-embedding-nomic-embed-text-v1.5"
+# Endpoints are local and OpenAI-compatible; override any of them with env vars.
+ANSWER_URL = os.environ.get("CAIRN_ANSWER_URL", "http://127.0.0.1:8460/v1") + "/chat/completions"
+JUDGE_URL = os.environ.get("CAIRN_JUDGE_URL", "http://127.0.0.1:8000/v1") + "/chat/completions"
+EMBED_URL = os.environ.get("CAIRN_EMBED_URL", "http://127.0.0.1:1234/v1") + "/embeddings"
+ANSWER_MODEL = os.environ.get("CAIRN_ANSWER_MODEL", "glm-5.3-flash")
+JUDGE_MODEL = os.environ.get("CAIRN_JUDGE_MODEL", "local-judge")
+EMBED_MODEL = os.environ.get("CAIRN_EMBED_MODEL", "text-embedding-nomic-embed-text-v1.5")
 TIMEOUT = 180
 HEADERS = {"Authorization": "Bearer local", "Content-Type": "application/json"}
 

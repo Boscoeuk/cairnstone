@@ -38,7 +38,7 @@ Two real failure modes are already visible in the rows, both relevant to the com
 1. **Relative time.** "When did Caroline go to the LGBTQ support group?" → gold `7 May 2023`,
    predicted `Yesterday`. A compiled page must anchor dates absolutely; raw transcript retrieval
    invites relative answers.
-2. **Local judging.** Numbers here are judged by `local-judge`, not GPT-judged, so they are
+2. **Local judging.** Numbers here are judged by a local model, not GPT-judged, so they are
    comparable in shape to published LoCoMo figures, not identical to them.
 
 ## Output
@@ -58,11 +58,15 @@ judge and engine identity.
 
 ## Endpoints (local only, OpenAI-compatible)
 
-| role | URL | model |
-|---|---|---|
-| answerer | `http://127.0.0.1:8460/v1` | `glm-5.3-flash` |
-| judge | `http://127.0.0.1:8889/v1` | `local-judge` |
-| embeddings | `http://127.0.0.1:1234/v1` | `text-embedding-nomic-embed-text-v1.5` (768d) |
+| role | env var | default URL | default model |
+|---|---|---|---|
+| answerer | `CAIRN_ANSWER_URL` | `http://127.0.0.1:8460/v1` | `glm-5.3-flash` |
+| judge | `CAIRN_JUDGE_URL` | `http://127.0.0.1:8000/v1` | `local-judge` |
+| embeddings | `CAIRN_EMBED_URL` | `http://127.0.0.1:1234/v1` | `text-embedding-nomic-embed-text-v1.5` (768d) |
+
+`local-judge` is a neutral label: it is whatever OpenAI-compatible local model you point
+`CAIRN_JUDGE_URL` at. Model names can be overridden with `CAIRN_ANSWER_MODEL`, `CAIRN_JUDGE_MODEL`
+and `CAIRN_EMBED_MODEL`.
 
 `Authorization: Bearer local`, 180 s timeout, 2 retries. No cloud call is made anywhere.
 

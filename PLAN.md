@@ -1,12 +1,12 @@
 # PLAN
 
-Owner: the maintainer (project manager, sole Hermes agent). Workers: coding agents (oh-my-pi)
-driving local models only. No cloud inference at any point.
+Owner: Ged Hughes (@Boscoeuk). Development: coding agents driving local models only, with
+every result independently verified. No cloud inference at any point.
 
 ## Ground rules
 
 1. Every phase ends with a **verifiable artifact** and a command that reproduces the result.
-2. No phase is "done" on an agent's assertion. the maintainer runs the acceptance command.
+2. No phase is "done" on an agent's assertion. The maintainer runs the acceptance command.
 3. The compile policy is the product. CRUD, MCP wrapping and SDKs are plumbing.
 4. Eval numbers are always reported with: dataset, subset size, judge model, context tokens,
    and date. Never quote a number without them.

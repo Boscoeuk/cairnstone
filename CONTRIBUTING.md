@@ -17,9 +17,9 @@ For MCP server work: `pip install ".[mcp]"`.
 
 ## Running tests offline
 
-The full suite (81 tests) runs with **no model endpoint and no network**. Tests that
+The full suite (87 tests) runs with **no model endpoint and no network**. Tests that
 need the local model endpoint skip cleanly when it is unreachable — you do not need
-`127.0.0.1` or `127.0.0.1:8460` to contribute. CI runs the same suite on Python 3.10
+any model endpoint to contribute. CI runs the same suite on Python 3.10
 and 3.12 with no endpoint.
 
 ```bash
@@ -29,7 +29,7 @@ python3 -m pytest -q
 ## Hard constraints (do not break these)
 
 - **Local-only inference.** Every model call goes to an endpoint on the local network
-  (`glm-5.3-flash`, `local-judge`, local embeddings). There is no cloud fallback and none
+  (`CAIRN_BASE_URL`, `CAIRN_JUDGE_URL`, local embeddings). There is no cloud fallback and none
   may be added. If an endpoint is unreachable the tool fails loudly.
 - **Citation rules.** Every fact must cite a capture id and character span; the verbatim
   quote is copied from that span at write time. A fact whose quote cannot be located in

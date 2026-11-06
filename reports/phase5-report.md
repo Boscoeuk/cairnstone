@@ -2,7 +2,7 @@
 
 ## DONE
 
-Implemented phase 5 per `docs/phase5-brief.md`: (A) scope-qualified result filenames and
+Implemented phase 5: (A) scope-qualified result filenames and
 median-latency reporting with outlier flags, (B) atomic attribute facts in the extractor with
 offline tests, (C) all three backends run at `--limit 2 --max-questions 60` against the live
 local endpoints.

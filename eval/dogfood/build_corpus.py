@@ -1,6 +1,6 @@
-"""Build a dogfood corpus from this profile's real Hermes session transcript.
+"""Build a dogfood corpus from a real Hermes agent session transcript.
 
-Source: ~/.hermes/state.db (messages table) for the Cairnstone build session.
+Source: a Hermes session database (CAIRN_STATE_DB, default ~/.hermes/state.db), messages table.
 Only user and assistant messages are captured. Tool-result messages are skipped: they are mostly
 raw command output, they dominate the byte count, and the claims we care about are in the prose.
 
@@ -18,7 +18,7 @@ from datetime import datetime, timezone
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 from cairnstone import store  # noqa: E402
 
-STATE_DB = os.path.expanduser("~/.hermes/state.db")
+STATE_DB = os.path.expanduser(os.environ.get("CAIRN_STATE_DB", "~/.hermes/state.db"))
 CHUNK = 1500
 
 

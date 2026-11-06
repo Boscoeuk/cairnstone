@@ -11,7 +11,7 @@ Policies implemented here (docs/compile-policies.md):
   question, the prefix may not. This is what makes TensorFold's per-message-boundary
   prefix cache hit.
 
-Phase 4 selection (docs/phase4-brief.md): facts — not pages — are indexed (FTS5 over
+Phase 4 selection: facts — not pages — are indexed (FTS5 over
 fact text and quote, plus cached per-fact embeddings) and scored against the question
 by lexical overlap, embedding similarity, entity match and slot match; near-duplicates
 collapse; a per-page diversity cap stops one entity flooding the brief; survivors are

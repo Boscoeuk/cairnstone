@@ -1,6 +1,6 @@
 """Dogfood evaluation: compiled memory vs keyword retrieval over the same raw transcript.
 
-Corpus: this profile's own Hermes session transcript (274 captures, no curated reports).
+Corpus: a real Hermes agent session transcript (274 captures, no curated reports).
 Both backends answer with the same local model and the same terse instruction. A local judge
 scores each answer against a gold answer that is independently known from the project's reports.
 

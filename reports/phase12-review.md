@@ -1,12 +1,12 @@
-# Phase 12 — dogfooding on a real transcript (PROVISIONAL: awaiting the reviewer review)
+# Phase 12 — dogfooding on a real transcript (PROVISIONAL: awaiting independent review)
 
-Ged has appointed the reviewer the independent reviewer for Cairnstone. Every number below is the maintainer's
-reading of the evidence and is **not accepted** until the reviewer verifies it (Kanban task
+Ged (the maintainer) appointed an independent reviewer for Cairnstone. Every number below is
+the maintainer's reading of the evidence and is **not accepted** until the reviewer verifies it (Kanban task
 `t_dd545ced`, board `cairnstone`).
 
 ## What was tested
 
-The corpus is this profile's own Hermes session transcript — 366 captures, built by
+The corpus is a real Hermes agent session transcript — 366 captures, built by
 `eval/dogfood/build_corpus.py` from `~/.hermes/state.db`. No curated reports were
 used, so the brain had to recover facts from the raw work record.
 
@@ -46,7 +46,7 @@ when ungrounded, role speaker does not reject a grounded person fact, cosmetic q
 |---|---|---|
 | automated judge (local-judge) | 16/20 (80%) | 11/20 (55%) |
 | second model, blind to the project | 16/20 (80%) | 12/20 (60%) |
-| the maintainer's own reading | 18/20 (90%) | 14/20 (70%) |
+| maintainer's own reading | 18/20 (90%) | 14/20 (70%) |
 
 The direction is consistent across all three readings: compiled memory answers more of these
 questions than keyword retrieval over the same transcript. The magnitude is not settled, and at
@@ -54,8 +54,8 @@ n=20 neither is significance (McNemar exact p ≈ 0.13 on the maintainer's readi
 
 The graders disagree on 5 of 40 verdicts (q05, q07, q09, q10, q20). The automated judge is
 therefore not reliable enough to be the sole arbiter — a finding about the judge, not about the
-compiler. the maintainer wrote the questions and knows the answers, so her reading is not independent
-either. This is precisely why the adjudication now goes to the reviewer.
+compiler. The maintainer wrote the questions and knows the answers, so that reading is not independent
+either. This is precisely why the adjudication now goes to the independent reviewer.
 
 ### Failures worth naming
 

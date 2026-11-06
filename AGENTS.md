@@ -1,13 +1,13 @@
-# AGENTS.md — worker contract
+# AGENTS.md — guidance for AI coding agents
 
-You are a worker agent driven by a coding agent. the maintainer is the project manager and the only Hermes agent
-involved. Read this file and the brief you were given before writing code.
+This file is for AI coding agents working in this repository. Read it before writing code.
 
 ## Rules
 
-1. **Local only.** Model endpoints are `glm-5.3-flash` and `local-judge` (see `the local endpoint configuration`).
-   Embeddings are `http://127.0.0.1:1234/v1`. Never call a cloud API.
-2. **Work only inside `~/cairnstone`.** Do not touch other directories.
+1. **Local inference only.** Every model call goes to an OpenAI-compatible endpoint on the local
+   network, configured by `CAIRN_BASE_URL` / `CAIRN_MODEL` (see README). Embeddings come from a
+   local endpoint too. Never call a cloud API.
+2. **Work only inside this repository.** Do not touch files outside it.
 3. **Run what you write.** Before reporting, execute the code and paste the real command and its
    real output. Never describe what the code would do.
 4. **No fabrication.** If a dataset field is missing, say so. Do not invent sample data.

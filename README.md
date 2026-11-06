@@ -14,8 +14,8 @@ built to run entirely on local hardware.
 ## Hard constraints
 
 - **No cloud inference.** Every model call goes to an endpoint on the local network:
-  - compiler/answerer: `glm-5.3-flash` → `http://127.0.0.1:8460/v1` (`glm-5.3-flash`)
-  - second worker / judge: `local-judge` → `http://127.0.0.1:8889/v1` (`local-judge`)
+  - compiler/answerer: `CAIRN_BASE_URL` (default `http://127.0.0.1:8460/v1`), model `glm-5.3-flash`
+  - judge (evaluation only): `CAIRN_JUDGE_URL` (default `http://127.0.0.1:8000/v1`), model `local-judge`
   - embeddings: `http://127.0.0.1:1234/v1` (`text-embedding-nomic-embed-text-v1.5`, 768d)
 - If an endpoint is unreachable the tool fails loudly. There is no cloud fallback.
 - Data stays on disk. SQLite + Markdown export. Nothing leaves the machine.

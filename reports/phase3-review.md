@@ -55,4 +55,4 @@ currently page-level, not question-conditioned. Selecting *fewer* facts is right
 
 Question-conditioned fact selection, plus a metric that separates retrieval failure from
 answering failure (`gold_support_in_brief`). Without that split we cannot tell whether to fix
-ranking or fix the answerer. See `docs/phase4-brief.md`.
+ranking or fix the answerer. See `reports/phase4-report.md`.
