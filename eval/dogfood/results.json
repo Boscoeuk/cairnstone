@@ -3237,7 +3237,7 @@
       "question": "What did the publish guard flag when the first push was blocked?",
       "gold": "a LAN IP, local paths, model names, long digit runs and machine-local git emails; each was allowed with a stated reason",
       "known_from": "reports/phase11-review.md",
-      "memory_answer": "LAN IP 127.0.0.1, 'Mac Studio', model names, local provenance paths, machine-local commit emails, false-positive digit runs in JSON \u2014 14 hits",
+      "memory_answer": "a private LAN IP, 'Mac Studio', model names, local provenance paths, machine-local commit emails, false-positive digit runs in JSON \u2014 14 hits",
       "memory_correct": true,
       "memory_citations": [
         {
@@ -3342,9 +3342,9 @@
         },
         {
           "fact_id": 1469,
-          "text": "Cairn's publish-guard blocked the first push on 2026-11-05 with 14 hits (LAN IP 127.0.0.1, 'Mac Studio', model names, local provenance paths, machine-local commit emails, false-positive digit runs in JSON); all were audited, none were secrets/PII, eval/inspect_compile.py's hardcoded path was cleaned, each was allowed with a stated reason, and the push succeeded",
+          "text": "Cairn's publish-guard blocked the first push on 2026-11-05 with 14 hits (a private LAN IP, 'Mac Studio', model names, local provenance paths, machine-local commit emails, false-positive digit runs in JSON); all were audited, none were secrets/PII, eval/inspect_compile.py's hardcoded path was cleaned, each was allowed with a stated reason, and the push succeeded",
           "source_ref": "session:local-df43f0:456:41",
-          "quote": "Publish-guard blocked first push** with 14 hits. Audited each: LAN IP `127.0.0.1`, \u201cMac Studio\u201d, model names, local provenance paths, machine-local commit emails, and false-positive card-like digit runs in JSON. None secrets/PII. Cleaned `eval/inspect_compile.py` hardcoded path, allowed each with a stated reason, then pushed successfully.",
+          "quote": "Publish-guard blocked first push** with 14 hits. Audited each: a private LAN IP, \u201cMac Studio\u201d, model names, local provenance paths, machine-local commit emails, and false-positive card-like digit runs in JSON. None secrets/PII. Cleaned `eval/inspect_compile.py` hardcoded path, allowed each with a stated reason, then pushed successfully.",
           "span": [
             421,
             762
