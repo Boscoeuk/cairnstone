@@ -139,7 +139,14 @@ def test_n6_phrasing_variant_relationship_contradicts(db):
     """Found live on the GLM endpoint: "Caroline is single" and "Caroline got
     married in May 2023" keyed as `caroline is` and `caroline got`, so the
     contradiction was never compared and both stayed active. The slot key must
-    identify the subject, not the verb phrase."""
+    identify the subject, not the verb phrase.
+
+    Phase 16 (N11) rewrote the EXPECTED OUTCOME of this test, not its detection:
+    the marriage is an event, so it is history rather than a live claim, and a
+    later "single" must not retract it. The rewrite therefore asserts the event
+    survives while the stale "single" duplicate does not — that both phrasings
+    reach the same slot is asserted directly in tests/test_phase16.py.
+    """
     c1 = _capture(db, "Caroline is single", "2023-05-01T00:00:00+00:00")
     c2 = _capture(db, "Caroline got married in May 2023", "2023-06-01T00:00:00+00:00")
     c3 = _capture(db, "Caroline is single now", "2023-07-01T00:00:00+00:00")
@@ -147,9 +154,12 @@ def test_n6_phrasing_variant_relationship_contradicts(db):
     f2 = _fact(db, "Caroline got married in May 2023", c2)
     f3 = _fact(db, "Caroline is single now", c3)
     consolidate(db[0], db[1])
-    assert _active(db[0]) == ["Caroline is single now"], _active(db[0])
-    assert _row(db[0], f2)["status"] == "superseded"
-    assert _row(db[0], f2)["superseded_by"] == f3
+    active = _active(db[0])
+    assert "Caroline got married in May 2023" in active, active
+    assert "Caroline is single now" in active, active
+    assert "Caroline is single" not in active, active
+    assert _row(db[0], f2)["status"] == "active"
+    assert _row(db[0], f3)["status"] == "active"
 
 
 # ------------------------------------------------------------------ N4

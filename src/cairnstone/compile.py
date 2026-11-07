@@ -480,7 +480,34 @@ def _tokens_overlap(a, b):
 
 # -------------------------------------------------------------------- dedupe
 
-def dedupe(conn, brain_id):
+def _capture_clocks(conn, brain_id):
+    """Ordering clock per capture: {capture_id: (known, stamp, capture_id)}.
+
+    Phase 16 (N9): `known` is 1 only when the stamp was given explicitly
+    (`captured_at_explicit = 1`) AND store.parse_timestamp can read it. An
+    undated or unparseable capture must not beat dated history, so the tuple
+    leads with `known`; among equals the stamp orders (parseable stamps were
+    normalised to ISO UTC at write time, phase 15 N2) and the capture id breaks
+    ties. Two undated captures therefore still order by their ingest stamps."""
+    clocks = {}
+    for r in conn.execute(
+            "SELECT id, captured_at, captured_at_explicit FROM captures"
+            " WHERE brain_id = ?", (brain_id,)):
+        known = 1 if (r["captured_at_explicit"] == 1
+                      and store.parse_timestamp(r["captured_at"]) is not None) \
+            else 0
+        clocks[r["id"]] = (known, r["captured_at"], r["id"])
+    return clocks
+
+
+def _row_clock(row, clocks):
+    """The ordering clock for a fact row's capture, defaulting to a known stamp
+    when the capture is missing from `clocks` (best evidence available)."""
+    return clocks.get(row["capture_id"],
+                      (1, row["captured_at"], row["capture_id"]))
+
+
+def dedupe(conn, brain_id, commit=True):
     """Link identical claims on the same page as corroboration (policy P7).
 
     Phase 7B: claims are matched by evidence, not wording. The slot-key machinery
@@ -494,6 +521,11 @@ def dedupe(conn, brain_id):
     lowest fact id. A re-assertion of an earlier value must be the row the
     contradiction scan reads, or a later truth is hidden as a duplicate
     (single May / married Jun / single Jul ended with "married" active).
+
+    Phase 16 (N9): the comparison uses the capture clock (known, stamp,
+    capture_id), so a dated capture is canonical over an undated one regardless
+    of the stored stamp strings. Phase 16 (N10): `commit=False` leaves the
+    writes uncommitted for a caller that runs the whole pass in one transaction.
     """
     rows = conn.execute(
         "SELECT f.id, f.page_id, f.text, f.capture_id, c.captured_at"
@@ -503,6 +535,7 @@ def dedupe(conn, brain_id):
         " AND f.duplicate_of IS NULL ORDER BY f.id",
         (brain_id,),
     ).fetchall()
+    clocks = _capture_clocks(conn, brain_id)
     canonical, linked = {}, 0
     for r in rows:
         key = (r["page_id"], _claim_key(r["text"]))
@@ -511,9 +544,10 @@ def dedupe(conn, brain_id):
             canonical[key] = r
             continue
         # N1: the newest capture is canonical; ties break to the higher
-        # capture id (insert order), then the higher fact id.
-        if ((r["captured_at"], r["capture_id"], r["id"])
-                > (prev["captured_at"], prev["capture_id"], prev["id"])):
+        # capture id (insert order), then the higher fact id. N9: "newest"
+        # is the capture clock, so a dated capture beats an undated one.
+        if ((_row_clock(r, clocks), r["id"])
+                > (_row_clock(prev, clocks), prev["id"])):
             # The new row is canonical; the previous canonical becomes its
             # duplicate. Rows already pointing at the old canonical are
             # repointed, so `duplicate_of` always names a live canonical row
@@ -528,7 +562,8 @@ def dedupe(conn, brain_id):
             conn.execute("UPDATE facts SET duplicate_of = ? WHERE id = ?",
                          (prev["id"], r["id"]))
         linked += 1
-    conn.commit()
+    if commit:
+        conn.commit()
     return linked
 
 
@@ -614,7 +649,7 @@ def supersede_contradictions(conn, brain_id):
     return _supersede_contradictions(conn, brain_id)[0]
 
 
-def _supersede_contradictions(conn, brain_id):
+def _supersede_contradictions(conn, brain_id, commit=True):
     """Core contradiction pass. Returns (superseded, flagged).
 
     Phase 15 (N1): the comparison timestamp for a fact is the LATEST
@@ -622,6 +657,20 @@ def _supersede_contradictions(conn, brain_id):
     capture id), so a re-assertion that dedupe linked as a duplicate still
     counts as the claim's current truth. The scan reads canonical rows only
     (D1), but each canonical row's clock is its whole duplicate cluster's.
+
+    Phase 16 (N9): every clock is the capture clock (known, stamp, capture_id)
+    — both the per-fact clock and the duplicate-cluster latest — so a dated
+    fact beats an undated or unparseable one regardless of the stored stamp
+    strings, and the P6 equal-instant tie applies only when `known` and the
+    stamp are both equal.
+
+    Phase 16 (N11): when the older row is an event fact and the newer row is a
+    state fact, the pair is not a live contradiction — the event stays active
+    as history, with no supersession and no flag. An event may still supersede
+    an older state, and two events supersede each other normally.
+
+    Phase 16 (N10): `commit=False` leaves the writes uncommitted for a caller
+    that runs the whole pass in one transaction.
     """
     rows = conn.execute(
         "SELECT f.id, f.page_id, f.text, f.capture_id, c.captured_at FROM facts f"
@@ -631,9 +680,9 @@ def _supersede_contradictions(conn, brain_id):
         " ORDER BY f.id",
         (brain_id,),
     ).fetchall()
-    # N1: latest captured_at (then capture id) over each canonical fact's
-    # duplicate cluster. Duplicates were linked by dedupe; a fact that is its
-    # own cluster uses its own stamp.
+    clocks = _capture_clocks(conn, brain_id)
+    # N1: latest clock over each canonical fact's duplicate cluster. Duplicates
+    # were linked by dedupe; a fact that is its own cluster uses its own stamp.
     latest = {}
     for r in conn.execute(
             "SELECT COALESCE(f.duplicate_of, f.id) AS canon,"
@@ -642,63 +691,111 @@ def _supersede_contradictions(conn, brain_id):
             " JOIN pages p ON p.id = f.page_id"
             " WHERE p.brain_id = ? AND f.status = 'active'",
             (brain_id,)):
+        clock = clocks.get(r["capture_id"],
+                           (1, r["captured_at"], r["capture_id"]))
         cur = latest.get(r["canon"])
-        if cur is None or (r["captured_at"], r["capture_id"]) > cur:
-            latest[r["canon"]] = (r["captured_at"], r["capture_id"])
+        if cur is None or clock > cur:
+            latest[r["canon"]] = clock
     by_page = {}
     for r in rows:
         by_page.setdefault(r["page_id"], []).append(r)
     superseded_ids = set()
     superseded = flagged = 0
+    # slot key -> [(value, row, clock)]: every active canonical claim on that
+    # slot. Phase 16 (N11): a slot can carry several stale claims at once
+    # ("is married" and "spouse is Tomas" alongside a later "is single"), so
+    # all of them are resolved against the current truth, not just the most
+    # recently seen one.
+    claims = {}
     for page_id, facts in by_page.items():
-        seen = {}  # slot key -> (value, row); value always belongs to row
         for r in facts:
-            # N1: compare with the cluster's latest timestamp, not the
-            # canonical row's own stamp.
-            stamp, cap_id = latest.get(r["id"], (r["captured_at"],
-                                                 r["capture_id"]))
+            # N1: compare with the cluster's latest clock, not the canonical
+            # row's own stamp.
+            clock = latest.get(r["id"]) or _row_clock(r, clocks)
             for key, value in _fact_slots(r["text"]):
-                prev = seen.get(key)
-                if prev is not None and prev[0] != value:
-                    old, new = prev[1], r
-                    old_value, new_value = prev[0], value
-                    old_stamp, old_cap = prev[2], prev[3]
-                    # D3: later captured_at wins. Fact id is never the clock.
-                    if (stamp, cap_id) < (old_stamp, old_cap):
-                        old, new = new, old
-                        # D4: the swap moves the rows, so the stored values move
-                        # with them — value and row must keep agreeing.
-                        old_value, new_value = new_value, old_value
-                        # N1: each row's clock is its duplicate cluster's latest.
-                        old_stamp, old_cap = latest.get(
-                            old["id"], (old["captured_at"], old["capture_id"]))
-                        stamp, cap_id = latest.get(
-                            new["id"], (new["captured_at"], new["capture_id"]))
-                    if stamp == old_stamp:
-                        # Phase 15 (N5, policy P6): equal timestamps must be
-                        # flagged with neither fact superseded — ambiguity is
-                        # recorded, not resolved by a capture-id coin flip.
-                        # Compare the instant only: including capture_id here
-                        # would make the equality test unreachable for two
-                        # different captures.
-                        if _write_contradiction_flag(conn, old["id"], new["id"],
-                                                     key, old_value, new_value):
-                            flagged += 1
-                    elif _is_advisory_slot(key):
-                        if _write_contradiction_flag(conn, old["id"], new["id"],
-                                                     key, old_value, new_value):
-                            flagged += 1
-                    elif old["id"] not in superseded_ids:
-                        store.supersede_fact(conn, old["id"], new["id"])
-                        superseded += 1
-                        superseded_ids.add(old["id"])
-                    seen[key] = (new_value, new, stamp, cap_id)
-                elif prev is None or (stamp, cap_id) > (prev[2], prev[3]):
-                    seen[key] = (value, r, stamp, cap_id)
+                claims.setdefault(key, []).append((value, r, clock))
+    for key, entries in claims.items():
+        if len({_value_key(e[0]) for e in entries}) < 2:
+            continue
+        s, f = _resolve_slot(conn, entries, key, superseded_ids, commit=commit)
+        superseded += s
+        flagged += f
     return superseded, flagged
 
 
-def _write_contradiction_flag(conn, old_id, new_id, key, old_value, new_value):
+def _value_key(value):
+    """A hashable comparison key for a slot value (str, token tuple, or None)."""
+    if value is None:
+        return ()
+    if isinstance(value, str):
+        return value
+    return tuple(value)
+
+
+def _resolve_slot(conn, entries, key, superseded_ids, commit=True):
+    """Resolve one slot's disagreeing active claims. Returns (superseded, flagged).
+
+    Phase 16: the newest claim by capture clock is the current truth. Every
+    earlier claim that disagrees is superseded by it (all of them, not only the
+    last seen), unless:
+
+    - the newest clock is shared by disagreeing claims (policy P6 ambiguity):
+      every disagreeing pair is flagged and nothing is superseded;
+    - the older claim is an event fact and the newest is a state fact (N11):
+      an event is history, so it stays active with no flag;
+    - the slot is advisory (location, occupation): both stay active and the
+      pair is flagged (D5b).
+    """
+    superseded = flagged = 0
+
+    def _instant(e):
+        # P6/N9: ambiguity is about the instant (known, stamp), never the
+        # capture id — two captures can share a stamp.
+        return e[2][:2]
+
+    top_instant = max(_instant(e) for e in entries)
+    top = [e for e in entries if _instant(e) == top_instant]
+    if len({_value_key(e[0]) for e in top}) > 1:
+        # Equal-instant ambiguity: flag each disagreeing pair, supersede none.
+        pairs = set()
+        for i in range(len(top)):
+            for j in range(i + 1, len(top)):
+                if _value_key(top[i][0]) == _value_key(top[j][0]):
+                    continue
+                a, b = sorted((top[i], top[j]), key=lambda e: e[1]["id"])
+                pairs.add((a[1]["id"], b[1]["id"], _value_key(a[0]),
+                           _value_key(b[0])))
+        for a_id, b_id, a_val, b_val in sorted(pairs):
+            if _write_contradiction_flag(conn, a_id, b_id, key, a_val, b_val,
+                                         commit=commit):
+                flagged += 1
+        return superseded, flagged
+    # Several rows may assert the winning value at the same instant; name the
+    # lowest-id one as the replacement so the result is deterministic.
+    winner = min(top, key=lambda e: e[1]["id"])
+    for old_value, old_row, _old_clock in entries:
+        if _value_key(old_value) == _value_key(winner[0]):
+            continue
+        if old_row["id"] == winner[1]["id"] or old_row["id"] in superseded_ids:
+            continue
+        if _is_event_fact(old_row["text"]) and not _is_event_fact(
+                winner[1]["text"]):
+            continue  # N11: event history is not retracted by a later state
+        if _is_advisory_slot(key):
+            if _write_contradiction_flag(conn, old_row["id"], winner[1]["id"],
+                                         key, old_value, winner[0],
+                                         commit=commit):
+                flagged += 1
+            continue
+        store.supersede_fact(conn, old_row["id"], winner[1]["id"],
+                             commit=commit)
+        superseded += 1
+        superseded_ids.add(old_row["id"])
+    return superseded, flagged
+
+
+def _write_contradiction_flag(conn, old_id, new_id, key, old_value, new_value,
+                              commit=True):
     """Record an advisory contradiction between two active facts (phase 14 D5b).
 
     Writes one `fact.contradiction_flagged` change event, keyed on the older
@@ -730,7 +827,8 @@ def _write_contradiction_flag(conn, old_id, new_id, key, old_value, new_value):
         " payload_json) VALUES (?, 'fact.contradiction_flagged', ?, ?, ?)",
         (brain_id, old_id, store._now(), payload),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
     return True
 
 
@@ -745,23 +843,30 @@ def consolidate(conn, brain_id, max_mutation_rate=None):
     Phase 15 (P11): when `max_mutation_rate` is given and the pass's mutations
     (superseded + flagged) exceed that fraction of the brain's active facts,
     a `PolicyHalt` is raised for review — mass mutation usually means a policy
-    bug rather than a changed world. The mutations are already committed
-    (each helper commits); the halt is a loud stop, not a rollback.
+    bug rather than a changed world.
+
+    Phase 16 (N10): the whole pass runs in ONE transaction. When the rate is
+    exceeded the transaction is rolled back before `PolicyHalt` is raised, so
+    nothing is applied: "halted for review" means the brain is untouched, and
+    the next run re-attempts (and halts again) until the policy is reviewed.
     """
     active = conn.execute(
         "SELECT COUNT(*) AS n FROM facts f JOIN pages p ON p.id = f.page_id"
         " WHERE p.brain_id = ? AND f.status = 'active'", (brain_id,)
     ).fetchone()["n"]
-    linked = dedupe(conn, brain_id)
-    superseded, flagged = _supersede_contradictions(conn, brain_id)
+    linked = dedupe(conn, brain_id, commit=False)
+    superseded, flagged = _supersede_contradictions(conn, brain_id, commit=False)
     if max_mutation_rate is not None and active:
         mutations = superseded + flagged
         if mutations > max_mutation_rate * active:
+            conn.rollback()  # N10: nothing is applied
             raise PolicyHalt(
                 "consolidation mutated %d of %d active facts (%.1f%%), above "
-                "max_mutation_rate %.1f%% (policy P11); halted for review"
+                "max_mutation_rate %.1f%% (policy P11); halted for review — the "
+                "pass was rolled back, so no mutation was applied"
                 % (mutations, active, 100.0 * mutations / active,
                    100.0 * max_mutation_rate))
+    conn.commit()
     return {"duplicates_linked": linked, "superseded": superseded,
             "flagged": flagged}
 
@@ -806,6 +911,13 @@ _CATEGORY_SLOTS = (
      True),
 )
 
+# Phase 16 (N11): "<subject>'s spouse/husband/wife/partner is <name>" forms a
+# relationship_status slot; the value is the documented inference above.
+_SPOUSE_RE = re.compile(
+    r"^(.+?)'s (spouse|husband|wife|partner) (?:is|was)\b\s*(.+)$", re.I)
+_SPOUSE_VALUES = {"spouse": "married", "husband": "married",
+                  "wife": "married", "partner": "partnered"}
+
 
 def _is_role_noun(word):
     """True when the word is a known occupation/role noun (phase 15, N4)."""
@@ -824,6 +936,25 @@ _LOCATION_TAIL_CUT = re.compile(
 def _is_advisory_slot(key):
     """True when a slot key belongs to an advisory (flag-only) lexicon entry."""
     return key.split(":")[1] in _ADVISORY_SLOTS if key.startswith("cat:") else False
+
+
+# Phase 16 (N8/N11): a bounded marker regex separating life EVENTS ("moved to
+# Lisbon", "got married") from STATES ("lives in Lisbon", "is married"). An
+# event is history: a later state does not contradict it, so it is skipped in
+# the brief's contradiction notes and left active by the supersession pass.
+_EVENT_MARKER_RE = re.compile(
+    r"\b(?:moved|moves|moving|migrated|arrived|departed|left|joined|started|"
+    r"began|stopped|quit|resigned|graduated|visited|travelled|traveled|"
+    r"bought|sold|got married|married on|got divorced|divorced on|split up|"
+    r"split from|broke up|met|was born|died)\b", re.IGNORECASE)
+
+
+def _is_event_fact(text):
+    """True when the fact text marks a life event rather than a state.
+
+    Used by the brief's contradiction notes (N8) and by the supersession pass
+    (N11): an event-and-state pair is not a live contradiction."""
+    return bool(_EVENT_MARKER_RE.search(text or ""))
 
 
 def _slot_value(slot, raw):
@@ -854,6 +985,14 @@ _COPULA_TAIL = {
     "now", "currently", "recently", "still", "also", "then", "later",
 }
 
+# Phase 16 (N7): the occupation branch captured "Caroline has been working as"
+# as the subject, so its slot key never matched "Caroline is a nurse". These
+# trailing article/verb tokens are stripped as well. Deliberately NOT here:
+# "plans", "to", "become" — a plan must stay a distinct slot from a status
+# (test_plan_fact_does_not_contradict_status_fact).
+_SUBJECT_TAIL_EXTRAS = frozenset(
+    "a an the working work works spouse husband wife partner".split())
+
 
 def _subject_prefix(text):
     """The subject part of a categorical slot key.
@@ -862,10 +1001,15 @@ def _subject_prefix(text):
     used to say it. "Caroline is single" and "Caroline got married" previously
     keyed as `caroline is` and `caroline got`, so a real contradiction between
     them was never compared. Trailing copulas, auxiliaries and time adverbs are
-    stripped so both key as `caroline`."""
+    stripped so both key as `caroline`. Phase 16 (N7): trailing articles and
+    work/role words are stripped too, and a possessive 's is removed from the
+    final token ("Caroline's spouse is Tomas" keys `caroline`)."""
     tokens = text.split()
-    while tokens and tokens[-1] in _COPULA_TAIL:
+    while tokens and (tokens[-1] in _COPULA_TAIL
+                      or tokens[-1] in _SUBJECT_TAIL_EXTRAS):
         tokens.pop()
+    if tokens and tokens[-1].endswith("'s") and len(tokens[-1]) > 2:
+        tokens[-1] = tokens[-1][:-2]
     return " ".join(tokens)
 
 
@@ -890,20 +1034,39 @@ def _fact_slots(text):
                     continue
                 # The subject is captured inside the match (group 1); the
                 # slot key must carry it, so "Caroline is a nurse" and
-                # "Melanie is a nurse" never collide.
-                prefix = _norm(m.group(1)).lower()
+                # "Melanie is a nurse" never collide. Phase 16 (N7): the
+                # captured subject runs through _subject_prefix, so
+                # "Caroline has been working as a nurse" keys
+                # cat:occupation:caroline, not ...caroline has been.
+                prefix = _subject_prefix(_norm(m.group(1)).lower())
                 value = _slot_value(slot, m.group(2))
             else:
                 prefix = _subject_prefix(_norm(norm[:m.start()]).lower())
                 value = _slot_value(slot, m.group(1))
             if prefix and value is not None:
                 slots.append(("cat:%s:%s" % (slot, prefix), value))
+    # Phase 16 (N11): a spouse implies married — a documented inference, so
+    # "Caroline's spouse is Tomas" carries the same relationship_status slot
+    # (and value) as a same-time "Caroline is married" — no false flag — and
+    # loses to a later "Caroline is single".
+    m = _SPOUSE_RE.search(norm)
+    if m:
+        prefix = _subject_prefix(_norm(m.group(1)).lower())
+        value = _SPOUSE_VALUES.get(m.group(2).lower())
+        if prefix and value:
+            slots.append(("cat:relationship_status:%s" % prefix, value))
     return slots
 
 
-_VALUE_RE = re.compile(r"\d+|(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)"
-                       r"[a-z]*|\b(?:monday|tuesday|wednesday|thursday|friday|"
-                       r"saturday|sunday)\b", re.I)
+# Phase 16 (N7): the month alternation matched a three-letter prefix plus any
+# tail, so "married" was read as the month "mar" + "ried" and the residual key
+# lost its verb. Explicit optional suffixes with word boundaries on both sides
+# keep "Mar 31" a month while "married" is no longer one.
+_VALUE_RE = re.compile(r"\d+|\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|"
+                       r"apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|"
+                       r"sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|"
+                       r"dec(?:ember)?)\b|\b(?:monday|tuesday|wednesday|"
+                       r"thursday|friday|saturday|sunday)\b", re.I)
 
 
 def _split_subject_slot(text):
@@ -920,17 +1083,58 @@ def _split_subject_slot(text):
     norm = _norm(text)
     matches = list(_VALUE_RE.finditer(norm))
     if not matches:
-        return (norm.lower(), None)
+        # Phase 16 (N7): the key is canonicalised here too, so "Caroline is
+        # single" and "Caroline is single now" share a slot key instead of
+        # carrying the extractor's phrasing.
+        return (_canonical_slot_key(norm.lower()) or None, None)
     parts, values, pos = [], [], 0
     for m in matches:
         parts.append(norm[pos:m.start()])
         values.append(m.group(0).lower())
         pos = m.end()
     parts.append(norm[pos:])
-    key = " ".join(" ".join(parts).split()).lower()
+    key = _canonical_slot_key(" ".join(" ".join(parts).split()).lower())
     if not key:
-        return (None, None)
+        return (None, tuple(values))
     return (key, tuple(values))
+
+
+# Phase 16 (N7): the residual key carried the extractor's phrasing ("has been
+# working as", "as of - - ."), so paraphrases of one claim never shared a slot
+# key and stale values stayed active. Canonicalise it to the claim's content:
+# word tokens only, no possessives, no copula/auxiliary boilerplate, plural
+# nouns folded to one form.
+_SLOT_KEY_TOKEN_RE = re.compile(r"[a-z0-9']+")
+
+_SLOT_KEY_BOILERPLATE = frozenset("""
+    a an the is are was were be been being am has have had having as of for
+    since during working now currently recently still also then later
+""".split())
+
+_IRREGULAR_SINGULARS = {
+    "children": "child", "people": "person", "men": "man", "women": "woman",
+    "feet": "foot", "teeth": "tooth", "mice": "mouse",
+}
+
+
+def _canonical_slot_key(residual):
+    """Canonical form of a residual slot key: content tokens only.
+
+    Drops punctuation fragments, possessive 's, boilerplate copulas/auxiliaries
+    and time-adverb filler, and singularises plural nouns (irregulars via map,
+    otherwise a trailing s on tokens of length >= 4 not ending in ss/us/is)."""
+    tokens = []
+    for tok in _SLOT_KEY_TOKEN_RE.findall(residual):
+        if tok.endswith("'s") and len(tok) > 2:
+            tok = tok[:-2]
+        if tok in _SLOT_KEY_BOILERPLATE:
+            continue
+        tok = _IRREGULAR_SINGULARS.get(tok, tok)
+        if (len(tok) >= 4 and tok.endswith("s")
+                and not tok.endswith(("ss", "us", "is"))):
+            tok = tok[:-1]
+        tokens.append(tok)
+    return " ".join(tokens)
 
 
 # ------------------------------------------------------------------- compile

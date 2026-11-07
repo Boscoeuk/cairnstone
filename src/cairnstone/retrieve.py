@@ -554,8 +554,7 @@ def select_facts(conn, brain_id, question, budget_tokens):
     q_time = _time_frame_tokens(question)
     # Capture timestamps, needed both for the stale-side fix below and for the
     # final chronological ordering.
-    stamps = {r["id"]: r["captured_at"] for r in
-              conn.execute("SELECT id, captured_at FROM captures")}
+    stamps = _capture_stamps(conn)
     winners = []
     for page_id in sorted(by_page):
         items = by_page[page_id]
@@ -626,14 +625,34 @@ def select_facts(conn, brain_id, question, budget_tokens):
     return selected
 
 
-def _contradiction_notes(selected):
-    """Brief lines marking unresolved contradictions among selected facts (N3).
+def _capture_stamps(conn):
+    """capture id -> captured_at stamp, for chronological ordering.
 
-    For each disagreeing pair (newest first), one line: "Earlier: <older fact>
-    (contradicts <newer fact>)". Deterministic and derived only from the
-    selected rows, so the volatile block stays reproducible.
+    Phase 16 (N8): the brief's contradiction notes must decide "earlier" from
+    this stamp, not from a fact's position in the selected list.
     """
-    from .compile import _fact_slots  # deferred: compile imports this module
+    return {r["id"]: r["captured_at"] for r in
+            conn.execute("SELECT id, captured_at FROM captures")}
+
+
+def _contradiction_notes(selected, stamps):
+    """Brief lines marking live contradictions among selected facts (N3).
+
+    One line per disagreeing pair of ACTIVE facts on the same page: either
+    "Earlier: <older fact> (contradicts <newer fact>)" when the capture stamps
+    can be ordered, or "Unresolved: <a fact> (contradicts <b fact>, capture
+    times not comparable)" when they cannot. Deterministic and derived only from
+    the selected rows and the capture stamps, so the volatile block stays
+    reproducible.
+
+    Phase 16 (N8): "Earlier" is the fact whose capture stamp is older — the
+    previous version labelled whichever row came second in `selected` as
+    "Earlier", so a newer claim was routinely marked as the older one. Pairs
+    where either side is superseded are resolved, not live, and are skipped;
+    so are event-versus-state pairs (an older marriage event is history, not a
+    contradiction of a later "is single").
+    """
+    from .compile import _fact_slots, _is_event_fact  # deferred: circular import
 
     def _slot_map(f):
         slots = {}
@@ -642,19 +661,41 @@ def _contradiction_notes(selected):
             slots.setdefault(key, set()).add(norm)
         return slots
 
-    notes = []
-    for i, newer in enumerate(selected):
-        newer_slots = _slot_map(newer)
-        for older in selected[i + 1:]:
-            if older["page_id"] != newer["page_id"]:
+    def _disagrees(a_slots, b_slots):
+        return any(key in b_slots and b_slots[key] != values
+                   for key, values in a_slots.items())
+
+    active = [f for f in selected if f["status"] == "active"]
+    entries = []
+    seen = set()
+    for i, a in enumerate(active):
+        a_slots = _slot_map(a)
+        for b in active[i + 1:]:
+            if a["page_id"] != b["page_id"]:
                 continue
-            for key, values in _slot_map(older).items():
-                other = newer_slots.get(key)
-                if other is not None and values != other:
-                    notes.append("Earlier: %s (contradicts %s)"
-                                 % (older["text"], newer["text"]))
-                    break
-    return notes
+            # An event and a state are not a contradiction (N11/N8).
+            if _is_event_fact(a["text"]) != _is_event_fact(b["text"]):
+                continue
+            if not _disagrees(a_slots, _slot_map(b)):
+                continue
+            low, high = sorted((a, b), key=lambda f: f["id"])
+            if (low["id"], high["id"]) in seen:
+                continue
+            seen.add((low["id"], high["id"]))
+            sa = store.parse_timestamp(stamps.get(a["capture_id"]) or "")
+            sb = store.parse_timestamp(stamps.get(b["capture_id"]) or "")
+            if sa is not None and sb is not None and sa != sb:
+                older, newer = (a, b) if sa < sb else (b, a)
+                text = "Earlier: %s (contradicts %s)" % (older["text"],
+                                                         newer["text"])
+                sort_stamp = stamps.get(older["capture_id"]) or ""
+            else:
+                text = ("Unresolved: %s (contradicts %s, capture times not "
+                        "comparable)" % (low["text"], high["text"]))
+                sort_stamp = ""
+            entries.append((sort_stamp, low["id"], high["id"], text))
+    entries.sort(key=lambda e: (e[0], e[1], e[2]))
+    return [e[3] for e in entries]
 
 
 def build_brief(conn, brain_id, question, budget_tokens=4000, category=None):
@@ -687,7 +728,7 @@ def build_brief(conn, brain_id, question, budget_tokens=4000, category=None):
         # Phase 15 (N3): when two selected records on the same page disagree
         # on a slot value, say so in the brief text — the flag must be visible
         # to a reader of the brief, not only in the change_events log.
-        lines.extend(_contradiction_notes(selected))
+        lines.extend(_contradiction_notes(selected, _capture_stamps(conn)))
         if _looks_multi_hop(question):
             # Phase 6: quotes carry the surrounding detail the compiled claim
             # abstracts away; multi-hop questions need it to combine facts.

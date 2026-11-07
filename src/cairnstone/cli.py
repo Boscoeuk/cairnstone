@@ -140,6 +140,17 @@ def cmd_init(args):
 def cmd_ingest(args):
     if args.kind not in ("note", "chat", "document"):
         raise CliError("kind must be note, chat or document (got %r)" % args.kind)
+    # Phase 16 (N9): a missing or unparseable stamp must be visible at the point
+    # of ingest, not only in `--help`. Both cases store a capture that cannot
+    # outrank dated history, so say so on stderr rather than exiting silently.
+    if args.captured_at is None:
+        print("warning: no --captured-at given; this capture is stamped with "
+              "ingest time and will not outrank dated history",
+              file=sys.stderr)
+    elif store.parse_timestamp(args.captured_at) is None:
+        print("warning: --captured-at %r is not a parseable timestamp; it is "
+              "stored verbatim and treated as undated" % args.captured_at,
+              file=sys.stderr)
     conn = _open_db(args.db)
     brain_id = _brain_id(conn)
     with open(args.file, "r", encoding="utf-8") as fh:

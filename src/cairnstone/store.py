@@ -36,7 +36,8 @@ CREATE TABLE IF NOT EXISTS captures (
     sha256 TEXT NOT NULL,
     captured_at TEXT NOT NULL,
     source_ref TEXT NOT NULL,
-    compiled_at TEXT
+    compiled_at TEXT,
+    captured_at_explicit INTEGER NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS buckets (
@@ -154,6 +155,15 @@ def init_db(path):
     # Phase 15 (N2): provenance for the original, unnormalised timestamp.
     if "captured_at_text" not in cols:
         conn.execute("ALTER TABLE captures ADD COLUMN captured_at_text TEXT")
+    # Phase 16 (N9): whether the stamp was supplied by the caller rather than
+    # defaulted to ingest time. An undated capture must not outrank dated
+    # history, so consolidation orders on this flag first.
+    if "captured_at_explicit" not in cols:
+        # Existing rows keep 1: their stored stamp is the best evidence there
+        # is, and defaulting them to 0 would silently demote every capture in a
+        # pre-phase-16 database. Only new ingests are classified explicitly.
+        conn.execute("ALTER TABLE captures ADD COLUMN captured_at_explicit"
+                     " INTEGER NOT NULL DEFAULT 1")
     conn.commit()
     _migrate_timestamps(conn)
     _backfill_compiled_at(conn)
@@ -301,14 +311,21 @@ def add_capture(conn, brain_id, kind, content, source_ref, captured_at=None):
     `captured_at_text` for provenance. A missing value defaults to now —
     `cairnstone ingest --captured-at` exists so a backfill need not silently
     mean "ingest time".
+
+    Phase 16 (N9): `captured_at_explicit` records whether the caller supplied a
+    stamp that `parse_timestamp` can read. Consolidation orders explicit,
+    parseable stamps ahead of defaulted or unparseable ones, so an undated
+    backfill cannot beat dated history.
     """
     original = captured_at
     stamp = normalise_timestamp(captured_at) if captured_at else _now()
+    explicit = 1 if (captured_at and parse_timestamp(captured_at) is not None) else 0
     cur = conn.execute(
         "INSERT INTO captures(brain_id, kind, content, sha256, captured_at,"
-        " captured_at_text, source_ref)"
-        " VALUES (?, ?, ?, ?, ?, ?, ?)",
-        (brain_id, kind, content, _sha256(content), stamp, original, source_ref),
+        " captured_at_text, source_ref, captured_at_explicit)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+        (brain_id, kind, content, _sha256(content), stamp, original, source_ref,
+         explicit),
     )
     capture_id = cur.lastrowid
     conn.execute(
@@ -443,8 +460,12 @@ def add_fact(conn, page_id, page_version_id, text, capture_id, span_start, span_
     return cur.lastrowid
 
 
-def supersede_fact(conn, fact_id, by_fact_id):
-    """Mark a fact superseded by another, recording the replacement. History is never deleted."""
+def supersede_fact(conn, fact_id, by_fact_id, commit=True):
+    """Mark a fact superseded by another, recording the replacement. History is never deleted.
+
+    Phase 16 (N10): `commit=False` leaves the write uncommitted for a caller
+    running the whole consolidation pass in one transaction.
+    """
     row = conn.execute("SELECT id, status FROM facts WHERE id = ?", (fact_id,)).fetchone()
     if row is None:
         raise NotFoundError("fact %d not found" % fact_id)
@@ -465,7 +486,8 @@ def supersede_fact(conn, fact_id, by_fact_id):
         " VALUES (?, 'fact.superseded', ?, ?, ?)",
         (brain_id, fact_id, _now(), json.dumps({"superseded_by": by_fact_id})),
     )
-    conn.commit()
+    if commit:
+        conn.commit()
 
 
 def facts_for_page(conn, page_id, status=None, include_duplicates=False):

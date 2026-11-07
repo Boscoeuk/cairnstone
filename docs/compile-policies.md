@@ -86,6 +86,17 @@ interactive traffic: it reads TensorFold's `/health` and backs off while
 `max_mutation_rate` (default 0.2) of a brain's facts in one pass is halted for review, because
 mass mutation usually means a policy bug rather than a changed world.
 
+A halt is a rollback, not a partial commit: the whole pass (dedupe, supersession, flags) runs in
+one transaction, and when the mutation rate is exceeded that transaction is rolled back before
+`PolicyHalt` is raised. The brain is left exactly as it was, so the next run re-attempts the same
+pass and halts again until the policy is reviewed — a halted pass can never become permanent by
+accident.
+
+Ordering inside the pass uses the capture stamp, and a stamp counts as authoritative only when it
+was supplied explicitly at ingest and parses as a timestamp. A capture ingested without
+`--captured-at`, or with a stamp that does not parse, is treated as undated: it never outranks
+dated history, and `cairnstone ingest` warns on stderr in both cases.
+
 ## P12 — Local only
 
 No policy may introduce a cloud call. If a local endpoint is unreachable the pass fails loudly
