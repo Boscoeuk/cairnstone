@@ -19,7 +19,8 @@ import sys
 import urllib.error
 
 from . import retrieve, store
-from .compile import compile_capture, consolidate, dedupe, supersede_contradictions
+from .compile import (PolicyHalt, compile_capture, consolidate, dedupe,
+                      supersede_contradictions)
 from .llm import DEFAULT_BASE_URL, DEFAULT_MODEL, LLMClient, LLMError
 
 DEFAULT_BRAIN = ("default", "default")  # (workspace name, brain slug)
@@ -91,6 +92,38 @@ def _require_endpoint(client):
                        "(policy P12)" % (client.base_url, exc)) from exc
 
 
+def _health_backoff(client, max_wait=120.0):
+    """Yield to interactive traffic before model calls (policy P11, R4).
+
+    Reads TensorFold's `/health` and sleeps while `live.connections` is at the
+    engine's `max_batch_size` (its `--parallel` limit), so a nightly batch never
+    starves an interactive user. Bounded by `max_wait` so a wedged engine
+    cannot hang the pass forever; a missing or unreadable `/health` is not an
+    error — the back-off is advisory, P12's loud failure still applies to the
+    model calls themselves.
+    """
+    import time
+    import urllib.request
+    url = client.base_url.rsplit("/v1", 1)[0] + "/health"
+    deadline = time.monotonic() + max_wait
+    waited = 0.0
+    while True:
+        try:
+            req = urllib.request.Request(url, method="GET")
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                health = json.loads(resp.read().decode("utf-8"))
+            live = health.get("live") or {}
+            parallel = health.get("max_batch_size")
+            if parallel and live.get("connections", 0) < parallel:
+                return waited
+        except Exception:
+            return waited  # no /health or engine busy answering: proceed
+        if time.monotonic() >= deadline:
+            return waited
+        time.sleep(2.0)
+        waited += 2.0
+
+
 # ----------------------------------------------------------------- commands
 
 def cmd_init(args):
@@ -111,7 +144,8 @@ def cmd_ingest(args):
     brain_id = _brain_id(conn)
     with open(args.file, "r", encoding="utf-8") as fh:
         content = fh.read()
-    capture_id = store.add_capture(conn, brain_id, args.kind, content, args.source)
+    capture_id = store.add_capture(conn, brain_id, args.kind, content,
+                                   args.source, captured_at=args.captured_at)
     print("ok: capture id=%d kind=%s source=%r bytes=%d"
           % (capture_id, args.kind, args.source, len(content)))
     return 0
@@ -134,6 +168,7 @@ def cmd_compile(args):
     if capture_ids:
         client = _client()
         _require_endpoint(client)
+        _health_backoff(client)  # P11: yield to interactive traffic first
         # Policy P2: a run rejecting more than max_reject_rate is an extractor
         # failure; stop rather than writing a thin brain.
         for cid in capture_ids:
@@ -165,7 +200,11 @@ def cmd_consolidate(args):
     + contradiction flagging over the whole brain, with no model calls."""
     conn = _open_db(args.db)
     brain_id = _brain_id(conn)
-    summary = consolidate(conn, brain_id)
+    try:
+        summary = consolidate(conn, brain_id,
+                              max_mutation_rate=args.max_mutation_rate)
+    except PolicyHalt as exc:
+        raise CliError(str(exc)) from exc
     print("ok: consolidated duplicates_linked=%d superseded=%d flagged=%d"
           % (summary["duplicates_linked"], summary["superseded"],
              summary["flagged"]))
@@ -201,6 +240,7 @@ def cmd_brief(args):
         conn, brain_id, args.query, budget_tokens=args.budget)
     client = _client()
     _require_endpoint(client)
+    _health_backoff(client)  # P11: yield to interactive traffic first
     answer = client.chat(
         [{"role": "system", "content": stable},
          {"role": "user", "content": volatile +
@@ -294,6 +334,12 @@ def build_parser():
     p.add_argument("--kind", required=True, help="note | chat | document")
     p.add_argument("--source", required=True, help="source label for the capture")
     p.add_argument("--file", required=True)
+    p.add_argument("--captured-at", default=None,
+                   help="capture timestamp (ISO-8601, '2023/04/10 (Mon) 17:50', "
+                        "or '1:56 pm on 8 May, 2023'). DEFAULT WARNING: when "
+                        "omitted the capture is stamped with the INGEST time, "
+                        "which silently makes a backfilled capture the newest "
+                        "fact — always pass this when importing history.")
     p.set_defaults(func=cmd_ingest)
 
     p = sub.add_parser("compile", help="compile captures into cited facts (local model)")
@@ -304,6 +350,9 @@ def build_parser():
     p = sub.add_parser("consolidate",
                        help="run the nightly consolidation pass (no model calls)")
     p.add_argument("--db", required=True)
+    p.add_argument("--max-mutation-rate", type=float, default=0.2,
+                   help="halt for review when superseded+flagged exceeds this "
+                        "fraction of active facts (policy P11, default 0.2)")
     p.set_defaults(func=cmd_consolidate)
 
     p = sub.add_parser("search", help="hybrid search over facts and pages")

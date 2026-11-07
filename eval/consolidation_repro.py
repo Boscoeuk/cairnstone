@@ -115,11 +115,37 @@ def scenario_run_d(conn, brain):
     add_fact(conn, brain, "Caroline is married and happy", c2)  # f3, June
 
 
+def scenario_n1(conn, brain):
+    """N1 (phase 15): single May / married June / single July ingested in ONE
+    batch. The July truth must be the active fact and 'married' superseded.
+
+    Before the fix, dedupe made the May fact canonical, the contradiction scan
+    read only that row, and 'married' won while the July truth was hidden as a
+    duplicate."""
+    c1 = add_capture(conn, brain, CAPTURE_TEXT, "2023-05-01T00:00:00+00:00")
+    c2 = add_capture(conn, brain, CAPTURE_TEXT, "2023-06-01T00:00:00+00:00")
+    c3 = add_capture(conn, brain, CAPTURE_TEXT, "2023-07-01T00:00:00+00:00")
+    add_fact(conn, brain, "Caroline is single", c1)
+    add_fact(conn, brain, "Caroline is married", c2)
+    add_fact(conn, brain, "Caroline is single", c3)
+
+
+def scenario_n2(conn, brain):
+    """N2 (phase 15): LoCoMo-style stamps compared as strings reversed recency.
+    The later claim (25 May) must win, not the earlier one (8 May)."""
+    c1 = add_capture(conn, brain, CAPTURE_TEXT, "1:56 pm on 8 May, 2023")
+    c2 = add_capture(conn, brain, CAPTURE_TEXT, "1:14 pm on 25 May, 2023")
+    add_fact(conn, brain, "Caroline is single", c1)
+    add_fact(conn, brain, "Caroline is married", c2)
+
+
 def main():
     run_scenario("Scenario B1 (D1: duplicate hides canonical fact)",
                  scenario_b1)
     run_scenario("Scenario B3 (D3: out-of-order captures)", scenario_b3)
     run_scenario("Scenario run_d (D4: swap records wrong value)", scenario_run_d)
+    run_scenario("Scenario N1 (phase 15: re-assertion inside one batch)", scenario_n1)
+    run_scenario("Scenario N2 (phase 15: LoCoMo-style stamps)", scenario_n2)
     print("\nAll scenarios: one pass converged, second pass was a no-op.")
 
 

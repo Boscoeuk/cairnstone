@@ -67,6 +67,10 @@ class ExtractError(Exception):
     """Extraction failed after the retry; the capture is recorded as failed."""
 
 
+class PolicyHalt(Exception):
+    """A policy bound (P11 max_mutation_rate) was exceeded; the pass halted."""
+
+
 # ---------------------------------------------------------------- extraction
 
 def _validate_payload(payload):
@@ -481,25 +485,49 @@ def dedupe(conn, brain_id):
 
     Phase 7B: claims are matched by evidence, not wording. The slot-key machinery
     (P6) strips numbers/dates, and trailing modifier clauses ("by adopting kids",
-    "through adoption") are cut, so paraphrases of the same claim share a key. The
-    earliest capture is the canonical citation; later facts stay active and carry
-    `duplicate_of`. Nothing is retracted or deleted. Returns the number linked.
+    "through adoption") are cut, so paraphrases of the same claim share a key.
+    Later facts stay active and carry `duplicate_of`. Nothing is retracted or
+    deleted. Returns the number linked.
+
+    Phase 15 (N1): the canonical citation is the fact with the LATEST
+    `captured_at` (tie-break: highest capture id, then highest fact id), not the
+    lowest fact id. A re-assertion of an earlier value must be the row the
+    contradiction scan reads, or a later truth is hidden as a duplicate
+    (single May / married Jun / single Jul ended with "married" active).
     """
     rows = conn.execute(
-        "SELECT f.id, f.page_id, f.text FROM facts f JOIN pages p"
-        " ON p.id = f.page_id WHERE p.brain_id = ? AND f.status = 'active'"
+        "SELECT f.id, f.page_id, f.text, f.capture_id, c.captured_at"
+        " FROM facts f JOIN pages p ON p.id = f.page_id"
+        " JOIN captures c ON c.id = f.capture_id"
+        " WHERE p.brain_id = ? AND f.status = 'active'"
         " AND f.duplicate_of IS NULL ORDER BY f.id",
         (brain_id,),
     ).fetchall()
     canonical, linked = {}, 0
     for r in rows:
         key = (r["page_id"], _claim_key(r["text"]))
-        if key in canonical:
+        prev = canonical.get(key)
+        if prev is None:
+            canonical[key] = r
+            continue
+        # N1: the newest capture is canonical; ties break to the higher
+        # capture id (insert order), then the higher fact id.
+        if ((r["captured_at"], r["capture_id"], r["id"])
+                > (prev["captured_at"], prev["capture_id"], prev["id"])):
+            # The new row is canonical; the previous canonical becomes its
+            # duplicate. Rows already pointing at the old canonical are
+            # repointed, so `duplicate_of` always names a live canonical row
+            # rather than forming a chain (a chain would leave an earlier
+            # duplicate pointing at a row that is itself a duplicate).
+            conn.execute("UPDATE facts SET duplicate_of = ? WHERE duplicate_of = ?",
+                         (r["id"], prev["id"]))
             conn.execute("UPDATE facts SET duplicate_of = ? WHERE id = ?",
-                         (canonical[key], r["id"]))
-            linked += 1
+                         (r["id"], prev["id"]))
+            canonical[key] = r
         else:
-            canonical[key] = r["id"]
+            conn.execute("UPDATE facts SET duplicate_of = ? WHERE id = ?",
+                         (prev["id"], r["id"]))
+        linked += 1
     conn.commit()
     return linked
 
@@ -569,10 +597,10 @@ def supersede_contradictions(conn, brain_id):
     - D1: the scan is restricted to canonical rows (`duplicate_of IS NULL`), so a
       duplicate can no longer replace the canonical fact in the comparison map
       and hide a contradiction from it. One pass converges.
-    - D3: "newer" is a later `captures.captured_at`, then a higher capture id
-      (insert order within the same timestamp) — never a higher fact id. A
-      capture with no timestamp cannot occur (the column is NOT NULL); the
-      documented tie-break for equal timestamps is capture id order.
+    - D3: "newer" is a later `captures.captured_at` — never a higher fact id.
+      Phase 15 (N1): the comparison uses the latest timestamp in a fact's
+      duplicate cluster, and (N5, policy P6) equal timestamps are flagged with
+      neither fact superseded, not resolved by capture id.
     - D4: when the comparison swaps the rows so the older capture loses, the
       value stored in the comparison map is swapped along with the row, so the
       stored value and stored row always agree.
@@ -587,7 +615,14 @@ def supersede_contradictions(conn, brain_id):
 
 
 def _supersede_contradictions(conn, brain_id):
-    """Core contradiction pass. Returns (superseded, flagged)."""
+    """Core contradiction pass. Returns (superseded, flagged).
+
+    Phase 15 (N1): the comparison timestamp for a fact is the LATEST
+    `captured_at` among the fact and its duplicates (tie-break: highest
+    capture id), so a re-assertion that dedupe linked as a duplicate still
+    counts as the claim's current truth. The scan reads canonical rows only
+    (D1), but each canonical row's clock is its whole duplicate cluster's.
+    """
     rows = conn.execute(
         "SELECT f.id, f.page_id, f.text, f.capture_id, c.captured_at FROM facts f"
         " JOIN pages p ON p.id = f.page_id"
@@ -596,6 +631,20 @@ def _supersede_contradictions(conn, brain_id):
         " ORDER BY f.id",
         (brain_id,),
     ).fetchall()
+    # N1: latest captured_at (then capture id) over each canonical fact's
+    # duplicate cluster. Duplicates were linked by dedupe; a fact that is its
+    # own cluster uses its own stamp.
+    latest = {}
+    for r in conn.execute(
+            "SELECT COALESCE(f.duplicate_of, f.id) AS canon,"
+            " f.capture_id, c.captured_at"
+            " FROM facts f JOIN captures c ON c.id = f.capture_id"
+            " JOIN pages p ON p.id = f.page_id"
+            " WHERE p.brain_id = ? AND f.status = 'active'",
+            (brain_id,)):
+        cur = latest.get(r["canon"])
+        if cur is None or (r["captured_at"], r["capture_id"]) > cur:
+            latest[r["canon"]] = (r["captured_at"], r["capture_id"])
     by_page = {}
     for r in rows:
         by_page.setdefault(r["page_id"], []).append(r)
@@ -604,20 +653,38 @@ def _supersede_contradictions(conn, brain_id):
     for page_id, facts in by_page.items():
         seen = {}  # slot key -> (value, row); value always belongs to row
         for r in facts:
+            # N1: compare with the cluster's latest timestamp, not the
+            # canonical row's own stamp.
+            stamp, cap_id = latest.get(r["id"], (r["captured_at"],
+                                                 r["capture_id"]))
             for key, value in _fact_slots(r["text"]):
                 prev = seen.get(key)
                 if prev is not None and prev[0] != value:
                     old, new = prev[1], r
                     old_value, new_value = prev[0], value
-                    # D3: later captured_at wins; equal timestamps fall back to
-                    # capture id (insert order). Fact id is never the clock.
-                    if ((new["captured_at"], new["capture_id"])
-                            < (old["captured_at"], old["capture_id"])):
+                    old_stamp, old_cap = prev[2], prev[3]
+                    # D3: later captured_at wins. Fact id is never the clock.
+                    if (stamp, cap_id) < (old_stamp, old_cap):
                         old, new = new, old
                         # D4: the swap moves the rows, so the stored values move
                         # with them — value and row must keep agreeing.
                         old_value, new_value = new_value, old_value
-                    if _is_advisory_slot(key):
+                        # N1: each row's clock is its duplicate cluster's latest.
+                        old_stamp, old_cap = latest.get(
+                            old["id"], (old["captured_at"], old["capture_id"]))
+                        stamp, cap_id = latest.get(
+                            new["id"], (new["captured_at"], new["capture_id"]))
+                    if stamp == old_stamp:
+                        # Phase 15 (N5, policy P6): equal timestamps must be
+                        # flagged with neither fact superseded — ambiguity is
+                        # recorded, not resolved by a capture-id coin flip.
+                        # Compare the instant only: including capture_id here
+                        # would make the equality test unreachable for two
+                        # different captures.
+                        if _write_contradiction_flag(conn, old["id"], new["id"],
+                                                     key, old_value, new_value):
+                            flagged += 1
+                    elif _is_advisory_slot(key):
                         if _write_contradiction_flag(conn, old["id"], new["id"],
                                                      key, old_value, new_value):
                             flagged += 1
@@ -625,11 +692,9 @@ def _supersede_contradictions(conn, brain_id):
                         store.supersede_fact(conn, old["id"], new["id"])
                         superseded += 1
                         superseded_ids.add(old["id"])
-                    seen[key] = (new_value, new)
-                elif prev is None or ((r["captured_at"], r["capture_id"])
-                                      > (prev[1]["captured_at"],
-                                         prev[1]["capture_id"])):
-                    seen[key] = (value, r)
+                    seen[key] = (new_value, new, stamp, cap_id)
+                elif prev is None or (stamp, cap_id) > (prev[2], prev[3]):
+                    seen[key] = (value, r, stamp, cap_id)
     return superseded, flagged
 
 
@@ -669,16 +734,34 @@ def _write_contradiction_flag(conn, old_id, new_id, key, old_value, new_value):
     return True
 
 
-def consolidate(conn, brain_id):
+def consolidate(conn, brain_id, max_mutation_rate=None):
     """Run the whole consolidation pass over a brain without touching the model.
 
     The nightly entry point behind `cairnstone consolidate` (phase 14, D2):
     dedupe, then supersede contradictions and flag undecidable ones. Idempotent
     on an unchanged brain: duplicates are already linked, superseded facts have
     left the active set, and a contradiction flag is written only once.
+
+    Phase 15 (P11): when `max_mutation_rate` is given and the pass's mutations
+    (superseded + flagged) exceed that fraction of the brain's active facts,
+    a `PolicyHalt` is raised for review — mass mutation usually means a policy
+    bug rather than a changed world. The mutations are already committed
+    (each helper commits); the halt is a loud stop, not a rollback.
     """
+    active = conn.execute(
+        "SELECT COUNT(*) AS n FROM facts f JOIN pages p ON p.id = f.page_id"
+        " WHERE p.brain_id = ? AND f.status = 'active'", (brain_id,)
+    ).fetchone()["n"]
     linked = dedupe(conn, brain_id)
     superseded, flagged = _supersede_contradictions(conn, brain_id)
+    if max_mutation_rate is not None and active:
+        mutations = superseded + flagged
+        if mutations > max_mutation_rate * active:
+            raise PolicyHalt(
+                "consolidation mutated %d of %d active facts (%.1f%%), above "
+                "max_mutation_rate %.1f%% (policy P11); halted for review"
+                % (mutations, active, 100.0 * mutations / active,
+                   100.0 * max_mutation_rate))
     return {"duplicates_linked": linked, "superseded": superseded,
             "flagged": flagged}
 
@@ -689,6 +772,27 @@ def consolidate(conn, brain_id):
 # 'plans to become a single parent' (a plan) never conflicts with 'is married'
 # (a status). Advisory slots (location, occupation) are contradictions this pass
 # cannot decide: they are flagged, never superseded (phase 14 D5b).
+#
+# Phase 15 (N4): the occupation regex required a person subject and a role-noun
+# complement. Identity sentences ("X is an independent reimplementation",
+# "X is a local-first memory compiler") matched the old `is a|is an` and
+# produced only false flags on real data. Now `is a|is an` forms an occupation
+# slot only when the subject is a person name (capitalised, not a sentence
+# starter) and the complement's first word is a known role noun; `works as`
+# keeps its original shape. The location value stops at a preposition or comma
+# so "lives in Lisbon" and "lives in Lisbon with her husband" compare equal
+# (done in _slot_value via _LOCATION_TAIL_CUT).
+_PERSON_PREFIX = r"[A-Z][a-z']+(?:\s+[A-Z][a-z']+)*"
+_ROLE_NOUNS = frozenset("""
+    nurse teacher lawyer doctor engineer artist writer designer developer
+    manager dancer singer musician chef baker driver farmer pilot officer
+    soldier student professor architect dentist pharmacist veterinarian
+    plumber electrician carpenter mechanic journalist editor photographer
+    accountant consultant analyst scientist researcher programmer therapist
+    counsellor counselor librarian barista waiter waitress surgeon parent
+    mom dad mother father sister brother uncle aunt grandmother grandfather
+    husband wife partner freelancer contractor intern
+""".split())
 _CATEGORY_SLOTS = (
     ("relationship_status",
      re.compile(r"\b(single|married|divorced|widowed|engaged|dating)\b", re.I),
@@ -697,12 +801,24 @@ _CATEGORY_SLOTS = (
      re.compile(r"\b(?:lives in|lived in|moved to|is moving to)\b\s+(.+)$", re.I),
      True),
     ("occupation",
-     re.compile(r"\b(?:works as|work as|working as|is a|is an)\b\s+(.+)$", re.I),
+     re.compile(r"^(%s)\s+(?:works as|work as|working as|is)\s+(?:a|an)\s+"
+                r"([a-z][a-z'-]*)\b.*$" % _PERSON_PREFIX, re.I),
      True),
 )
 
+
+def _is_role_noun(word):
+    """True when the word is a known occupation/role noun (phase 15, N4)."""
+    return word.lower() in _ROLE_NOUNS
+
 _ADVISORY_SLOTS = frozenset(slot for slot, _rx, advisory in _CATEGORY_SLOTS
                             if advisory)
+
+# Phase 15 (N4): a location value ends at a preposition or comma — "in Lisbon
+# with her husband" and "in Lisbon" are the same city.
+_LOCATION_TAIL_CUT = re.compile(
+    r"\s+(?:with|without|near|beside|next|and|but|before|after|during|since|"
+    r"until|for|from|about|around|to|in|on|at|by)\b|,", re.IGNORECASE)
 
 
 def _is_advisory_slot(key):
@@ -718,16 +834,49 @@ def _slot_value(slot, raw):
     to Lisbon on 2023-05-25' and 'lives in Lisbon' carry the same value ('lisbon')
     and rewordings of the same occupation compare equal. Returns None when
     nothing comparable remains.
+
+    Phase 15 (N4): the location value stops at a preposition or comma, so
+    'lives in Lisbon' and 'lives in Lisbon with her husband' carry the same
+    value — the trailing household detail is not a different city.
     """
     if slot == "relationship_status":
         return raw.lower()
+    if slot == "location":
+        raw = _LOCATION_TAIL_CUT.split(raw)[0].strip()
     tokens = [t for t in _content_tokens(raw) if not _VALUE_RE.fullmatch(t)]
     return tuple(tokens) or None
 
 
+_COPULA_TAIL = {
+    "is", "are", "was", "were", "be", "been", "being", "am",
+    "got", "get", "gets", "gotten", "became", "becomes", "become",
+    "has", "have", "had", "having",
+    "now", "currently", "recently", "still", "also", "then", "later",
+}
+
+
+def _subject_prefix(text):
+    """The subject part of a categorical slot key.
+
+    Phase 15: the key must identify WHO the claim is about, not the verb phrase
+    used to say it. "Caroline is single" and "Caroline got married" previously
+    keyed as `caroline is` and `caroline got`, so a real contradiction between
+    them was never compared. Trailing copulas, auxiliaries and time adverbs are
+    stripped so both key as `caroline`."""
+    tokens = text.split()
+    while tokens and tokens[-1] in _COPULA_TAIL:
+        tokens.pop()
+    return " ".join(tokens)
+
+
 def _fact_slots(text):
     """All (slot key, value) pairs a fact asserts: numeric/date slots from
-    _split_subject_slot plus one entry per categorical lexicon match."""
+    _split_subject_slot plus one entry per categorical lexicon match.
+
+    Phase 15 (N4): an `is a|is an` occupation match only counts when the
+    complement's first word is a role noun; identity sentences ("X is an
+    independent reimplementation") form no slot.
+    """
     slots = []
     key, value = _split_subject_slot(text)
     if key is not None:
@@ -736,8 +885,17 @@ def _fact_slots(text):
     for slot, rx, _advisory in _CATEGORY_SLOTS:
         m = rx.search(norm)
         if m:
-            prefix = _norm(norm[:m.start()]).lower()
-            value = _slot_value(slot, m.group(1))
+            if slot == "occupation":
+                if not _is_role_noun(m.group(2)):
+                    continue
+                # The subject is captured inside the match (group 1); the
+                # slot key must carry it, so "Caroline is a nurse" and
+                # "Melanie is a nurse" never collide.
+                prefix = _norm(m.group(1)).lower()
+                value = _slot_value(slot, m.group(2))
+            else:
+                prefix = _subject_prefix(_norm(norm[:m.start()]).lower())
+                value = _slot_value(slot, m.group(1))
             if prefix and value is not None:
                 slots.append(("cat:%s:%s" % (slot, prefix), value))
     return slots

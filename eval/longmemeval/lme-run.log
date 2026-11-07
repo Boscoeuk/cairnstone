@@ -1,0 +1,16 @@
+<user-site-packages>/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+split=s n=20 budget=600 seed=20261106 full_context_ids=['08e075c7', '0f05491a', '2133c1b5_abs', '85fa3a3f', '0100672e']
+08e075c7 [knowledge-update] cairnstone=OK keyword=OK brief=2942t 7.825s
+0f05491a [knowledge-update] cairnstone=MISS keyword=MISS brief=2901t 8.347s
+2133c1b5_abs [knowledge-update] cairnstone=MISS keyword=MISS brief=3038t 76.771s
+85fa3a3f [multi-session] cairnstone=MISS keyword=OK brief=2775t 6.617s
+0100672e [multi-session] cairnstone=OK keyword=OK brief=2320t 6.679s
+b5ef892d [multi-session] cairnstone=OK keyword=MISS brief=2360t 78.826s
+e5ba910e_abs [multi-session] cairnstone=MISS keyword=MISS brief=2395t 5.623s
+9ee3ecd6 [multi-session] cairnstone=MISS keyword=MISS brief=2692t 6.017s
+c8f1aeed [single-session-assistant] cairnstone=OK keyword=OK brief=2767t 6.002s
+0e5e2d1a [single-session-assistant] cairnstone=MISS keyword=OK brief=2611t 6.905s
+8a2466db [single-session-preference] cairnstone=OK keyword=OK brief=2007t 4.949s
+06878be2 [single-session-preference] cairnstone=OK keyword=OK brief=1815t 261.665s
+311778f1 [single-session-user] cairnstone=OK keyword=OK brief=2633t 18.213s

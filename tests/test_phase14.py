@@ -76,14 +76,17 @@ def test_d1_duplicate_does_not_hide_canonical_fact_one_pass_converges(db):
     f1 = _fact(db, "Caroline is single", c1)
     f2 = _fact(db, "Caroline is single", c2)
     f3 = _fact(db, "Caroline is married", c3)
-    assert dedupe(conn, brain) == 1  # f2 linked as duplicate of f1
-    assert _fact_row(conn, f2)["duplicate_of"] == f1
+    assert dedupe(conn, brain) == 1
+    # Phase 15 (N1): the canonical row is the LATEST capture, so f1 (May 1) is
+    # linked as a duplicate of f2 (May 15) — not the other way round.
+    assert _fact_row(conn, f1)["duplicate_of"] == f2
+    assert _fact_row(conn, f2)["duplicate_of"] is None
 
     linked, superseded, flagged = consolidate(conn, brain).values()
     assert (linked, superseded, flagged) == (0, 1, 0)
-    # The canonical fact f1 — not just its duplicate — is superseded in ONE pass.
-    assert _fact_row(conn, f1)["status"] == "superseded"
-    assert _fact_row(conn, f1)["superseded_by"] == f3
+    # The canonical fact f2 — not just a duplicate — is superseded in ONE pass.
+    assert _fact_row(conn, f2)["status"] == "superseded"
+    assert _fact_row(conn, f2)["superseded_by"] == f3
     # No canonical ('single') fact contradicts 'married' any more; the only
     # remaining active 'single' row is f2, a duplicate excluded from briefs and
     # export by eligible_facts (P8).
@@ -134,17 +137,24 @@ def test_d3_out_of_order_captures_supersede_by_captured_at(db):
     assert _fact_row(conn, f1)["superseded_by"] is None
 
 
-def test_d3_equal_timestamps_tie_break_on_capture_id(db):
-    """D3 tie-break: equal captured_at falls back to capture id (insert order);
-    the documented rule keeps the later-ingested capture as the winner."""
+def test_d3_equal_timestamps_flag_under_policy_p6(db):
+    """D3 tie-break, superseded by phase 15 N5: when two captures share the same
+    instant, policy P6 says flag the contradiction and supersede neither. The
+    capture-id tie-break still orders *different* timestamps, but an exact tie is
+    ambiguity, not a race."""
     conn, brain = db
     c1 = _capture(db, "Caroline is single", "2023-05-01T00:00:00+00:00")
     c2 = _capture(db, "Caroline is married", "2023-05-01T00:00:00+00:00")
     f1 = _fact(db, "Caroline is single", c1)
     f2 = _fact(db, "Caroline is married", c2)
     supersede_contradictions(conn, brain)
-    assert _fact_row(conn, f1)["superseded_by"] == f2
+    assert _fact_row(conn, f1)["status"] == "active"
     assert _fact_row(conn, f2)["status"] == "active"
+    assert _fact_row(conn, f1)["superseded_by"] is None
+    assert _fact_row(conn, f2)["superseded_by"] is None
+    assert conn.execute(
+        "SELECT COUNT(*) FROM change_events WHERE kind = 'fact.contradiction_flagged'"
+    ).fetchone()[0] == 1
 
 
 # ---------------------------------------------------------------- D4
@@ -260,8 +270,11 @@ def test_spelling_variants_link_as_duplicates(db):
     f1 = _fact(db, "Caroline's favourite hobby is painting landscapes", c1)
     f2 = _fact(db, "Caroline's favorite hobby is painting landscapes", c2)
     assert dedupe(conn, brain) == 1
-    assert _fact_row(conn, f2)["duplicate_of"] == f1
-    assert _fact_row(conn, f1)["duplicate_of"] is None
+    # Phase 15 (N1): the later capture (June) is canonical, so the May fact is
+    # the duplicate. Linking either way proves the spelling fold works; which
+    # one is canonical is decided by capture time, not fact id.
+    assert _fact_row(conn, f1)["duplicate_of"] == f2
+    assert _fact_row(conn, f2)["duplicate_of"] is None
 
 
 # ---------------------------------------------------------------- D6
@@ -293,7 +306,11 @@ def test_d6_brief_prefers_new_side_of_undetected_contradiction(db, monkeypatch):
         conn, brain, "Where does Caroline live?")
     texts = [f["text"] for f in selected]
     assert any("Lisbon" in t for t in texts)
-    assert not any("Berlin" in t for t in texts)
+    # Phase 15 (N3): the flagged contradiction must stay visible to a reader
+    # rather than being silently dropped by the collapse. Berlin is still the
+    # older, unresolved fact, so it is present AND labelled as contradicting.
+    assert any("Berlin" in t for t in texts)
+    assert "contradict" in _volatile.lower()
 
 
 # ------------------------------------------------- D2 compile bookkeeping

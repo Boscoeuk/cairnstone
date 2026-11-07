@@ -507,6 +507,10 @@ def select_facts(conn, brain_id, question, budget_tokens):
     - collapses near-duplicates within a page (same slot rephrased — the twelve
       camping facts), keeping the fact that best matches the question's time
       frame, then the best-scoring, then the earliest capture (canonical, P7);
+      when a cluster's members disagree on a slot value, BOTH sides stay in the
+      brief (phase 15, N3) — the newest first, the older marked as
+      contradicting it, so a flagged fact is never hidden more thoroughly than
+      a superseded one;
     - applies a diversity cap of 3 facts per page, lifted when the question names
       that page's entity, so one entity cannot flood the brief;
     - packs facts in score order until the token budget is reached;
@@ -584,9 +588,19 @@ def select_facts(conn, brain_id, question, budget_tokens):
                 winner = max(cluster, key=lambda t: (
                     stamps.get(t[1]["capture_id"], ""), t[1]["capture_id"],
                     t[1]["id"]))
+                # Phase 15 (N3): a flagged (unresolved) contradiction must not
+                # be hidden more thoroughly than a superseded fact. The loser
+                # stays in the brief, right after the winner, so the reader
+                # sees both sides; build_brief renders the pair with an
+                # "Earlier: ... (contradicts ...)" marker.
+                losers = [t for t in cluster if t[1]["id"] != winner[1]["id"]]
+                losers.sort(key=lambda t: (stamps.get(t[1]["capture_id"], ""),
+                                           t[1]["capture_id"], t[1]["id"]))
+                winners.append(winner)
+                winners.extend(losers)
             else:
                 winner = sorted(cluster, key=_keep)[0]
-            winners.append(winner)
+                winners.append(winner)
     winners.sort(key=lambda t: (-t[0], t[1]["id"]))
 
     # Diversity cap + budget packing, in score order. The "### Records" header is
@@ -610,6 +624,37 @@ def select_facts(conn, brain_id, question, budget_tokens):
     selected.sort(key=lambda f: (stamps.get(f["capture_id"], ""), f["capture_id"],
                                  f["span_start"]))
     return selected
+
+
+def _contradiction_notes(selected):
+    """Brief lines marking unresolved contradictions among selected facts (N3).
+
+    For each disagreeing pair (newest first), one line: "Earlier: <older fact>
+    (contradicts <newer fact>)". Deterministic and derived only from the
+    selected rows, so the volatile block stays reproducible.
+    """
+    from .compile import _fact_slots  # deferred: compile imports this module
+
+    def _slot_map(f):
+        slots = {}
+        for key, value in _fact_slots(f["text"]):
+            norm = value if isinstance(value, tuple) else (value,)
+            slots.setdefault(key, set()).add(norm)
+        return slots
+
+    notes = []
+    for i, newer in enumerate(selected):
+        newer_slots = _slot_map(newer)
+        for older in selected[i + 1:]:
+            if older["page_id"] != newer["page_id"]:
+                continue
+            for key, values in _slot_map(older).items():
+                other = newer_slots.get(key)
+                if other is not None and values != other:
+                    notes.append("Earlier: %s (contradicts %s)"
+                                 % (older["text"], newer["text"]))
+                    break
+    return notes
 
 
 def build_brief(conn, brain_id, question, budget_tokens=4000, category=None):
@@ -639,6 +684,10 @@ def build_brief(conn, brain_id, question, budget_tokens=4000, category=None):
         lines = ["### Records"]
         for f in selected:
             lines.append("- %s %s" % (f["text"], _citation(f)))
+        # Phase 15 (N3): when two selected records on the same page disagree
+        # on a slot value, say so in the brief text — the flag must be visible
+        # to a reader of the brief, not only in the change_events log.
+        lines.extend(_contradiction_notes(selected))
         if _looks_multi_hop(question):
             # Phase 6: quotes carry the surrounding detail the compiled claim
             # abstracts away; multi-hop questions need it to combine facts.

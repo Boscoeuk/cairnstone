@@ -1,0 +1,50 @@
+===== endpoint glm: http://127.0.0.1:8460/v1 model=glm-5.3-flash =====
+ok: initialised brain id=1 workspace='default' at eval/consolidation-live/glm.db
+ok: capture id=1 kind=chat source='live-glm-1' bytes=44
+ok: capture id=2 kind=chat source='live-glm-2' bytes=58
+ok: capture id=3 kind=chat source='live-glm-3' bytes=49
+ok: capture id=4 kind=chat source='live-glm-4' bytes=44
+-- compile --
+ok: compiled captures=4 accepted=7 rejected=0 duplicates_linked=3 superseded=1 failed_captures=[]
+-- consolidate pass 1 --
+ok: consolidated duplicates_linked=0 superseded=0 flagged=0
+-- consolidate pass 2 --
+ok: consolidated duplicates_linked=0 superseded=0 flagged=0
+-- fact table --
+  1   Caroline lives in Berlin                      active      sup_by=None dup_of=6    2023-05-01T09:00:00+00:00
+  2   Caroline is single                            active      sup_by=None dup_of=7    2023-05-01T09:00:00+00:00
+  3   Caroline moved to Lisbon in May 2023          active      sup_by=None dup_of=None 2023-06-01T09:00:00+00:00
+  4   Caroline got married in May 2023              superseded  sup_by=7    dup_of=None 2023-06-01T09:00:00+00:00
+  5   Caroline is single                            active      sup_by=None dup_of=7    2023-07-01T09:00:00+00:00
+  6   Caroline lives in Berlin                      active      sup_by=None dup_of=None 2023-08-01T09:00:00+00:00
+  7   Caroline is single                            active      sup_by=None dup_of=None 2023-08-01T09:00:00+00:00
+  FLAG fact=3 {"contradicts": 6, "slot": "cat:location:caroline", "values": [["lisbon"], ["berlin"]]}
+-- brief --
+Where does Caroline live?
+citations:
+- [capture live-glm-2 span 10:38] Caroline moved to Lisbon in May 2023 -- "I moved to Lisbon last month"
+- [capture live-glm-4 span 10:26] Caroline lives in Berlin -- "I live in Berlin"
+- [capture live-glm-4 span 31:42] Caroline is single -- "I am single"
+ok: brief facts=3
+===== endpoint spark: http://<lan-node>:8889/v1 model=local-judge =====
+ok: initialised brain id=1 workspace='default' at eval/consolidation-live/spark.db
+ok: capture id=1 kind=chat source='live-spark-1' bytes=44
+ok: capture id=2 kind=chat source='live-spark-2' bytes=58
+ok: capture id=3 kind=chat source='live-spark-3' bytes=49
+ok: capture id=4 kind=chat source='live-spark-4' bytes=44
+-- compile --
+ok: compiled captures=4 accepted=7 rejected=0 duplicates_linked=3 superseded=1 failed_captures=[]
+-- consolidate pass 1 --
+ok: consolidated duplicates_linked=0 superseded=0 flagged=0
+-- consolidate pass 2 --
+ok: consolidated duplicates_linked=0 superseded=0 flagged=0
+-- fact table --
+  1   Caroline lives in Berlin.                     active      sup_by=None dup_of=6    2023-05-01T09:00:00+00:00
+  2   Caroline is single.                           active      sup_by=None dup_of=7    2023-05-01T09:00:00+00:00
+  3   Caroline moved to Lisbon in 2023-05.          active      sup_by=None dup_of=None 2023-06-01T09:00:00+00:00
+  4   Caroline is married.                          superseded  sup_by=7    dup_of=None 2023-06-01T09:00:00+00:00
+  5   Caroline is single.                           active      sup_by=None dup_of=7    2023-07-01T09:00:00+00:00
+  6   Caroline lives in Berlin.                     active      sup_by=None dup_of=None 2023-08-01T09:00:00+00:00
+  7   Caroline is single.                           active      sup_by=None dup_of=None 2023-08-01T09:00:00+00:00
+  FLAG fact=3 {"contradicts": 6, "slot": "cat:location:caroline", "values": [["lisbon"], ["berlin"]]}
+-- brief --

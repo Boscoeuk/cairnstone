@@ -7,7 +7,9 @@ there is no uncited-fact state.
 import hashlib
 import json
 import os
+import re
 import sqlite3
+import sys
 from datetime import datetime, timezone
 
 SCHEMA = """
@@ -149,8 +151,124 @@ def init_db(path):
     cols = {r[1] for r in conn.execute("PRAGMA table_info(captures)")}
     if "compiled_at" not in cols:
         conn.execute("ALTER TABLE captures ADD COLUMN compiled_at TEXT")
-        conn.commit()
+    # Phase 15 (N2): provenance for the original, unnormalised timestamp.
+    if "captured_at_text" not in cols:
+        conn.execute("ALTER TABLE captures ADD COLUMN captured_at_text TEXT")
+    conn.commit()
+    _migrate_timestamps(conn)
+    _backfill_compiled_at(conn)
     return conn
+
+
+# Phase 15 (N2): stamps are compared as instants, so every parseable stamp is
+# normalised to ISO-8601 UTC at write time and at migration time. The original
+# text is kept in captures.captured_at_text for provenance.
+_STAMP_FORMATS = (
+    "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%dT%H:%M:%S", "%Y-%m-%d %H:%M:%S",
+    "%Y-%m-%d %H:%M", "%Y-%m-%d", "%Y/%m/%d",
+    "%Y/%m/%d (%a) %H:%M", "%Y/%m/%d (%A) %H:%M",
+)
+
+
+def parse_timestamp(text):
+    """Parse a capture timestamp to an aware UTC datetime, or None.
+
+    Accepts ISO-8601, `2023/04/10 (Mon) 17:50`, and LoCoMo's
+    `1:56 pm on 8 May, 2023`. Returns None for anything unparseable: the
+    caller decides (store keeps the raw text; the migration reports it).
+    """
+    if not text:
+        return None
+    raw = text.strip()
+    if not raw or raw.lower() == "unknown":
+        return None
+    for fmt in _STAMP_FORMATS:
+        try:
+            dt = datetime.strptime(raw, fmt)
+        except ValueError:
+            continue
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    m = re.match(
+        r"^(\d{1,2}):(\d{2})\s*(am|pm)\s+on\s+(\d{1,2})\s+"
+        r"(January|February|March|April|May|June|July|August|September|"
+        r"October|November|December),?\s+(\d{4})$",
+        raw, re.IGNORECASE)
+    if m:
+        hour, minute, ampm, day, month, year = m.groups()
+        hour = int(hour) % 12 + (12 if ampm.lower() == "pm" else 0)
+        dt = datetime(int(year), _MONTHS[month.lower()], int(day),
+                      hour, int(minute), tzinfo=timezone.utc)
+        return dt
+    try:
+        dt = datetime.fromisoformat(raw)
+    except ValueError:
+        return None
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(timezone.utc)
+
+
+_MONTHS = {name: i for i, name in enumerate(
+    ("january", "february", "march", "april", "may", "june", "july",
+     "august", "september", "october", "november", "december"), start=1)}
+
+
+def normalise_timestamp(text):
+    """Normalise a stamp to ISO-8601 UTC, or return the text unchanged when
+    unparseable (the migration reports those rather than guessing)."""
+    dt = parse_timestamp(text)
+    if dt is None:
+        return text
+    return dt.isoformat()
+
+
+def _migrate_timestamps(conn):
+    """Normalise existing captured_at values where parseable (phase 15, N2).
+
+    Unparseable rows are left as-is and reported on stderr — the original text
+    is evidence, and guessing a date would corrupt the contradiction logic.
+    """
+    rows = conn.execute(
+        "SELECT id, captured_at FROM captures WHERE captured_at_text IS NULL"
+    ).fetchall()
+    unparseable = []
+    for r in rows:
+        dt = parse_timestamp(r["captured_at"])
+        if dt is None:
+            if r["captured_at"] and r["captured_at"].strip():
+                unparseable.append((r["id"], r["captured_at"]))
+            continue
+        conn.execute(
+            "UPDATE captures SET captured_at = ?, captured_at_text = ?"
+            " WHERE id = ?",
+            (dt.isoformat(), r["captured_at"], r["id"]))
+    conn.commit()
+    if unparseable:
+        print("warning: %d capture(s) have unparseable captured_at, left as-is:"
+              % len(unparseable), file=sys.stderr)
+        for cid, text in unparseable[:10]:
+            print("  capture %d: %r" % (cid, text), file=sys.stderr)
+    return len(rows) - len(unparseable)
+
+
+def _backfill_compiled_at(conn):
+    """Mark captures that already produced facts as compiled (phase 15, item 5).
+
+    A pre-phase-14 brain has no compiled_at, so the first `compile` after
+    upgrading would re-extract every capture. Captures with at least one fact
+    demonstrably went through extraction, so their compiled_at is backfilled.
+    Captures with zero facts are NOT marked: a capture with no facts is
+    indistinguishable from one the extractor never saw or that failed, and
+    marking it would silently skip real work on the next compile.
+    """
+    n = conn.execute(
+        "UPDATE captures SET compiled_at = ? WHERE compiled_at IS NULL"
+        " AND id IN (SELECT DISTINCT capture_id FROM facts)",
+        (_now(),)).rowcount
+    conn.commit()
+    return n
 
 
 def create_workspace(conn, name):
@@ -176,11 +294,21 @@ def create_brain(conn, workspace_id, name, slug):
 
 
 def add_capture(conn, brain_id, kind, content, source_ref, captured_at=None):
-    """Insert an immutable, hashed capture. Returns capture id."""
+    """Insert an immutable, hashed capture. Returns capture id.
+
+    Phase 15 (N2): the stamp is normalised to ISO-8601 UTC so consolidation
+    compares instants, not strings. The original text is kept in
+    `captured_at_text` for provenance. A missing value defaults to now —
+    `cairnstone ingest --captured-at` exists so a backfill need not silently
+    mean "ingest time".
+    """
+    original = captured_at
+    stamp = normalise_timestamp(captured_at) if captured_at else _now()
     cur = conn.execute(
-        "INSERT INTO captures(brain_id, kind, content, sha256, captured_at, source_ref)"
-        " VALUES (?, ?, ?, ?, ?, ?)",
-        (brain_id, kind, content, _sha256(content), captured_at or _now(), source_ref),
+        "INSERT INTO captures(brain_id, kind, content, sha256, captured_at,"
+        " captured_at_text, source_ref)"
+        " VALUES (?, ?, ?, ?, ?, ?, ?)",
+        (brain_id, kind, content, _sha256(content), stamp, original, source_ref),
     )
     capture_id = cur.lastrowid
     conn.execute(
