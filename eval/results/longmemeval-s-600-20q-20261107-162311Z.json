@@ -1,0 +1,1320 @@
+{
+  "label": "LOCAL-JUDGED",
+  "split": "s",
+  "budget": 600,
+  "seed": 20261106,
+  "question_ids": [
+    "08e075c7",
+    "0f05491a",
+    "2133c1b5_abs",
+    "85fa3a3f",
+    "0100672e",
+    "b5ef892d",
+    "e5ba910e_abs",
+    "9ee3ecd6",
+    "c8f1aeed",
+    "0e5e2d1a",
+    "8a2466db",
+    "06878be2",
+    "311778f1",
+    "5d3d2817",
+    "7527f7e2",
+    "c8090214_abs",
+    "f0853d11",
+    "gpt4_68e94287",
+    "c8090214",
+    "gpt4_76048e76"
+  ],
+  "full_context_ids": [
+    "08e075c7",
+    "0f05491a",
+    "2133c1b5_abs",
+    "85fa3a3f",
+    "0100672e"
+  ],
+  "judge": {
+    "url": "http://spark-side:8889/v1",
+    "model": "spark-side-model"
+  },
+  "answer_model": "glm-5.3-flash",
+  "aggregate": {
+    "label": "LOCAL-JUDGED",
+    "n": 20,
+    "accuracy_overall": {
+      "cairnstone": 0.65,
+      "keyword": 0.6,
+      "full_context": 0.4
+    },
+    "accuracy_by_type": {
+      "knowledge-update": {
+        "n": 3,
+        "cairnstone_accuracy": 0.333,
+        "keyword_accuracy": 0.333,
+        "full_context_accuracy": 0.333
+      },
+      "multi-session": {
+        "n": 5,
+        "cairnstone_accuracy": 0.4,
+        "keyword_accuracy": 0.4,
+        "full_context_accuracy": 0.5
+      },
+      "single-session-assistant": {
+        "n": 2,
+        "cairnstone_accuracy": 0.5,
+        "keyword_accuracy": 1.0,
+        "full_context_accuracy": null
+      },
+      "single-session-preference": {
+        "n": 2,
+        "cairnstone_accuracy": 1.0,
+        "keyword_accuracy": 1.0,
+        "full_context_accuracy": null
+      },
+      "single-session-user": {
+        "n": 3,
+        "cairnstone_accuracy": 1.0,
+        "keyword_accuracy": 0.667,
+        "full_context_accuracy": null
+      },
+      "temporal-reasoning": {
+        "n": 5,
+        "cairnstone_accuracy": 0.8,
+        "keyword_accuracy": 0.6,
+        "full_context_accuracy": null
+      }
+    },
+    "mean_brief_tokens": 2611.1,
+    "median_latency_s": 12.594,
+    "outlier_count": 3,
+    "judge_ambiguous_count": 0
+  },
+  "rows": [
+    {
+      "question_id": "08e075c7",
+      "question_type": "knowledge-update",
+      "question": "How long have I been using my Fitbit Charge 3?",
+      "gold": "9 months",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "9 months (as of 2023-09-02)",
+          "latency_s": 7.825,
+          "brief_tokens": 2942,
+          "prompt_tokens": 3148,
+          "citations_used": 31,
+          "citations": [
+            "longmemeval:08e075c7:session1:chunk4",
+            "longmemeval:08e075c7:session4:chunk0",
+            "longmemeval:08e075c7:session4:chunk0",
+            "longmemeval:08e075c7:session7:chunk0",
+            "longmemeval:08e075c7:session7:chunk0",
+            "longmemeval:08e075c7:session7:chunk1",
+            "longmemeval:08e075c7:session7:chunk8",
+            "longmemeval:08e075c7:session12:chunk0",
+            "longmemeval:08e075c7:session13:chunk2",
+            "longmemeval:08e075c7:session14:chunk0",
+            "longmemeval:08e075c7:session19:chunk2",
+            "longmemeval:08e075c7:session20:chunk3",
+            "longmemeval:08e075c7:session22:chunk1",
+            "longmemeval:08e075c7:session23:chunk0",
+            "longmemeval:08e075c7:session24:chunk0",
+            "longmemeval:08e075c7:session24:chunk0",
+            "longmemeval:08e075c7:session26:chunk0",
+            "longmemeval:08e075c7:session34:chunk4",
+            "longmemeval:08e075c7:session34:chunk8",
+            "longmemeval:08e075c7:session32:chunk5"
+          ],
+          "gold_support_in_brief": true,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "9 months",
+          "latency_s": 20.936,
+          "prompt_tokens": 8795,
+          "sessions_used": [
+            40,
+            4,
+            43
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "full_context": {
+          "answer": "9 months",
+          "latency_s": 215.538,
+          "prompt_tokens": 105152,
+          "estimated_tokens": 126095,
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "0f05491a",
+      "question_type": "knowledge-update",
+      "question": "How many stars do I need to reach the gold level on my Starbucks Rewards app?",
+      "gold": 120,
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "125 stars",
+          "latency_s": 8.347,
+          "brief_tokens": 2901,
+          "prompt_tokens": 3243,
+          "citations_used": 29,
+          "citations": [
+            "longmemeval:0f05491a:session4:chunk1",
+            "longmemeval:0f05491a:session4:chunk2",
+            "longmemeval:0f05491a:session4:chunk3",
+            "longmemeval:0f05491a:session10:chunk1",
+            "longmemeval:0f05491a:session8:chunk4",
+            "longmemeval:0f05491a:session19:chunk0",
+            "longmemeval:0f05491a:session19:chunk0",
+            "longmemeval:0f05491a:session25:chunk0",
+            "longmemeval:0f05491a:session30:chunk2",
+            "longmemeval:0f05491a:session29:chunk0",
+            "longmemeval:0f05491a:session29:chunk0",
+            "longmemeval:0f05491a:session29:chunk1",
+            "longmemeval:0f05491a:session29:chunk2",
+            "longmemeval:0f05491a:session29:chunk3",
+            "longmemeval:0f05491a:session43:chunk0",
+            "longmemeval:0f05491a:session43:chunk2",
+            "longmemeval:0f05491a:session43:chunk2",
+            "longmemeval:0f05491a:session43:chunk3",
+            "longmemeval:0f05491a:session43:chunk3",
+            "longmemeval:0f05491a:session43:chunk3"
+          ],
+          "gold_support_in_brief": true,
+          "correct": false,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "300 stars",
+          "latency_s": 17.634,
+          "prompt_tokens": 6072,
+          "sessions_used": [
+            4,
+            43,
+            29
+          ],
+          "correct": false,
+          "judge_ambiguous": false
+        },
+        "full_context": {
+          "answer": "125 stars",
+          "latency_s": 211.518,
+          "prompt_tokens": 104148,
+          "estimated_tokens": 121934,
+          "correct": false,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "2133c1b5_abs",
+      "question_type": "knowledge-update",
+      "question": "How long have I been living in my current apartment in Shinjuku?",
+      "gold": "The information provided is not enough. You mentioned living in Harajuku but not Shinjuku.",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "About 3 months (as of October 2023)",
+          "latency_s": 76.771,
+          "brief_tokens": 3038,
+          "prompt_tokens": 3360,
+          "citations_used": 27,
+          "citations": [
+            "longmemeval:2133c1b5_abs:session5:chunk3",
+            "longmemeval:2133c1b5_abs:session7:chunk1",
+            "longmemeval:2133c1b5_abs:session7:chunk2",
+            "longmemeval:2133c1b5_abs:session7:chunk2",
+            "longmemeval:2133c1b5_abs:session9:chunk0",
+            "longmemeval:2133c1b5_abs:session9:chunk1",
+            "longmemeval:2133c1b5_abs:session9:chunk1",
+            "longmemeval:2133c1b5_abs:session9:chunk1",
+            "longmemeval:2133c1b5_abs:session11:chunk2",
+            "longmemeval:2133c1b5_abs:session24:chunk5",
+            "longmemeval:2133c1b5_abs:session32:chunk0",
+            "longmemeval:2133c1b5_abs:session32:chunk0",
+            "longmemeval:2133c1b5_abs:session49:chunk0",
+            "longmemeval:2133c1b5_abs:session42:chunk2",
+            "longmemeval:2133c1b5_abs:session37:chunk1",
+            "longmemeval:2133c1b5_abs:session37:chunk1",
+            "longmemeval:2133c1b5_abs:session37:chunk4",
+            "longmemeval:2133c1b5_abs:session38:chunk0",
+            "longmemeval:2133c1b5_abs:session38:chunk2"
+          ],
+          "gold_support_in_brief": false,
+          "correct": false,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "One month",
+          "latency_s": 16.718,
+          "prompt_tokens": 8163,
+          "sessions_used": [
+            38,
+            9,
+            30
+          ],
+          "correct": false,
+          "judge_ambiguous": false
+        },
+        "full_context": {
+          "answer": "3 months",
+          "latency_s": 210.215,
+          "prompt_tokens": 102837,
+          "estimated_tokens": 121220,
+          "correct": false,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "85fa3a3f",
+      "question_type": "multi-session",
+      "question": "What is the total cost of the new food bowl, measuring cup, dental chews, and flea and tick collar I got for Max?",
+      "gold": "$50",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "$95",
+          "latency_s": 6.617,
+          "brief_tokens": 2775,
+          "prompt_tokens": 3006,
+          "citations_used": 34,
+          "citations": [
+            "longmemeval:85fa3a3f:session4:chunk0",
+            "longmemeval:85fa3a3f:session7:chunk0",
+            "longmemeval:85fa3a3f:session7:chunk0",
+            "longmemeval:85fa3a3f:session7:chunk0",
+            "longmemeval:85fa3a3f:session7:chunk1",
+            "longmemeval:85fa3a3f:session7:chunk1",
+            "longmemeval:85fa3a3f:session7:chunk1",
+            "longmemeval:85fa3a3f:session7:chunk2",
+            "longmemeval:85fa3a3f:session7:chunk2",
+            "longmemeval:85fa3a3f:session10:chunk0",
+            "longmemeval:85fa3a3f:session15:chunk2",
+            "longmemeval:85fa3a3f:session19:chunk2",
+            "longmemeval:85fa3a3f:session27:chunk3",
+            "longmemeval:85fa3a3f:session30:chunk0",
+            "longmemeval:85fa3a3f:session30:chunk0",
+            "longmemeval:85fa3a3f:session30:chunk0",
+            "longmemeval:85fa3a3f:session30:chunk0",
+            "longmemeval:85fa3a3f:session30:chunk1",
+            "longmemeval:85fa3a3f:session30:chunk2",
+            "longmemeval:85fa3a3f:session30:chunk2"
+          ],
+          "gold_support_in_brief": true,
+          "correct": false,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "$50",
+          "latency_s": 16.248,
+          "prompt_tokens": 6978,
+          "sessions_used": [
+            7,
+            30,
+            29
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "full_context": {
+          "answer": "$85",
+          "latency_s": 214.485,
+          "prompt_tokens": 105841,
+          "estimated_tokens": 123499,
+          "correct": false,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "0100672e",
+      "question_type": "multi-session",
+      "question": "How much did I spend on each coffee mug for my coworkers?",
+      "gold": "$12",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "$12",
+          "latency_s": 6.679,
+          "brief_tokens": 2320,
+          "prompt_tokens": 2434,
+          "citations_used": 20,
+          "citations": [
+            "longmemeval:0100672e:session0:chunk5",
+            "longmemeval:0100672e:session2:chunk2",
+            "longmemeval:0100672e:session2:chunk3",
+            "longmemeval:0100672e:session2:chunk6",
+            "longmemeval:0100672e:session4:chunk4",
+            "longmemeval:0100672e:session8:chunk1",
+            "longmemeval:0100672e:session11:chunk3",
+            "longmemeval:0100672e:session17:chunk0",
+            "longmemeval:0100672e:session30:chunk1",
+            "longmemeval:0100672e:session35:chunk1",
+            "longmemeval:0100672e:session36:chunk0",
+            "longmemeval:0100672e:session36:chunk2",
+            "longmemeval:0100672e:session36:chunk2",
+            "longmemeval:0100672e:session36:chunk2",
+            "longmemeval:0100672e:session36:chunk4",
+            "longmemeval:0100672e:session36:chunk4",
+            "longmemeval:0100672e:session37:chunk0",
+            "longmemeval:0100672e:session45:chunk0",
+            "longmemeval:0100672e:session45:chunk1",
+            "longmemeval:0100672e:session48:chunk0"
+          ],
+          "gold_support_in_brief": true,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "$12",
+          "latency_s": 18.21,
+          "prompt_tokens": 9237,
+          "sessions_used": [
+            36,
+            45,
+            33
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "full_context": {
+          "answer": "$12",
+          "latency_s": 209.565,
+          "prompt_tokens": 106767,
+          "estimated_tokens": 127058,
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "b5ef892d",
+      "question_type": "multi-session",
+      "question": "How many days did I spend on camping trips in the United States this year?",
+      "gold": "8 days.",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "8 days",
+          "latency_s": 78.826,
+          "brief_tokens": 2360,
+          "prompt_tokens": 2506,
+          "citations_used": 27,
+          "citations": [
+            "longmemeval:b5ef892d:session6:chunk0",
+            "longmemeval:b5ef892d:session6:chunk5",
+            "longmemeval:b5ef892d:session15:chunk4",
+            "longmemeval:b5ef892d:session18:chunk2",
+            "longmemeval:b5ef892d:session21:chunk0",
+            "longmemeval:b5ef892d:session24:chunk0",
+            "longmemeval:b5ef892d:session24:chunk7",
+            "longmemeval:b5ef892d:session24:chunk7",
+            "longmemeval:b5ef892d:session24:chunk7",
+            "longmemeval:b5ef892d:session27:chunk1",
+            "longmemeval:b5ef892d:session28:chunk0",
+            "longmemeval:b5ef892d:session34:chunk0",
+            "longmemeval:b5ef892d:session35:chunk0",
+            "longmemeval:b5ef892d:session42:chunk6",
+            "longmemeval:b5ef892d:session43:chunk0",
+            "longmemeval:b5ef892d:session43:chunk0",
+            "longmemeval:b5ef892d:session43:chunk1",
+            "longmemeval:b5ef892d:session43:chunk4",
+            "longmemeval:b5ef892d:session49:chunk4"
+          ],
+          "gold_support_in_brief": true,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "Zero",
+          "latency_s": 13.248,
+          "prompt_tokens": 6759,
+          "sessions_used": [
+            24,
+            45,
+            36
+          ],
+          "correct": false,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "e5ba910e_abs",
+      "question_type": "multi-session",
+      "question": "What is the total cost of my recently purchased headphones and the iPad?",
+      "gold": "The information provided is not enough. You mentioned purchasing a headphone, but you did not mention the iPad.",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "$378",
+          "latency_s": 5.623,
+          "brief_tokens": 2395,
+          "prompt_tokens": 2547,
+          "citations_used": 31,
+          "citations": [
+            "longmemeval:e5ba910e_abs:session7:chunk0",
+            "longmemeval:e5ba910e_abs:session7:chunk3",
+            "longmemeval:e5ba910e_abs:session8:chunk0",
+            "longmemeval:e5ba910e_abs:session8:chunk1",
+            "longmemeval:e5ba910e_abs:session14:chunk4",
+            "longmemeval:e5ba910e_abs:session15:chunk4",
+            "longmemeval:e5ba910e_abs:session18:chunk0",
+            "longmemeval:e5ba910e_abs:session18:chunk0",
+            "longmemeval:e5ba910e_abs:session18:chunk3",
+            "longmemeval:e5ba910e_abs:session19:chunk1",
+            "longmemeval:e5ba910e_abs:session22:chunk0",
+            "longmemeval:e5ba910e_abs:session22:chunk0",
+            "longmemeval:e5ba910e_abs:session22:chunk1",
+            "longmemeval:e5ba910e_abs:session22:chunk3",
+            "longmemeval:e5ba910e_abs:session22:chunk4",
+            "longmemeval:e5ba910e_abs:session22:chunk5",
+            "longmemeval:e5ba910e_abs:session22:chunk5",
+            "longmemeval:e5ba910e_abs:session38:chunk2",
+            "longmemeval:e5ba910e_abs:session42:chunk3",
+            "longmemeval:e5ba910e_abs:session42:chunk3"
+          ],
+          "gold_support_in_brief": true,
+          "correct": false,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "$378",
+          "latency_s": 89.371,
+          "prompt_tokens": 6747,
+          "sessions_used": [
+            19,
+            22,
+            11
+          ],
+          "correct": false,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "9ee3ecd6",
+      "question_type": "multi-session",
+      "question": "How many points do I need to earn to redeem a free skincare product at Sephora?",
+      "gold": "100",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "300 points",
+          "latency_s": 6.017,
+          "brief_tokens": 2692,
+          "prompt_tokens": 2728,
+          "citations_used": 26,
+          "citations": [
+            "longmemeval:9ee3ecd6:session3:chunk0",
+            "longmemeval:9ee3ecd6:session3:chunk0",
+            "longmemeval:9ee3ecd6:session3:chunk5",
+            "longmemeval:9ee3ecd6:session3:chunk5",
+            "longmemeval:9ee3ecd6:session7:chunk0",
+            "longmemeval:9ee3ecd6:session12:chunk0",
+            "longmemeval:9ee3ecd6:session16:chunk0",
+            "longmemeval:9ee3ecd6:session16:chunk2",
+            "longmemeval:9ee3ecd6:session16:chunk4",
+            "longmemeval:9ee3ecd6:session16:chunk4",
+            "longmemeval:9ee3ecd6:session20:chunk5",
+            "longmemeval:9ee3ecd6:session20:chunk8",
+            "longmemeval:9ee3ecd6:session31:chunk0",
+            "longmemeval:9ee3ecd6:session31:chunk1",
+            "longmemeval:9ee3ecd6:session36:chunk0",
+            "longmemeval:9ee3ecd6:session45:chunk0",
+            "longmemeval:9ee3ecd6:session45:chunk0",
+            "longmemeval:9ee3ecd6:session45:chunk1"
+          ],
+          "gold_support_in_brief": false,
+          "correct": false,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "300 points",
+          "latency_s": 17.635,
+          "prompt_tokens": 8654,
+          "sessions_used": [
+            45,
+            7,
+            31
+          ],
+          "correct": false,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "c8f1aeed",
+      "question_type": "single-session-assistant",
+      "question": "I wanted to follow up on our previous conversation about fracking in the Marcellus Shale region. You mentioned that some states require fracking companies to monitor groundwater quality at nearby wells before drilling and for a certain period after drilling is complete. Can you remind me which state you mentioned as an example that has this requirement?",
+      "gold": "Pennsylvania",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "Pennsylvania",
+          "latency_s": 6.002,
+          "brief_tokens": 2767,
+          "prompt_tokens": 2718,
+          "citations_used": 23,
+          "citations": [
+            "longmemeval:c8f1aeed:session7:chunk0",
+            "longmemeval:c8f1aeed:session7:chunk1",
+            "longmemeval:c8f1aeed:session10:chunk5",
+            "longmemeval:c8f1aeed:session11:chunk2",
+            "longmemeval:c8f1aeed:session14:chunk0",
+            "longmemeval:c8f1aeed:session14:chunk3",
+            "longmemeval:c8f1aeed:session14:chunk4",
+            "longmemeval:c8f1aeed:session16:chunk0",
+            "longmemeval:c8f1aeed:session21:chunk2",
+            "longmemeval:c8f1aeed:session32:chunk1",
+            "longmemeval:c8f1aeed:session40:chunk0",
+            "longmemeval:c8f1aeed:session40:chunk0",
+            "longmemeval:c8f1aeed:session48:chunk0",
+            "longmemeval:c8f1aeed:session48:chunk0",
+            "longmemeval:c8f1aeed:session48:chunk0"
+          ],
+          "gold_support_in_brief": false,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "Pennsylvania",
+          "latency_s": 14.225,
+          "prompt_tokens": 6815,
+          "sessions_used": [
+            7,
+            40,
+            6
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "0e5e2d1a",
+      "question_type": "single-session-assistant",
+      "question": "I wanted to follow up on our previous conversation about binaural beats for anxiety and depression. Can you remind me how many subjects were in the study published in the journal Music and Medicine that found significant reductions in symptoms of depression, anxiety, and stress?",
+      "gold": "38 subjects",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "The records don't contain any information about a binaural beats study published in Music and Medicine, so I can't provide the number of subjects.",
+          "latency_s": 6.905,
+          "brief_tokens": 2611,
+          "prompt_tokens": 2728,
+          "citations_used": 27,
+          "citations": [
+            "longmemeval:0e5e2d1a:session1:chunk0",
+            "longmemeval:0e5e2d1a:session2:chunk0",
+            "longmemeval:0e5e2d1a:session2:chunk2",
+            "longmemeval:0e5e2d1a:session2:chunk2",
+            "longmemeval:0e5e2d1a:session3:chunk0",
+            "longmemeval:0e5e2d1a:session5:chunk0",
+            "longmemeval:0e5e2d1a:session5:chunk6",
+            "longmemeval:0e5e2d1a:session8:chunk5",
+            "longmemeval:0e5e2d1a:session8:chunk5",
+            "longmemeval:0e5e2d1a:session10:chunk1",
+            "longmemeval:0e5e2d1a:session10:chunk1",
+            "longmemeval:0e5e2d1a:session13:chunk6",
+            "longmemeval:0e5e2d1a:session17:chunk1",
+            "longmemeval:0e5e2d1a:session21:chunk0",
+            "longmemeval:0e5e2d1a:session24:chunk2",
+            "longmemeval:0e5e2d1a:session31:chunk0",
+            "longmemeval:0e5e2d1a:session40:chunk1",
+            "longmemeval:0e5e2d1a:session43:chunk3",
+            "longmemeval:0e5e2d1a:session44:chunk1"
+          ],
+          "gold_support_in_brief": false,
+          "correct": false,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "38",
+          "latency_s": 15.67,
+          "prompt_tokens": 7370,
+          "sessions_used": [
+            23,
+            24,
+            43
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "8a2466db",
+      "question_type": "single-session-preference",
+      "question": "Can you recommend some resources where I can learn more about video editing?",
+      "gold": "The user would prefer responses that suggest resources specifically tailored to Adobe Premiere Pro, especially those that delve into its advanced settings. They might not prefer general video editing resources or resources related to other video editing software.",
+      "compile": {
+        "cached": true
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "Adobe Premiere Pro, Lumetri Color Panel",
+          "latency_s": 4.949,
+          "brief_tokens": 2007,
+          "prompt_tokens": 2109,
+          "citations_used": 19,
+          "citations": [
+            "longmemeval:8a2466db:session2:chunk2",
+            "longmemeval:8a2466db:session7:chunk4",
+            "longmemeval:8a2466db:session8:chunk0",
+            "longmemeval:8a2466db:session8:chunk2",
+            "longmemeval:8a2466db:session8:chunk3",
+            "longmemeval:8a2466db:session8:chunk6",
+            "longmemeval:8a2466db:session8:chunk8",
+            "longmemeval:8a2466db:session8:chunk9",
+            "longmemeval:8a2466db:session20:chunk4",
+            "longmemeval:8a2466db:session23:chunk2",
+            "longmemeval:8a2466db:session23:chunk3",
+            "longmemeval:8a2466db:session23:chunk6",
+            "longmemeval:8a2466db:session27:chunk3",
+            "longmemeval:8a2466db:session27:chunk4",
+            "longmemeval:8a2466db:session30:chunk0",
+            "longmemeval:8a2466db:session38:chunk1",
+            "longmemeval:8a2466db:session39:chunk1",
+            "longmemeval:8a2466db:session39:chunk5",
+            "longmemeval:8a2466db:session39:chunk7"
+          ],
+          "gold_support_in_brief": false,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "YouTube channels like Premiere Bro, Video Copilot, and Adobe Creative Cloud; online courses on Udemy, LinkedIn Learning, and Skillshare; and communities like Reddit's r/premierepro and Adobe's Premiere Pro forum.",
+          "latency_s": 25.815,
+          "prompt_tokens": 11821,
+          "sessions_used": [
+            22,
+            8,
+            27
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "06878be2",
+      "question_type": "single-session-preference",
+      "question": "Can you suggest some accessories that would complement my current photography setup?",
+      "gold": "The user would prefer suggestions of Sony-compatible accessories or high-quality photography gear that can enhance their photography experience. They may not prefer suggestions of other brands' equipment or low-quality gear.",
+      "compile": {
+        "captures": 214,
+        "facts_accepted": 336,
+        "facts_rejected": 37,
+        "rejections_by_reason": {
+          "subject_unresolved": 34,
+          "weak_quote": 3
+        },
+        "failed_captures": 7,
+        "reject_rate": 0.099,
+        "reject_rate_high": false,
+        "duplicates_linked": 4,
+        "superseded": 0
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "Godox V1 flash, a more comfortable camera bag, and extra batteries/SD cards",
+          "latency_s": 261.665,
+          "brief_tokens": 1815,
+          "prompt_tokens": 1945,
+          "citations_used": 22,
+          "citations": [
+            "longmemeval:06878be2:session4:chunk8",
+            "longmemeval:06878be2:session8:chunk3",
+            "longmemeval:06878be2:session8:chunk5",
+            "longmemeval:06878be2:session8:chunk5",
+            "longmemeval:06878be2:session13:chunk2",
+            "longmemeval:06878be2:session14:chunk2",
+            "longmemeval:06878be2:session14:chunk3",
+            "longmemeval:06878be2:session18:chunk1",
+            "longmemeval:06878be2:session20:chunk0",
+            "longmemeval:06878be2:session20:chunk0",
+            "longmemeval:06878be2:session20:chunk0",
+            "longmemeval:06878be2:session27:chunk1",
+            "longmemeval:06878be2:session27:chunk2",
+            "longmemeval:06878be2:session30:chunk1",
+            "longmemeval:06878be2:session33:chunk1",
+            "longmemeval:06878be2:session33:chunk1",
+            "longmemeval:06878be2:session35:chunk0",
+            "longmemeval:06878be2:session35:chunk0",
+            "longmemeval:06878be2:session35:chunk3",
+            "longmemeval:06878be2:session35:chunk6"
+          ],
+          "gold_support_in_brief": true,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "A tripod, extra batteries, a polarizing filter, and a camera bag",
+          "latency_s": 267.931,
+          "prompt_tokens": 5986,
+          "sessions_used": [
+            10,
+            9,
+            38
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "311778f1",
+      "question_type": "single-session-user",
+      "question": "How many hours did I spend watching documentaries on Netflix last month?",
+      "gold": "10",
+      "compile": {
+        "captures": 215,
+        "facts_accepted": 393,
+        "facts_rejected": 57,
+        "rejections_by_reason": {
+          "quote not found in capture": 2,
+          "subject_mismatch": 1,
+          "subject_unresolved": 54
+        },
+        "failed_captures": 4,
+        "reject_rate": 0.127,
+        "reject_rate_high": false,
+        "duplicates_linked": 2,
+        "superseded": 0
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "Around 10 hours",
+          "latency_s": 18.213,
+          "brief_tokens": 2633,
+          "prompt_tokens": 2758,
+          "citations_used": 27,
+          "citations": [
+            "longmemeval:311778f1:session3:chunk0",
+            "longmemeval:311778f1:session3:chunk0",
+            "longmemeval:311778f1:session3:chunk1",
+            "longmemeval:311778f1:session3:chunk2",
+            "longmemeval:311778f1:session3:chunk2",
+            "longmemeval:311778f1:session6:chunk3",
+            "longmemeval:311778f1:session10:chunk1",
+            "longmemeval:311778f1:session28:chunk1",
+            "longmemeval:311778f1:session33:chunk0",
+            "longmemeval:311778f1:session33:chunk1",
+            "longmemeval:311778f1:session33:chunk4",
+            "longmemeval:311778f1:session33:chunk4",
+            "longmemeval:311778f1:session33:chunk5",
+            "longmemeval:311778f1:session39:chunk6",
+            "longmemeval:311778f1:session39:chunk6",
+            "longmemeval:311778f1:session39:chunk6",
+            "longmemeval:311778f1:session43:chunk0",
+            "longmemeval:311778f1:session43:chunk1",
+            "longmemeval:311778f1:session43:chunk2"
+          ],
+          "gold_support_in_brief": true,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "10 hours",
+          "latency_s": 19.424,
+          "prompt_tokens": 9794,
+          "sessions_used": [
+            33,
+            35,
+            38
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "5d3d2817",
+      "question_type": "single-session-user",
+      "question": "What was my previous occupation?",
+      "gold": "Marketing specialist at a small startup",
+      "compile": {
+        "captures": 237,
+        "facts_accepted": 463,
+        "facts_rejected": 90,
+        "rejections_by_reason": {
+          "subject_mismatch": 5,
+          "subject_unresolved": 82,
+          "weak_quote": 3
+        },
+        "failed_captures": 0,
+        "reject_rate": 0.163,
+        "reject_rate_high": false,
+        "duplicates_linked": 2,
+        "superseded": 0
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "Marketing specialist at a small startup",
+          "latency_s": 19.598,
+          "brief_tokens": 3274,
+          "prompt_tokens": 3370,
+          "citations_used": 26,
+          "citations": [
+            "longmemeval:5d3d2817:session0:chunk1",
+            "longmemeval:5d3d2817:session2:chunk0",
+            "longmemeval:5d3d2817:session6:chunk2",
+            "longmemeval:5d3d2817:session12:chunk2",
+            "longmemeval:5d3d2817:session15:chunk0",
+            "longmemeval:5d3d2817:session16:chunk1",
+            "longmemeval:5d3d2817:session16:chunk1",
+            "longmemeval:5d3d2817:session16:chunk3",
+            "longmemeval:5d3d2817:session18:chunk0",
+            "longmemeval:5d3d2817:session19:chunk0",
+            "longmemeval:5d3d2817:session23:chunk2",
+            "longmemeval:5d3d2817:session26:chunk0",
+            "longmemeval:5d3d2817:session26:chunk1",
+            "longmemeval:5d3d2817:session26:chunk5",
+            "longmemeval:5d3d2817:session26:chunk5",
+            "longmemeval:5d3d2817:session37:chunk0",
+            "longmemeval:5d3d2817:session50:chunk1",
+            "longmemeval:5d3d2817:session51:chunk1"
+          ],
+          "gold_support_in_brief": true,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "The session excerpts do not mention your previous occupation.",
+          "latency_s": 13.388,
+          "prompt_tokens": 6776,
+          "sessions_used": [
+            41,
+            16,
+            18
+          ],
+          "correct": false,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "7527f7e2",
+      "question_type": "single-session-user",
+      "question": "How much did I spend on a designer handbag?",
+      "gold": "$800",
+      "compile": {
+        "captures": 232,
+        "facts_accepted": 439,
+        "facts_rejected": 61,
+        "rejections_by_reason": {
+          "quote not found in capture": 1,
+          "subject_unresolved": 60
+        },
+        "failed_captures": 0,
+        "reject_rate": 0.122,
+        "reject_rate_high": false,
+        "duplicates_linked": 5,
+        "superseded": 0
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "$800",
+          "latency_s": 13.092,
+          "brief_tokens": 1975,
+          "prompt_tokens": 2080,
+          "citations_used": 18,
+          "citations": [
+            "longmemeval:7527f7e2:session0:chunk2",
+            "longmemeval:7527f7e2:session2:chunk0",
+            "longmemeval:7527f7e2:session7:chunk1",
+            "longmemeval:7527f7e2:session7:chunk1",
+            "longmemeval:7527f7e2:session8:chunk4",
+            "longmemeval:7527f7e2:session12:chunk2",
+            "longmemeval:7527f7e2:session15:chunk1",
+            "longmemeval:7527f7e2:session15:chunk2",
+            "longmemeval:7527f7e2:session16:chunk0",
+            "longmemeval:7527f7e2:session16:chunk0",
+            "longmemeval:7527f7e2:session20:chunk2",
+            "longmemeval:7527f7e2:session29:chunk2",
+            "longmemeval:7527f7e2:session32:chunk4",
+            "longmemeval:7527f7e2:session38:chunk3",
+            "longmemeval:7527f7e2:session39:chunk0",
+            "longmemeval:7527f7e2:session39:chunk0",
+            "longmemeval:7527f7e2:session40:chunk0",
+            "longmemeval:7527f7e2:session44:chunk1"
+          ],
+          "gold_support_in_brief": true,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "$800",
+          "latency_s": 16.054,
+          "prompt_tokens": 8092,
+          "sessions_used": [
+            15,
+            39,
+            23
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "c8090214_abs",
+      "question_type": "temporal-reasoning",
+      "question": "How many days before I bought my iPad did I attend the Holiday Market?",
+      "gold": "The information provided is not enough. You mentioned getting the iPhone 13 Pro and attending the market, but you did not mention buying an iPad.",
+      "compile": {
+        "captures": 235,
+        "facts_accepted": 423,
+        "facts_rejected": 73,
+        "rejections_by_reason": {
+          "subject_mismatch": 4,
+          "subject_unresolved": 66,
+          "weak_quote": 3
+        },
+        "failed_captures": 0,
+        "reject_rate": 0.147,
+        "reject_rate_high": false,
+        "duplicates_linked": 2,
+        "superseded": 0
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "The records don't mention you buying an iPad, so this can't be determined.",
+          "latency_s": 18.879,
+          "brief_tokens": 3245,
+          "prompt_tokens": 3478,
+          "citations_used": 28,
+          "citations": [
+            "longmemeval:c8090214_abs:session39:chunk0",
+            "longmemeval:c8090214_abs:session39:chunk2",
+            "longmemeval:c8090214_abs:session39:chunk3",
+            "longmemeval:c8090214_abs:session36:chunk0",
+            "longmemeval:c8090214_abs:session36:chunk3",
+            "longmemeval:c8090214_abs:session36:chunk4",
+            "longmemeval:c8090214_abs:session36:chunk4",
+            "longmemeval:c8090214_abs:session36:chunk5",
+            "longmemeval:c8090214_abs:session15:chunk5",
+            "longmemeval:c8090214_abs:session15:chunk8",
+            "longmemeval:c8090214_abs:session15:chunk8",
+            "longmemeval:c8090214_abs:session22:chunk4",
+            "longmemeval:c8090214_abs:session37:chunk0",
+            "longmemeval:c8090214_abs:session31:chunk7",
+            "longmemeval:c8090214_abs:session17:chunk0",
+            "longmemeval:c8090214_abs:session6:chunk4",
+            "longmemeval:c8090214_abs:session24:chunk2",
+            "longmemeval:c8090214_abs:session24:chunk4",
+            "longmemeval:c8090214_abs:session5:chunk2",
+            "longmemeval:c8090214_abs:session5:chunk3"
+          ],
+          "gold_support_in_brief": true,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "A week before Black Friday",
+          "latency_s": 17.885,
+          "prompt_tokens": 9075,
+          "sessions_used": [
+            17,
+            36,
+            5
+          ],
+          "correct": false,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "f0853d11",
+      "question_type": "temporal-reasoning",
+      "question": "How many days had passed between the 'Walk for Hunger' event and the 'Coastal Cleanup' event?",
+      "gold": "14 days. 8 days (including the last day) is also acceptable.",
+      "compile": {
+        "captures": 223,
+        "facts_accepted": 403,
+        "facts_rejected": 64,
+        "rejections_by_reason": {
+          "quote not found in capture": 3,
+          "subject_unresolved": 60,
+          "weak_quote": 1
+        },
+        "failed_captures": 0,
+        "reject_rate": 0.137,
+        "reject_rate_high": false,
+        "duplicates_linked": 4,
+        "superseded": 0
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "14 days",
+          "latency_s": 12.096,
+          "brief_tokens": 2292,
+          "prompt_tokens": 2407,
+          "citations_used": 27,
+          "citations": [
+            "longmemeval:f0853d11:session32:chunk0",
+            "longmemeval:f0853d11:session20:chunk3",
+            "longmemeval:f0853d11:session20:chunk8",
+            "longmemeval:f0853d11:session30:chunk0",
+            "longmemeval:f0853d11:session22:chunk0",
+            "longmemeval:f0853d11:session22:chunk4",
+            "longmemeval:f0853d11:session22:chunk4",
+            "longmemeval:f0853d11:session22:chunk4",
+            "longmemeval:f0853d11:session22:chunk5",
+            "longmemeval:f0853d11:session22:chunk5",
+            "longmemeval:f0853d11:session22:chunk5",
+            "longmemeval:f0853d11:session8:chunk0",
+            "longmemeval:f0853d11:session8:chunk1",
+            "longmemeval:f0853d11:session31:chunk1",
+            "longmemeval:f0853d11:session36:chunk0",
+            "longmemeval:f0853d11:session13:chunk4",
+            "longmemeval:f0853d11:session18:chunk0",
+            "longmemeval:f0853d11:session18:chunk8",
+            "longmemeval:f0853d11:session24:chunk2"
+          ],
+          "gold_support_in_brief": false,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "14 days",
+          "latency_s": 20.24,
+          "prompt_tokens": 10276,
+          "sessions_used": [
+            14,
+            22,
+            18
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "gpt4_68e94287",
+      "question_type": "temporal-reasoning",
+      "question": "Which event happened first, my participation in the #PlankChallenge or my post about vegan chili recipe?",
+      "gold": "You posted a recipe for vegan chili on Instagram using the hashtag #FoodieAdventures first.",
+      "compile": {
+        "captures": 225,
+        "facts_accepted": 399,
+        "facts_rejected": 99,
+        "rejections_by_reason": {
+          "quote not found in capture": 2,
+          "subject_mismatch": 9,
+          "subject_unresolved": 86,
+          "weak_quote": 2
+        },
+        "failed_captures": 0,
+        "reject_rate": 0.199,
+        "reject_rate_high": false,
+        "duplicates_linked": 2,
+        "superseded": 0
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "#PlankChallenge",
+          "latency_s": 14.755,
+          "brief_tokens": 2844,
+          "prompt_tokens": 2937,
+          "citations_used": 25,
+          "citations": [
+            "longmemeval:gpt4_68e94287:session4:chunk2",
+            "longmemeval:gpt4_68e94287:session6:chunk0",
+            "longmemeval:gpt4_68e94287:session8:chunk3",
+            "longmemeval:gpt4_68e94287:session13:chunk0",
+            "longmemeval:gpt4_68e94287:session13:chunk2",
+            "longmemeval:gpt4_68e94287:session13:chunk2",
+            "longmemeval:gpt4_68e94287:session28:chunk2",
+            "longmemeval:gpt4_68e94287:session34:chunk0",
+            "longmemeval:gpt4_68e94287:session34:chunk0",
+            "longmemeval:gpt4_68e94287:session34:chunk1",
+            "longmemeval:gpt4_68e94287:session34:chunk1",
+            "longmemeval:gpt4_68e94287:session34:chunk1",
+            "longmemeval:gpt4_68e94287:session34:chunk1",
+            "longmemeval:gpt4_68e94287:session25:chunk1",
+            "longmemeval:gpt4_68e94287:session36:chunk6",
+            "longmemeval:gpt4_68e94287:session21:chunk0",
+            "longmemeval:gpt4_68e94287:session18:chunk4"
+          ],
+          "gold_support_in_brief": true,
+          "correct": false,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "Vegan chili recipe post",
+          "latency_s": 15.872,
+          "prompt_tokens": 7648,
+          "sessions_used": [
+            34,
+            13,
+            18
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "c8090214",
+      "question_type": "temporal-reasoning",
+      "question": "How many days before I bought the iPhone 13 Pro did I attend the Holiday Market?",
+      "gold": "7 days. 8 days (including the last day) is also acceptable.",
+      "compile": {
+        "captures": 218,
+        "facts_accepted": 397,
+        "facts_rejected": 76,
+        "rejections_by_reason": {
+          "quote not found in capture": 1,
+          "subject_unresolved": 72,
+          "weak_quote": 3
+        },
+        "failed_captures": 0,
+        "reject_rate": 0.161,
+        "reject_rate_high": false,
+        "duplicates_linked": 1,
+        "superseded": 0
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "7 days",
+          "latency_s": 16.419,
+          "brief_tokens": 2857,
+          "prompt_tokens": 3052,
+          "citations_used": 30,
+          "citations": [
+            "longmemeval:c8090214:session27:chunk0",
+            "longmemeval:c8090214:session27:chunk0",
+            "longmemeval:c8090214:session27:chunk3",
+            "longmemeval:c8090214:session27:chunk3",
+            "longmemeval:c8090214:session27:chunk4",
+            "longmemeval:c8090214:session27:chunk4",
+            "longmemeval:c8090214:session27:chunk5",
+            "longmemeval:c8090214:session24:chunk0",
+            "longmemeval:c8090214:session24:chunk0",
+            "longmemeval:c8090214:session24:chunk0",
+            "longmemeval:c8090214:session24:chunk0",
+            "longmemeval:c8090214:session24:chunk0",
+            "longmemeval:c8090214:session24:chunk1",
+            "longmemeval:c8090214:session24:chunk1",
+            "longmemeval:c8090214:session24:chunk1",
+            "longmemeval:c8090214:session24:chunk1",
+            "longmemeval:c8090214:session24:chunk3",
+            "longmemeval:c8090214:session24:chunk3",
+            "longmemeval:c8090214:session24:chunk4",
+            "longmemeval:c8090214:session14:chunk0"
+          ],
+          "gold_support_in_brief": false,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "The session excerpts don't mention a Holiday Market, so I can't determine this from the provided conversations.",
+          "latency_s": 17.915,
+          "prompt_tokens": 8368,
+          "sessions_used": [
+            14,
+            4,
+            35
+          ],
+          "correct": false,
+          "judge_ambiguous": false
+        }
+      }
+    },
+    {
+      "question_id": "gpt4_76048e76",
+      "question_type": "temporal-reasoning",
+      "question": "Which vehicle did I take care of first in February, the bike or the car?",
+      "gold": "bike",
+      "compile": {
+        "captures": 216,
+        "facts_accepted": 420,
+        "facts_rejected": 68,
+        "rejections_by_reason": {
+          "subject_mismatch": 1,
+          "subject_unresolved": 65,
+          "weak_quote": 2
+        },
+        "failed_captures": 0,
+        "reject_rate": 0.139,
+        "reject_rate_high": false,
+        "duplicates_linked": 7,
+        "superseded": 0
+      },
+      "backends": {
+        "cairnstone": {
+          "answer": "The bike",
+          "latency_s": 13.318,
+          "brief_tokens": 2478,
+          "prompt_tokens": 2646,
+          "citations_used": 31,
+          "citations": [
+            "longmemeval:gpt4_76048e76:session27:chunk4",
+            "longmemeval:gpt4_76048e76:session13:chunk1",
+            "longmemeval:gpt4_76048e76:session13:chunk4",
+            "longmemeval:gpt4_76048e76:session20:chunk0",
+            "longmemeval:gpt4_76048e76:session20:chunk0",
+            "longmemeval:gpt4_76048e76:session20:chunk0",
+            "longmemeval:gpt4_76048e76:session20:chunk1",
+            "longmemeval:gpt4_76048e76:session20:chunk3",
+            "longmemeval:gpt4_76048e76:session20:chunk4",
+            "longmemeval:gpt4_76048e76:session20:chunk4",
+            "longmemeval:gpt4_76048e76:session20:chunk5",
+            "longmemeval:gpt4_76048e76:session20:chunk5",
+            "longmemeval:gpt4_76048e76:session30:chunk0",
+            "longmemeval:gpt4_76048e76:session16:chunk2",
+            "longmemeval:gpt4_76048e76:session38:chunk5",
+            "longmemeval:gpt4_76048e76:session38:chunk5",
+            "longmemeval:gpt4_76048e76:session18:chunk0",
+            "longmemeval:gpt4_76048e76:session18:chunk3",
+            "longmemeval:gpt4_76048e76:session18:chunk3",
+            "longmemeval:gpt4_76048e76:session18:chunk4"
+          ],
+          "gold_support_in_brief": true,
+          "correct": true,
+          "judge_ambiguous": false
+        },
+        "keyword": {
+          "answer": "The bike",
+          "latency_s": 17.831,
+          "prompt_tokens": 8520,
+          "sessions_used": [
+            18,
+            20,
+            28
+          ],
+          "correct": true,
+          "judge_ambiguous": false
+        }
+      }
+    }
+  ]
+}
