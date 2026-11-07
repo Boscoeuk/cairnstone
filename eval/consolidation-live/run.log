@@ -48,3 +48,9 @@ ok: consolidated duplicates_linked=0 superseded=0 flagged=0
   7   Caroline is single.                           active      sup_by=None dup_of=None 2023-08-01T09:00:00+00:00
   FLAG fact=3 {"contradicts": 6, "slot": "cat:location:caroline", "values": [["lisbon"], ["berlin"]]}
 -- brief --
+Where does Caroline live?
+citations:
+- [capture live-spark-2 span 10:38] Caroline moved to Lisbon in 2023-05. -- "I moved to Lisbon last month"
+- [capture live-spark-4 span 10:26] Caroline lives in Berlin. -- "I live in Berlin"
+- [capture live-spark-4 span 31:42] Caroline is single. -- "I am single"
+ok: brief facts=3
