@@ -1,11 +1,11 @@
 # Phase 15 report — closing N1–N5, the migration backfill and P11
 
-Date: 2026-11-06. Specification: `reports/tes-review-2.md`. Executed by Polly after the phase-15
+Date: 2026-11-07. Specification: `reports/tes-review-2.md`. Executed by Polly after the phase-15
 worker was SIGTERM'd mid-task with four tests failing and no report; the work below was completed
 and verified by hand.
 
 Boundaries honoured: extraction prompts, retrieval ranking, the citation invariant, `eval/harness.py`,
-`eval/dogfood/`, `eval/longemma/` and every measured number untouched.
+`eval/dogfood/`, `eval/longmemeval/` and every measured number untouched.
 
 ## What changed
 
@@ -46,7 +46,7 @@ Boundaries honoured: extraction prompts, retrieval ranking, the citation invaria
 
 ## Verification
 
-`python3 -m pytest -q` → **112 passed** (104 before; `tests/test_phase15.py` adds 9: N1 batch
+`.venv/bin/python -m pytest -q` → **113 passed** (104 before; `tests/test_phase15.py` adds 9: N1 batch
 re-assertion, duplicate chains, N2 LoCoMo stamp ordering, N2 slash-date normalisation, N4 identity
 false-positive, N4 real occupation change, N5 equal timestamps, N6 phrasing variant, migration
 backfill).
