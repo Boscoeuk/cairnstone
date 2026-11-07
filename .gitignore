@@ -5,6 +5,9 @@ eval/dogfood/*.db
 eval/dogfood/*.db-shm
 eval/dogfood/*.db-wal
 eval/dogfood/redaction_rules.local.json
+eval/consolidation-live/*.db
+eval/consolidation-live/*.db-wal
+eval/consolidation-live/*.db-shm
 *.db-shm
 *.db-wal
 *.tmp*
