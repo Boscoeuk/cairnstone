@@ -91,8 +91,12 @@ the Markdown export print it under every claim.
 
 ## Measured results
 
-150 LoCoMo questions across 2 conversations, recompiled and re-measured on the current code
-(2026-11-06; result `eval/results/2026-11-06-cairnstone-b600-ps75-s2-q150-130032Z.json`):
+150 LoCoMo questions across 2 conversations. The table and the figures in this section were measured
+on 2026-11-06 on pre-phase-13 code (result
+`eval/results/2026-11-06-cairnstone-b600-ps75-s2-q150-130032Z.json`). A like-for-like re-measure of
+the cairnstone row on 2026-11-07 at commit `fe71ff1` (phase 16) scored 76.7% (115/150), 1,275 mean
+context tokens and 2.79 s median latency: a change within noise (12 questions lost, 10 gained,
+McNemar p = 0.83; see `reports/locomo-phase15.md`):
 
 | backend | accuracy | mean context tokens | median latency |
 |---|---|---|---|
