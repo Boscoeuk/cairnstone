@@ -105,7 +105,9 @@ ok: consolidated duplicates_linked=0 superseded=0 flagged=0
   FLAG fact=3 {"contradicts": 6, "slot": "cat:location:caroline", "values": [["lisbon"], ["berlin"]]}
 ```
 
-Second local node (`http://<lan-node>:8889/v1`, `local-judge`):
+Second local node (`http://<lan-node>:8889/v1`), whose `backend.json` at the time reported
+`DeepSeek-V4.1-Flash` served by `tensorfold-native` — so a different model from GLM did this
+extraction, and it is not the same machine as the GLM route (see `reports/tes-review-3.md`):
 
 ```
 ok: compiled captures=4 accepted=7 rejected=0 duplicates_linked=3 superseded=1 failed_captures=[]
