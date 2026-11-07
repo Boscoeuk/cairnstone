@@ -18,7 +18,7 @@ I ran the live model run at `a2b5340`. I re-ran every deterministic harness at `
 
 **Which model did the extraction.** The second local route (the Spark-side endpoint, port 8889) is
 **not the same machine as the GLM route**. It is the Spark pair. At 14:44Z its `backend.json` said:
-`DeepSeek-V4.1-Flash-1017 EXL3 EAQ v1 2.9bpw ...`, served by `tensorfold-native` on port 8898. Both
+`DeepSeek-V4.1-Flash-1017 EXL3 EAQ v1 2.9bpw …`, served by `tensorfold-native` on port 8898. Both
 nights' extraction calls succeeded, before the DS upgrade outage. So this is the first consolidation
 run where a model other than GLM did the extraction, but the model was DeepSeek-V4.1-Flash, not
 anything on the Spark itself.
