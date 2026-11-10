@@ -1,0 +1,113 @@
+{
+ "aggregate": {
+  "label": "LOCAL-JUDGED",
+  "n": 1,
+  "before_accuracy": 1.0,
+  "after_accuracy": 1.0,
+  "gained": 0,
+  "lost": 0,
+  "both_correct": 1,
+  "both_wrong": 0,
+  "mcnemar_exact_p": 1.0,
+  "questions_mutated_by_consolidation": 0,
+  "total_superseded": 0,
+  "total_duplicates_linked": 0,
+  "total_flagged": 0,
+  "mean_brief_tokens_before": 2071.0,
+  "mean_brief_tokens_after": 2071.0,
+  "judge_ambiguous_count": 0
+ },
+ "rows": [
+  {
+   "question_id": "71315a70",
+   "question": "How many hours have I spent on my abstract ocean sculpture?",
+   "gold": "10-12 hours",
+   "compile": {
+    "captures": 228,
+    "facts_accepted": 388,
+    "facts_rejected": 92,
+    "rejections_by_reason": {
+     "quote not found in capture": 2,
+     "subject_mismatch": 2,
+     "subject_unresolved": 86,
+     "weak_quote": 2
+    },
+    "failed_captures": 1,
+    "reject_rate": 0.192,
+    "reject_rate_high": false,
+    "duplicates_linked": 4,
+    "superseded": 0
+   },
+   "answer_session_ids": [
+    "answer_c44b9df4_1",
+    "answer_c44b9df4_2"
+   ],
+   "before": {
+    "answer": "10-12 hours (as of 2023-06-17)",
+    "latency_s": 21.874,
+    "brief_tokens": 2071,
+    "prompt_tokens": 2214,
+    "citations_used": 15,
+    "citations": [
+     "longmemeval:71315a70:session3:chunk0",
+     "longmemeval:71315a70:session3:chunk0",
+     "longmemeval:71315a70:session3:chunk1",
+     "longmemeval:71315a70:session3:chunk2",
+     "longmemeval:71315a70:session3:chunk2",
+     "longmemeval:71315a70:session3:chunk4",
+     "longmemeval:71315a70:session3:chunk4",
+     "longmemeval:71315a70:session3:chunk6",
+     "longmemeval:71315a70:session29:chunk0",
+     "longmemeval:71315a70:session29:chunk1",
+     "longmemeval:71315a70:session29:chunk2",
+     "longmemeval:71315a70:session29:chunk4",
+     "longmemeval:71315a70:session29:chunk5",
+     "longmemeval:71315a70:session29:chunk7",
+     "longmemeval:71315a70:session29:chunk7"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "superseded": 0,
+    "flagged": 0
+   },
+   "facts": {
+    "active_before": 388,
+    "active_after": 388,
+    "superseded_before": 0,
+    "superseded_after": 0
+   },
+   "after": {
+    "answer": "10-12 hours (as of 2023-06-17)",
+    "latency_s": 0.598,
+    "brief_tokens": 2071,
+    "prompt_tokens": 2214,
+    "citations_used": 15,
+    "citations": [
+     "longmemeval:71315a70:session3:chunk0",
+     "longmemeval:71315a70:session3:chunk0",
+     "longmemeval:71315a70:session3:chunk1",
+     "longmemeval:71315a70:session3:chunk2",
+     "longmemeval:71315a70:session3:chunk2",
+     "longmemeval:71315a70:session3:chunk4",
+     "longmemeval:71315a70:session3:chunk4",
+     "longmemeval:71315a70:session3:chunk6",
+     "longmemeval:71315a70:session29:chunk0",
+     "longmemeval:71315a70:session29:chunk1",
+     "longmemeval:71315a70:session29:chunk2",
+     "longmemeval:71315a70:session29:chunk4",
+     "longmemeval:71315a70:session29:chunk5",
+     "longmemeval:71315a70:session29:chunk7",
+     "longmemeval:71315a70:session29:chunk7"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   }
+  }
+ ],
+ "elapsed_s": 1756.1
+}

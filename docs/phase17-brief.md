@@ -1,9 +1,11 @@
 # Phase 17 brief — consolidation knowledge-update test
 
-Written by Polly, 2026-11-10 (rev 2, after Tes review round 1 at `fdfb816`). Tes reviews this
+Written by Polly, 2026-11-10 (rev 3, after Tes review round 2 at `a068e4b`; rev 2 followed round 1 at
+`fdfb816`). Tes reviews this
 **before any run** and re-checks the result before it is called accepted. No measurement run has
-been made: the only execution of this code path is one 1-question smoke (`71315a70`), which is not a
-result and is excluded from the question set.
+been made: the only executions of this code path are one 1-question smoke (`71315a70`) and a stray
+20-question run stopped at question 1 before any answer was judged. Neither is a result; both are
+excluded from the question set and quarantined (§P8.9).
 
 Two parts, in this order:
 
@@ -18,7 +20,27 @@ Decisions recorded here are Polly's and are final for this phase; implementation
 re-litigate them. The defects and the measurements behind them are Tes's, in `reports/tes-review-4.md`
 (committed at `68280b9`; do not edit that file).
 
-**Round-1 changes made in this revision** (all nine requested): arm (d) redefined as
+**Revision 3 (this version) — round-2 changes, all three requested:**
+
+1. **The stray pre-freeze run is stopped.** `ku_paired.py --questions 20 --seed 20261106`, pid 45392,
+   started 16:22 from Polly's interactive session on the unfrozen harness, was killed with SIGTERM at
+   16:29 before any answer or verdict was written. It held `:8460` (gate §B8.1) and overlapped 19 of
+   the 74 eligible ids and 7 of the 20 pilot ids. No `ku-paired-20q.json` was produced. Its partial
+   brain and every other pre-freeze artifact are quarantined, with sha256s, in
+   `eval/results/ku-quarantine-20261110-pre-freeze/MANIFEST.md` (§P8.9). **No question has been
+   judged or read on unfrozen code, so the 74 stays 74.**
+2. **Provenance sidecar, fail-closed (§P8.8, §P8.9).** A brain is reused only if `<qid>.meta.json`
+   records the frozen code SHA and the config sha256 and both match; missing, malformed or mismatched
+   → refuse and recompile. Pre-freeze brains and the pre-freeze smoke JSON are moved (not deleted) to
+   the quarantine directory. Tests for the missing/mismatched sidecar are specified.
+3. **(d)'s date granularity is pinned (§B2).** Full timestamp, `%Y/%m/%d (%a) %H:%M`, newest first,
+   tie-break score descending then session index; unparseable last. The recall table is regenerated
+   under that rule by committed `eval/longmemeval/p17_recall_check.py` and pasted with its output.
+   26 of the 74 questions have a same-day tie inside the relevance top 4, and at k=4 the full-timestamp
+   and date-only rules keep a **different** set on **59 of 74** questions — so the parse rule is part
+   of the pre-registration, not a detail.
+
+**Revision 2 — round-1 changes (retained):** arm (d) redefined as
 relevance-then-recency with k pre-registered and the recall table included (§B2); harness rewritten
 to keep the compiled brain pristine and consolidate a backup copy (§P8); LoCoMo pairing pinned to the
 `fe71ff1` brains and the 11-07 baseline JSON, with `.venv/bin/python` and an explicit `--db-dir`
@@ -170,9 +192,9 @@ reading it at `fdfb816`:
 
 **Required changes, frozen with the pre-work commit:**
 
-1. **Pristine brain.** Compile once into `eval/results/ku-db/<qid>.db`. If it exists and `--recompile`
-   is not passed, reuse it as-is. After compiling (or reusing), record `sha256` of the DB file and
-   store it in the result row.
+1. **Pristine brain.** Compile once into `eval/results/ku-db/<qid>.db`. Reuse is **conditional on the
+   provenance sidecar in item 8** — never "reuse as-is". After compiling (or reusing), record `sha256`
+   of the DB file and store it in the result row.
 2. **Consolidate a copy, never the original.** Make a SQLite backup copy with the `sqlite3` backup API
    to `eval/results/ku-db/<qid>.consolidated.db`, run `consolidate(conn, brain_id,
    max_mutation_rate=0.2)` **on the copy**, and record its sha256 too. Arm (a) answers from
@@ -193,9 +215,35 @@ reading it at `fdfb816`:
      as active, arm (b)'s must show it superseded — i.e. (a) is read from the unconsolidated DB;
    - the pristine sha256 is unchanged after a full `run_one`;
    - a second `run_one` on an existing DB does not recompile (capture/fact counts and sha identical,
-     stub client asserts zero extraction calls);
+     stub client asserts zero extraction calls) **when the sidecar matches**;
+   - a DB with a **missing** sidecar is refused: the harness recompiles rather than reading it, and the
+     row records `reused=false` with reason `sidecar-missing`;
+   - a DB with a sidecar whose `code_sha` or `config_sha256` differs from the frozen values is refused
+     the same way (`sidecar-mismatch`), and the stale DB is never read by any arm;
    - the consolidation call receives `max_mutation_rate=0.2` (assert via monkeypatched
      `cairn_compile.consolidate`).
+8. **Provenance sidecar (fail-closed).** At compile time write `eval/results/ku-db/<qid>.meta.json`
+   containing: `question_id`, `code_sha` (the frozen commit SHA the run is pinned to), `config_sha256`
+   (sha256 of the committed config file, §B5), `dataset_sha256`, `compile_started_utc`,
+   `compile_finished_utc`, `captures`, `facts`, and `db_sha256` (sha256 of the finished DB file).
+   Reuse rule, implemented as one function and unit-tested: read the sidecar; if it is missing, or
+   unparseable, or `code_sha != frozen_sha`, or `config_sha256 != config_sha256(frozen config)`, or
+   `db_sha256 != sha256(<qid>.db)`, then **do not read the DB** — recompile it and rewrite the sidecar.
+   Never repair a sidecar by hand; the harness owns it. The consolidated copy gets the same treatment:
+   `<qid>.consolidated.meta.json` recording the pristine sidecar's `db_sha256` it was derived from, the
+   `max_mutation_rate` used, the returned consolidation counts, and its own `db_sha256`; a consolidated
+   DB whose recorded source hash does not match the current pristine hash is rebuilt, not reused.
+   Rationale: without this, a brain compiled by pre-freeze code is silently read as if it were frozen,
+   which is exactly the contamination Tes round 2 identified.
+9. **Quarantine of everything pre-freeze.** Before the freeze, move (do not delete)
+   `eval/results/ku-db/*` and `eval/results/ku-paired-*.json` that were produced before the frozen SHA
+   into `eval/results/ku-quarantine-20261110-pre-freeze/`, with a `MANIFEST.md` listing each file's
+   sha256, size, provenance and why it cannot be reused. **Done in this revision** — the directory now
+   holds `71315a70.db` (the smoke brain, 228 captures / 388 facts, `b6560579…c92c3`), the stray run's
+   partial `1cea1afa.tmp` plus its `-shm`/`-wal`, and `ku-paired-smoke.json`. `eval/results/ku-db/` is
+   now empty, so every brain there after the freeze is frozen-SHA provenance-checked. A test asserts
+   that a brain placed in `ku-db/` without a sidecar is refused (item 7), which is the mechanism that
+   keeps a future stray artifact out.
 
 ## P9 — cross-page collision dry-run (B7 needs a measure, not a promise)
 
@@ -257,32 +305,62 @@ One brain per question, compiled once; every arm uses the same answerer, engine 
 | (a) | Cairnstone as the compiler left it — `retrieve.build_brief(conn, brain_id, question, budget_tokens=600)` against the **pristine** `<qid>.db`, **no** consolidation call. Note: `compile_all` itself runs dedupe/supersession, so (a) is "post-compile, pre-nightly-pass"; (b)−(a) isolates the nightly pass only. |
 | (b) | The same brain after **one** nightly pass: `compile.consolidate(conn, brain_id, max_mutation_rate=0.2)` on `<qid>.consolidated.db` — the function `cairnstone consolidate` calls, with the CLI's default rate (`src/cairnstone/cli.py:364`, `--max-mutation-rate` default `0.2`). Verified 2026-11-10: there is **no installed cron or launchd job** for cairnstone on this machine, so the CLI command is the nightly entry point and (b) is that command's code path. Record the returned counts and any `PolicyHalt`. |
 | (c) | Keyword retrieval, as committed in `eval/longmemeval/lme_eval.py::keyword_backend`: top-3 whole sessions by length-normalised lexical overlap, verbatim, each prefixed with its session date. Unchanged code. |
-| (d) | Keyword retrieval **relevance first, then recency**, new function `keyword_relevance_recency_backend(question)` in the same module: score every session with the *same* `(c)` score and tokeniser (imported, not reimplemented); take the top **k = 4** by that score; order those 4 by parsed session date descending (unparseable last, tie-break score descending); keep **3**; identical prompt, identical `ANSWER_SUFFIX`, identical session-date prefix. |
+| (d) | Keyword retrieval **relevance first, then recency**, new function `keyword_relevance_recency_backend(question)` in the same module: score every session with the *same* `(c)` score and tokeniser (imported, not reimplemented); take the top **k = 4** by that score; order those 4 by the parsed session date **full timestamp descending** — `datetime.strptime(date, "%Y/%m/%d (%a) %H:%M")`, unparseable last, tie-break score descending, then session index ascending; keep **3**; identical prompt, identical `ANSWER_SUFFIX`, identical session-date prefix. |
 
-**(d) was redefined after Tes round 1.** As originally written — every session with overlap>0, keep
-the 3 newest — it put an answer session in the top 3 on only **36/74** questions (against 71/74 for
-(c)), so beating it would have proved nothing. Recall of the **latest** answer session under the
-redefined rule, measured with Tes's dataset-only script
-(`p17_dcheck.py` (Tes's scratch script), reproduced by me under `.venv/bin/python`,
-no model calls):
+**(d) was redefined after Tes round 1**, and its date rule was pinned after round 2. As originally
+written — every session with overlap>0, keep the 3 newest — it put an answer session in the top 3 on
+only **36/74** questions (against 71/74 for (c)), so beating it would have proved nothing.
 
-| (d) candidate set | latest answer session in the 3 kept |
-|---|---|
-| k=3 (same set as (c), reordered) | 68/74 |
-| **k=4 (pre-registered)** | **67/74** |
-| k=5 | 63/74 |
-| k=6 | 60/74 |
-| k=8 | 57/74 |
-| k=10 | 47/74 |
-| (c) top-3 by score, for reference | 71/74 |
-| (d) as originally written (all overlap>0, newest 3) | 36/74 |
+**Date granularity is pre-registered as the full timestamp, and it is load-bearing.** The haystack
+dates carry times (`2023/04/23 (Sun) 08:57`). 26 of the 74 questions have a same-day tie inside the
+relevance top 4, and at k=4 the full-timestamp rule and a date-only rule keep a **different set on 59
+of 74** questions. The parse format is therefore frozen in the config (§B5), not left to the
+implementation. Recall under the pre-registered rule, computed by committed
+`eval/longmemeval/p17_recall_check.py` (dataset-only, no model calls, no brains; run 2026-11-10):
+
+```
+$ PYTHONPATH=src:. .venv/bin/python eval/longmemeval/p17_recall_check.py
+eligible_n 74
+sessions_per_q mean 47.5 min 39 max 55
+sessions_with_overlap mean 28.4 min 7
+answer_sessions_per_q set [2]
+unparsed_full_timestamp 0
+questions_with_same_day_tie_in_top4 26
+questions_where_full_and_day_k4_keep_differ 59
+c_top3_any_answer 71/74 latest 68/74
+k  full_any full_latest day_any day_latest
+3  71       68          71      68
+4  67       67          71      68
+5  61       61          71      68
+6  60       60          71      68
+8  54       54          71      68
+10 45       45          71      68
+```
+
+| (d) candidate set | **pre-registered: full timestamp** — latest answer session kept | pre-registered: any answer session kept | date-only variant (NOT used) — latest kept |
+|---|---|---|---|
+| k=3 (same set as (c), reordered) | 68/74 | 71/74 | 68/74 |
+| **k=4 (pre-registered)** | **67/74** | **67/74** | 68/74 |
+| k=5 | 61/74 | 61/74 | 68/74 |
+| k=6 | 60/74 | 60/74 | 68/74 |
+| k=8 | 54/74 | 54/74 | 68/74 |
+| k=10 | 45/74 | 45/74 | 68/74 |
+| (c) top-3 by score, for reference | 68/74 | 71/74 | — |
+| (d) as originally written (all overlap>0, newest 3) | 36/74 | — | — |
+
+**Why the date-only column differs from the rev-2 table.** Rev 2 quoted 67 (k=4), 63 (k=5), 60 (k=6),
+57 (k=8), 47 (k=10) from Tes's `p17_dcheck.py`, which parsed dates but did not state how same-day ties
+were broken — and 26 of the 74 questions have such a tie. The committed script fixes the tie-break
+(score descending) and gets 68 for every k≥3 on the date-only rule, because the newest three days then
+almost always carry an answer session. That ambiguity is the reason the full timestamp is now pinned:
+one rule, one table, no tie-break left to choice.
 
 **k = 4 is pre-registered** rather than 3, because at k=3 (d) shares (c)'s candidate set exactly and
 differs only in ordering — a contrast too weak to mean anything in the other direction. At k=4 one
-relevant session is dropped in favour of recency while retaining 67/74 latest-answer recall: a genuine
-recency-preferring policy, not a strawman. Also measured (same script): 47.5 sessions per question,
-28.4 of them with overlap>0 (minimum 7), 0 unparsed dates, and exactly 2 answer sessions per question
-in all 74.
+relevant session is dropped in favour of recency while retaining 67/74 latest-answer recall under the
+frozen rule: a genuine recency-preferring policy, not a strawman. Also measured (same script, same
+run): 47.5 sessions per question, 28.4 of them with overlap>0 (minimum 7), 0 unparsed full timestamps,
+and exactly 2 answer sessions per question in all 74.
 
 Fairness note to carry into the report: (c) and (d) read raw sessions, which already carry absolute
 session dates; Cairnstone briefs carry capture dates too (commit `ebee5f6`). Both sides have date
@@ -333,11 +411,13 @@ Grounding numbers, all measured:
 
 - one extraction call per capture; captures per KU question 209–236 (mean 223 over the 74 eligible
   questions, computed from the dataset with the `lme_eval.session_chunks` 3,000-character rule);
-- **measured 2026-11-10 15:50 → 16:14 on `71315a70` (`eval/results/ku-db/71315a70.tmp`, read live,
-  still compiling): max `capture_id` in `facts` = 196 of 228 captures in 24.4 minutes — 7.5 s per
-  extraction call**, against the 2–4 s the phase-13 build report recorded. Caveat: another agent was
-  using `:8460` at the same time, so 7.5 s is pessimistic, not a clean benchmark. Reproduce the count
-  read-only with `eval/longmemeval/p17_smoke_progress.py` (committed).
+- **measured 2026-11-10 15:50 → 16:14 on `71315a70` (read live while it was still compiling; the
+  finished brain is now quarantined as
+  `eval/results/ku-quarantine-20261110-pre-freeze/71315a70.db`, 228 captures / 388 facts): max
+  `capture_id` in `facts` = 196 of 228 captures in 24.4 minutes — 7.5 s per extraction call**, against
+  the 2–4 s the phase-13 build report recorded. Caveat: another agent was using `:8460` at the same
+  time, so 7.5 s is pessimistic, not a clean benchmark. Reproduce the count read-only with
+  `eval/longmemeval/p17_smoke_progress.py` (committed; point it at the quarantined brain).
 
 At 7.5 s/capture (≈28 min per question):
 
@@ -373,7 +453,14 @@ must contain, verbatim:
 - embeddings: URL `http://127.0.0.1:1234/v1/embeddings`, model `text-embedding-nomic-embed-text-v1.5`,
   dimension 768;
 - consolidation parameters (`max_mutation_rate=0.2`);
-- arm definitions verbatim from §B2, including **k=4** for (d);
+- arm definitions verbatim from §B2, including **k=4** for (d) and, explicitly, (d)'s date rule:
+  `d_date_parse_format = "%Y/%m/%d (%a) %H:%M"`, `d_order = "parsed date descending"`,
+  `d_tiebreak = "score descending, then session index ascending"`, `d_unparseable = "last"`,
+  `d_k = 4`, `d_keep = 3`;
+- provenance: `provenance_sidecar = "<qid>.meta.json"`, `consolidated_sidecar =
+  "<qid>.consolidated.meta.json"`, `reuse_rule = "fail closed: missing/mismatched sidecar ⇒ recompile,
+  never read"`, and the quarantine directory `eval/results/ku-quarantine-20261110-pre-freeze/` as the
+  only place pre-freeze artifacts live;
 - the success criterion text from §B6, the McNemar thresholds, and the MDE table;
 - the runtime decision rule from §B4.
 
@@ -433,17 +520,18 @@ are the ones where (b) failed, say so — that is the P1 limitation showing up i
 ## B8 — gates (all checked immediately before the first question; log each result)
 
 1. **:8460 idle.** `/v1/models` answers and reports `glm-5.3-flash`; a 1-token completion returns;
-   `pgrep -f "eval/(harness|lme_eval|ku_paired)"` is empty. Verified 2026-11-10 16:14: the `71315a70`
-   smoke (pid 12260, started 15:50) was **still holding the endpoint**, so it must be finished or
-   stopped first — re-check, do not assume.
+   `pgrep -f "eval/(harness|lme_eval|ku_paired)"` is empty. **State at 2026-11-10 16:29:** the
+   `71315a70` smoke finished (228/228 captures, 388 facts) and its brain is quarantined; the stray
+   `ku_paired` run (pid 45392) was killed and no `ku_paired` process remains. Re-check before question
+   1 — do not assume.
 2. **Embeddings up.** `http://127.0.0.1:1234/v1/models` lists
    `text-embedding-nomic-embed-text-v1.5` and a test embed returns 768 floats (verified up
-   2026-11-10 16:13).
+   2026-11-10 16:13 and again at 16:29).
 3. **Judge healthy.** The judge endpoint answers `/v1/models`; a 3-call sanity probe in which the gold
    answer is submitted as the answer returns CORRECT 3/3. Record the `/health` identity verbatim.
    **Verified 2026-11-10: `http://127.0.0.1:8000/v1` (documented default) is DOWN.** The pinned route
    is `CAIRN_JUDGE_URL=http://spark-side:8889/v1`, `CAIRN_JUDGE_MODEL=spark-side-model`, whose
-   `/health` label at 16:13 was "DeepSeek-V4.1-Flash-1017 EXL3 EAQ v1 2.9bpw + drowzeys Keys overlay
+   `/health` label at 16:29 was "DeepSeek-V4.1-Flash-1017 EXL3 EAQ v1 2.9bpw + drowzeys Keys overlay
    (spark-side flag, Mia recipe c7f2b85, image exl3-tp2-8a98ae503d85) + 2200 MHz cap". Whatever is used must be
    recorded and identical for all arms, for every question, and for §B9.
 4. **No cloud.** Every endpoint URL is loopback or `the LAN address`; assert it in the harness and record
@@ -451,6 +539,11 @@ are the ones where (b) failed, say so — that is the P1 limitation showing up i
 5. **Frozen state.** `git status` clean at the frozen SHA; config committed and its sha256 recorded.
 6. **Citation audit gate.** §P5 item 1 passed with zero mismatches.
 7. **No recompile** of the LoCoMo per-sample DBs (§B9).
+8. **No pre-freeze brain can be read.** `eval/results/ku-db/` contains only `<qid>.db` files with a
+   matching `<qid>.meta.json` whose `code_sha` equals the frozen SHA and whose `db_sha256` equals the
+   file's current hash; any other file is moved into the quarantine directory (moved, not deleted)
+   before question 1, and the harness would refuse it anyway (§P8.8). Confirm the quarantine manifest
+   still lists every pre-freeze artifact with its sha256.
 
 ## B9 — post-run: the LoCoMo date-format re-measure (separate result, separate claim)
 
@@ -503,7 +596,9 @@ change is doing something else.
   can reach it; arms are judged independently, never side by side), sanity probe result;
 - artifact paths: `eval/longmemeval/ku-phase17-config.json`,
   `eval/results/ku-paired-b600-q<n>-<UTC stamp>.json`, per-question brains under
-  `eval/results/ku-db/` (pristine and consolidated, with sha256s), the quote-integrity audit output,
+  `eval/results/ku-db/` (pristine and consolidated, with sha256s) **and their provenance sidecars**
+  (`<qid>.meta.json`, `<qid>.consolidated.meta.json`), the quarantine manifest
+  `eval/results/ku-quarantine-20261110-pre-freeze/MANIFEST.md`, the quote-integrity audit output,
   the cross-page collision counts, the LoCoMo result file and pinned brain sha256s;
 - per-arm table: accuracy, Wilson 95% CI, mean/median prompt tokens, latency, judge-ambiguous count;
 - all six pairwise discordant tables with exact McNemar p, and the explicit statement that the
@@ -524,6 +619,11 @@ change is doing something else.
 - Any non-local endpoint → stop.
 - P1–P3 not closed and green, or the §P5 pre-run audit non-zero → do not start the run.
 - Pristine DB sha256 changed after a question → stop; arm (a) is contaminated.
+- Any arm reads a DB whose sidecar does not match the frozen SHA/config sha256/DB hash → stop. (The
+  harness refuses and recompiles by design; if a row still reports `reused=true` with a mismatch, that
+  is a bug, not a warning.)
+- A new process starts holding `:8460` mid-run (another eval launched by anyone) → stop and restart the
+  question; do not interleave.
 
 ---
 
@@ -552,10 +652,15 @@ change is doing something else.
 |---|---|
 | KU population 78 in `longmemeval_s_cleaned.json`; 74 eligible after excluding the 4 ids | verified by counting the dataset; Tes round 1 independently reproduced |
 | literal 74 ids and the 20 pilot ids | produced by committed `eval/longmemeval/p17_ids.py` (dataset-only); reproduced 2026-11-10 |
-| (d) as originally written keeps an answer session in the top 3 on 36/74; (c) on 71/74; k=4 relevance-then-recency latest-answer recall 67/74; k=3 68/74, k=5 63/74, k=6 60/74, k=8 57/74, k=10 47/74 | reproduced 2026-11-10 with `.venv/bin/python` running Tes's `p17_dcheck.py` (no model calls) |
-| 47.5 sessions/question, 28.4 with overlap>0 (min 7), 0 unparsed dates, 2 answer sessions per question in all 74 | same script, same run |
+| (d) as originally written keeps an answer session in the top 3 on 36/74; (c) on 71/74 (any answer session) / 68/74 (latest); pre-registered full-timestamp k=4 gives 67/74 latest, k=3 68/74, k=5 61/74, k=6 60/74, k=8 54/74, k=10 45/74 | measured 2026-11-10 by committed `eval/longmemeval/p17_recall_check.py` (`.venv/bin/python`, dataset-only, no model calls); output pasted in §B2 |
+| 47.5 sessions/question, 28.4 with overlap>0 (min 7), 0 unparsed full timestamps, 2 answer sessions per question in all 74 | same committed script, same run |
+| 26 of 74 questions have a same-day tie inside the relevance top 4; at k=4 the full-timestamp and date-only rules keep a different set on 59/74 | same committed script |
+| the stray pre-freeze `ku_paired` run (pid 45392) is stopped and wrote no JSON | verified 2026-11-10 16:29 by `ps -p 45392` (gone) and `ls eval/results/ku-paired-20q.json` (absent) |
+| all pre-freeze KU artifacts moved to `eval/results/ku-quarantine-20261110-pre-freeze/` with sha256s in `MANIFEST.md` | done and hashed 2026-11-10 16:30 (`shasum -a 256` output pasted into the manifest); `eval/results/ku-db/` is empty |
+| the quarantined smoke brain is complete: 228 captures, 388 facts, sha256 `b6560579…c92c3` | read with `sqlite3` after the run stopped |
+| `:8460` idle and serving `glm-5.3-flash`; `:1234` serving `text-embedding-nomic-embed-text-v1.5`; `:8889` `/health` = `spark-side-model` / DeepSeek-V4.1-Flash-1017 EXL3 EAQ v1 2.9bpw | verified 2026-11-10 16:29 |
 | captures per KU question 209–236, mean 223 | computed from the dataset with the `session_chunks` 3,000-char rule |
-| 7.5 s per extraction call; `71315a70` reached capture 196 of 228 in 24.4 min | measured 2026-11-10 15:50–16:14 by reading `eval/results/ku-db/71315a70.tmp` read-only, with another agent sharing `:8460`; supersedes the 6.9 s figure in rev 1 |
+| 7.5 s per extraction call; `71315a70` reached capture 196 of 228 in 24.4 min | measured 2026-11-10 15:50–16:14 by reading the in-flight brain read-only, with another agent sharing `:8460`; supersedes the 6.9 s figure in rev 1. The finished brain (228/228) is quarantined. |
 | ≈9.3 h for the pilot, ≈34 h for 74 | derived from the row above; the §B4 rule replaces it with a measurement after 3 questions |
 | `:8460` serving `glm-5.3-flash` and busy with the smoke at 16:14 | verified 2026-11-10 |
 | `:1234` serving `text-embedding-nomic-embed-text-v1.5` | verified 2026-11-10 16:13 |
