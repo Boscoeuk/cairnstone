@@ -250,6 +250,35 @@ def keyword_backend(question: dict) -> dict:
             "sessions_used": [si for _, si, _ in top]}
 
 
+def keyword_relevance_recency_backend(question: dict) -> dict:
+    """Arm (d) of the phase-17 experiment: keyword retrieval, relevance first,
+    then recency (docs/phase17-brief.md B2).
+
+    Scores every session with exactly arm (c)'s score and tokeniser — both
+    imported from the committed recall-check script that pre-registered the
+    rule (p17_recall_check.scored_sessions), not reimplemented — takes the top
+    k=4 by that score, reorders those 4 by the parsed full session timestamp
+    descending (unparseable last, tie-break score descending, then session
+    index ascending) and keeps 3. The prompt, ANSWER_SUFFIX and session-date
+    prefix are identical to arm (c); only the selection and its order differ.
+    """
+    from p17_recall_check import FULL_FMT, kept, scored_sessions  # noqa: E402
+
+    scored = scored_sessions(question)
+    order = kept(question, scored, 4, FULL_FMT)  # k=4 pre-registered; keeps 3
+    texts = {}
+    for si, session in enumerate(question["haystack_sessions"]):
+        texts[si] = "\n".join(f"{t['role']}: {t['content']}" for t in session)
+    ctx = "\n\n".join(f"Session date: {question['haystack_dates'][si]}\n{texts[si]}"
+                      for si in order)
+    out = answer(_client,
+                 "Answer the question from these session excerpts only.\n\n" + ctx,
+                 "Question: " + question["question"])
+    return {"answer": out["answer"], "latency_s": out["latency_s"],
+            "prompt_tokens": out["prompt_tokens"],
+            "sessions_used": list(order)}
+
+
 def full_context_backend(question: dict) -> dict | None:
     """Whole haystack. Never truncates: if the prompt cannot fit the model's
     window the row says so instead of dropping content."""
