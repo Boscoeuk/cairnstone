@@ -181,3 +181,37 @@ code.
 - **The 13 remaining flags were not individually adjudicated.** I read the relationship-status ones
   (one, the Caroline ambiguity flag at equal timestamps); the occupation/location ones are the
   pre-existing residue Tes already audited at 17→3, and I have not re-audited each of them here.
+
+## P8 — the harness rewrite is complete (this commit)
+
+`eval/longmemeval/ku_paired.py` now implements P8 items 1-8, so Part B can run on a frozen,
+provenance-checked brain:
+
+- **Pristine brain, fail-closed reuse.** One unit-tested function decides reuse from the sidecar;
+  a missing, unparseable, wrong-`code_sha`, wrong-`config_sha256` or wrong-`db_sha256` sidecar
+  refuses the DB and recompiles it. A brain placed in `ku-db/` without a sidecar is never read.
+- **Consolidate a copy.** The nightly pass runs on a sqlite backup copy of the pristine brain, with
+  `max_mutation_rate=0.2` passed explicitly. The rev-1 harness never passed the rate, so the P11
+  guard was silently off while the CLI defaults it to 0.2.
+- **Non-contamination assertions** on checkpointed hashes, before arm (a) and after the question.
+- **Four arms** in one pass: (a) pristine brief, (b) consolidated-copy brief, (c) the keyword
+  backend unchanged, (d) the dataset-only arm from B2.
+- **`--ids-file` selection**, no random call inside the harness, and the judge's `/health` identity
+  recorded per question, stopping the run if the label changes.
+
+**Root-cause defect found by writing the tests:** `write_sidecar` hashed the database file without a
+WAL checkpoint, so the recorded hash could never match the reuse check and every "reuse" silently
+recompiled — the precise failure the sidecar exists to prevent. Hashes are now taken with
+`checkpointed_sha`, and the consolidated sidecar records the checkpointed hash of the copy. The tests
+also pin the ordering the harness depends on: the brief is warmed *before* the hash is taken, because
+warming writes retrieval telemetry.
+
+Suite: **193 passed** (19 base + 24 from the D1-D5 round + the P8 harness suite). No model calls.
+
+### Still not verified
+
+- **Part B has not run.** No question-level measurement of consolidation exists yet.
+- **The rewritten harness has never touched a real brain.** Only the stubbed tests exercise it; the
+  smoke brain is quarantined pre-freeze, so the first real run is Part B itself.
+- Probe on the final tree: `superseded=0 flagged=13 duplicates_linked=39` across 27 databases,
+  unchanged from the D5 round.
