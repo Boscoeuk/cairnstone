@@ -48,11 +48,24 @@ to the replacement, and a `fact.superseded` event is written. Both remain readab
 deleted, ever. If the two captures have the same timestamp, the contradiction is flagged for
 review and neither is superseded — ambiguity is recorded, not resolved by coin flip.
 
+**Scope of the comparison (phase 17, F1):** the scan compares facts **within one page**. A fact on
+page A cannot supersede or flag a fact on page B. This is deliberate: a brain-wide scan at `fe71ff1`
+paired 20 of 43 new supersessions/flags across pages, including plainly wrong pairs such as
+`projects/alpha` "first CI run failed" being superseded by a `projects/beta` fact. Restoring page
+scope removed those false pairs but also loses genuine cross-page contradictions. **Known
+limitation:** the same entity can be split across pages (`misc/user` and `people/user`), so a real
+contradiction between those pages is neither superseded nor flagged. Measured example: in
+`eval/results/lme-db/08e075c7.db` the Fitbit tenure facts sit on `misc/user` ("6 months as of
+2023-06-18") and `people/user` ("9 months as of 2023-09-02"); they stay active together. Keying on
+entity rather than page is the fix, and is out of scope for phase 17.
+
 ## P7 — Dedupe by evidence, not by wording
 
 Two facts are duplicates when they assert the same claim about the same entity, even if phrased
-differently. Dedupe keeps the earliest capture as the canonical citation and records later
-captures as corroboration. It does not delete the later facts; it links them.
+differently. Dedupe keeps the **latest** capture as the canonical citation (phase 15, N1: an earlier
+version kept the earliest, which hid later re-assertions from contradiction detection) and links the
+others to it as corroboration. It does not delete them; it links them, and `duplicate_of` always
+names a live canonical fact rather than forming a chain.
 
 ## P8 — Re-entry is earned
 

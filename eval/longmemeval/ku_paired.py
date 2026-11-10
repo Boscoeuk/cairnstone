@@ -160,6 +160,8 @@ def main():
     ap.add_argument("--seed", type=int, default=20261106)
     ap.add_argument("--split", choices=["s", "oracle"], default="s")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--resume", action="store_true",
+                    help="skip questions already present in --out")
     args = ap.parse_args()
 
     pool = json.load(open(lme.DATASETS[args.split]))
@@ -172,17 +174,33 @@ def main():
     harness.JUDGE_URL = lme.JUDGE_URL.rstrip("/") + "/chat/completions"
     harness.JUDGE_MODEL = lme.JUDGE_MODEL
 
+    out = Path(args.out) if args.out else RESULTS_DIR / (
+        "ku-paired-b%d-q%d-%s.json" % (args.budget, len(picked),
+                                       datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%SZ")))
     rows = []
+    done = set()
+    if args.resume and out.exists():
+        prev = json.load(open(out))
+        rows = prev.get("rows", [])
+        done = {r["question_id"] for r in rows}
+        print("resuming: %d questions already done" % len(done), flush=True)
+
     t0 = time.monotonic()
     for i, q in enumerate(picked, 1):
+        if q["question_id"] in done:
+            print("[%d/%d] %s (cached)" % (i, len(picked), q["question_id"]), flush=True)
+            continue
         print("[%d/%d] %s" % (i, len(picked), q["question_id"]), flush=True)
         rows.append(run_one(q, args.budget, client))
+        # Write after every question so an interrupted run can be resumed rather
+        # than paying for the compile of a 48-session haystack twice.
+        json.dump({"aggregate": aggregate(rows), "rows": rows,
+                   "partial": True, "elapsed_s": round(time.monotonic() - t0, 1)},
+                  open(out, "w"), indent=1)
 
     agg = aggregate(rows)
-    stamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%SZ")
-    out = Path(args.out) if args.out else RESULTS_DIR / (
-        "ku-paired-b%d-q%d-%s.json" % (args.budget, len(rows), stamp))
-    json.dump({"aggregate": agg, "rows": rows, "elapsed_s": round(time.monotonic() - t0, 1)},
+    json.dump({"aggregate": agg, "rows": rows, "partial": False,
+               "elapsed_s": round(time.monotonic() - t0, 1)},
               open(out, "w"), indent=1)
     print("\n" + json.dumps(agg, indent=1))
     print("wrote %s" % out)

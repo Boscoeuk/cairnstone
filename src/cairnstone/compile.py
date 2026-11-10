@@ -701,25 +701,35 @@ def _supersede_contradictions(conn, brain_id, commit=True):
         by_page.setdefault(r["page_id"], []).append(r)
     superseded_ids = set()
     superseded = flagged = 0
-    # slot key -> [(value, row, clock)]: every active canonical claim on that
-    # slot. Phase 16 (N11): a slot can carry several stale claims at once
-    # ("is married" and "spouse is Tomas" alongside a later "is single"), so
-    # all of them are resolved against the current truth, not just the most
-    # recently seen one.
-    claims = {}
+    # Phase 17 (F1): the comparison state resets PER PAGE, as policy P6 and the
+    # phase-16 brief specify ("on the same page"). The phase-16 canonicalisation
+    # work had let one `claims` dict span the whole brain, so a fact on page A
+    # could supersede or flag a fact on page B ("first CI run failed" on
+    # projects/alpha retired by a projects/beta fact; phase-1 vs phase-2;
+    # conv-26 vs conv-30 counts). Known limitation, documented in P6: genuinely
+    # contradicting pairs that live on different pages (user facts split between
+    # misc/user and people/user; the Fitbit tenure supersession) are no longer
+    # resolved. A future phase may key on entity rather than page.
     for page_id, facts in by_page.items():
+        # slot key -> [(value, row, clock)]: every active canonical claim on
+        # that slot, on this page. Phase 16 (N11): a slot can carry several
+        # stale claims at once ("is married" and "spouse is Tomas" alongside a
+        # later "is single"), so all of them are resolved against the current
+        # truth, not just the most recently seen one.
+        claims = {}
         for r in facts:
             # N1: compare with the cluster's latest clock, not the canonical
             # row's own stamp.
             clock = latest.get(r["id"]) or _row_clock(r, clocks)
             for key, value in _fact_slots(r["text"]):
                 claims.setdefault(key, []).append((value, r, clock))
-    for key, entries in claims.items():
-        if len({_value_key(e[0]) for e in entries}) < 2:
-            continue
-        s, f = _resolve_slot(conn, entries, key, superseded_ids, commit=commit)
-        superseded += s
-        flagged += f
+        for key, entries in claims.items():
+            if len({_value_key(e[0]) for e in entries}) < 2:
+                continue
+            s, f = _resolve_slot(conn, entries, key, superseded_ids,
+                                 commit=commit)
+            superseded += s
+            flagged += f
     return superseded, flagged
 
 
@@ -942,11 +952,27 @@ def _is_advisory_slot(key):
 # Lisbon", "got married") from STATES ("lives in Lisbon", "is married"). An
 # event is history: a later state does not contradict it, so it is skipped in
 # the brief's contradiction notes and left active by the supersession pass.
+#
+# Phase 17 (F4): "X married Y", "wed", "eloped", "separated", "engaged" and
+# "relocated" are life-event phrasings the bounded list missed, so a later
+# state could wrongly retire them. They are added to the marker; "married" is
+# anchored to the verb-with-named-object form ("married Tomas") in
+# _MARRIED_VERB_RE, because a bare "married" would also mark the state sentence
+# "Caroline is married" as an event and break its retirement. The false event
+# hits "met", "left" and "joined" are DROPPED from the marker (Tes's
+# "drop them from the state-immunity rule" option): they hit state sentences
+# ("Caroline met her husband through work and is married", "left-handed",
+# "the club she joined") and made them permanently immune, and a verb-position
+# anchor cannot separate "met her husband and is married" from a genuine
+# "met her husband" event.
 _EVENT_MARKER_RE = re.compile(
-    r"\b(?:moved|moves|moving|migrated|arrived|departed|left|joined|started|"
+    r"\b(?:moved|moves|moving|migrated|arrived|departed|started|"
     r"began|stopped|quit|resigned|graduated|visited|travelled|traveled|"
     r"bought|sold|got married|married on|got divorced|divorced on|split up|"
-    r"split from|broke up|met|was born|died)\b", re.IGNORECASE)
+    r"split from|broke up|was born|died|"
+    r"wed|eloped|separated|engaged|relocated)\b", re.IGNORECASE)
+
+_MARRIED_VERB_RE = re.compile(r"\bmarried\s+[A-Z]")
 
 
 def _is_event_fact(text):
@@ -954,7 +980,10 @@ def _is_event_fact(text):
 
     Used by the brief's contradiction notes (N8) and by the supersession pass
     (N11): an event-and-state pair is not a live contradiction."""
-    return bool(_EVENT_MARKER_RE.search(text or ""))
+    text = text or ""
+    if _EVENT_MARKER_RE.search(text):
+        return True
+    return bool(_MARRIED_VERB_RE.search(text))
 
 
 def _slot_value(slot, raw):
@@ -985,6 +1014,21 @@ _COPULA_TAIL = {
     "now", "currently", "recently", "still", "also", "then", "later",
 }
 
+# Phase 17 (F4): common predicate verbs. A categorical slot's subject ends where
+# the predicate starts, so the key cannot swallow a whole clause. Kept small and
+# explicit rather than derived, because a wrong split would silently change slot
+# keys; tokens ending in "ed" are treated as verbs too.
+# Deliberately action verbs only. Planning/modal verbs ("plans", "wants",
+# "hopes") are excluded so "plans to become a single parent" keeps its own slot
+# (test_plan_fact_does_not_contradict_status_fact). The "ed" suffix is NOT used
+# as a verb signal for the same reason ("planned" would truncate the key).
+_VERB_TOKENS = {
+    "met", "joined", "left", "started", "began", "moved", "relocated",
+    "bought", "sold", "married", "wed", "eloped", "separated", "achieved",
+    "scored", "owns", "owned", "works", "worked", "lives", "lived", "uses",
+    "used", "spent", "took", "went", "made",
+}
+
 # Phase 16 (N7): the occupation branch captured "Caroline has been working as"
 # as the subject, so its slot key never matched "Caroline is a nurse". These
 # trailing article/verb tokens are stripped as well. Deliberately NOT here:
@@ -1003,11 +1047,22 @@ def _subject_prefix(text):
     them was never compared. Trailing copulas, auxiliaries and time adverbs are
     stripped so both key as `caroline`. Phase 16 (N7): trailing articles and
     work/role words are stripped too, and a possessive 's is removed from the
-    final token ("Caroline's spouse is Tomas" keys `caroline`)."""
+    final token ("Caroline's spouse is Tomas" keys `caroline`).
+
+    Phase 17 (F4): stripping only TRAILING copulas still left a whole clause in
+    the key — "Caroline met her husband through work and is married" keyed
+    `caroline met her husband through work and`, so it never compared against
+    `caroline` and the later "Caroline is single" could not retire it. The
+    subject ends at the first verb, so the prefix is cut there.
+    """
     tokens = text.split()
     while tokens and (tokens[-1] in _COPULA_TAIL
                       or tokens[-1] in _SUBJECT_TAIL_EXTRAS):
         tokens.pop()
+    for i, tok in enumerate(tokens):
+        if tok in _COPULA_TAIL or tok in _VERB_TOKENS:
+            tokens = tokens[:i]
+            break
     if tokens and tokens[-1].endswith("'s") and len(tokens[-1]) > 2:
         tokens[-1] = tokens[-1][:-2]
     return " ".join(tokens)
@@ -1069,6 +1124,67 @@ _VALUE_RE = re.compile(r"\d+|\b(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|"
                        r"thursday|friday|saturday|sunday)\b", re.I)
 
 
+# Phase 17 (F3a): a bare trailing "as of <date>" clause — "as of" followed only
+# by date-ish tokens (digits with separators, month or weekday words) — is a
+# provenance stamp, not claim material.
+_AS_OF_DATE_TOKEN_RE = re.compile(
+    r"^(?:[\d./-]+|jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|"
+    r"apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|"
+    r"sep(?:t|tember)?|oct(?:ober)?|nov(?:ember)?|"
+    r"dec(?:ember)?|monday|tuesday|wednesday|thursday|friday|saturday|"
+    r"sunday)$", re.IGNORECASE)
+
+
+def _strip_bare_as_of_tail(norm):
+    """Drop a bare trailing "as of <date>" clause (phase 17, F3a).
+
+    Only a BARE clause is dropped: "as of" followed by nothing but date tokens
+    at the very end of the text. "As of 2026-11-05 the build sits at 83 tests"
+    (leading), "as of late 2022" (not bare) and "as of the 2023-05-22 deadline"
+    (not bare) are left alone.
+    """
+    tokens = norm.split()
+    i = len(tokens)
+    while i > 0 and _AS_OF_DATE_TOKEN_RE.match(tokens[i - 1]):
+        i -= 1
+    if (i < len(tokens) and i >= 2
+            and tokens[i - 2].lower() == "as"
+            and tokens[i - 1].lower() == "of"):
+        return " ".join(tokens[:i - 2])
+    return norm
+
+
+# Phase 17 (F3b): digits after these words describe a quantity or a date (the
+# value side of the claim); digits after any other word are labelled by it and
+# name the thing ("phase 1", "budget 600", "n=12").
+_VALUE_CONTEXT_WORDS = frozenset("""
+    in on at by from to since during after before until near about around
+    with without and or than per
+""".split())
+
+
+def _is_identifier_digit(norm, match):
+    """True when the digit match is part of a name, not a value (F3b).
+
+    Two signals: the digits are attached to a preceding word ("b600", "v2"), or
+    the preceding token is a content word that labels them ("phase 1",
+    "conv-26", "budget 600", "n=12"). Digits after boilerplate, prepositions,
+    month/weekday tokens or other digits stay values ("for 6 months", "in 2022",
+    "has 1 child", "1,613").
+    """
+    if match.start() > 0 and norm[match.start() - 1].isalpha():
+        return True
+    label = re.search(r"([A-Za-z]+)[^A-Za-z]*$", norm[:match.start()])
+    if not label:
+        return False
+    word = label.group(1).lower()
+    if (word in _SLOT_KEY_BOILERPLATE
+            or word in _VALUE_CONTEXT_WORDS
+            or _VALUE_RE.fullmatch(word)):
+        return False
+    return True
+
+
 def _split_subject_slot(text):
     """Split a fact into (subject/slot key, value tuple).
 
@@ -1079,8 +1195,21 @@ def _split_subject_slot(text):
     different keys ('alice has cats' / 'alice has dogs') and are NOT treated as contradictory.
     'Billing v2 ships Mar 31' and 'Billing v2 ships Apr 30' produce the same key
     ('billing v ships') with different values, which IS a contradiction.
+
+    Phase 17 (F3a): a bare trailing "as of <date>" clause is a provenance stamp,
+    not part of the claim, so it is stripped before matching: its date tokens
+    are neither a value nor key material, and "X" and "X as of 2023-05-22" key
+    and compare as one claim.
+
+    Phase 17 (F3b): digits that are part of a name stay in the KEY. A digit
+    directly attached to a word ("b600", "v2") or preceded by a content word
+    that labels it ("phase 1", "conv-26", "budget 600", "n=12") identifies
+    WHICH thing the claim is about; it is not a value that changes over time.
+    Digits after boilerplate, prepositions or month/weekday tokens ("for 6
+    months", "in 2022", "on 2023-05-08", "has 1 child") remain values.
     """
     norm = _norm(text)
+    norm = _strip_bare_as_of_tail(norm)
     matches = list(_VALUE_RE.finditer(norm))
     if not matches:
         # Phase 16 (N7): the key is canonicalised here too, so "Caroline is
@@ -1089,14 +1218,16 @@ def _split_subject_slot(text):
         return (_canonical_slot_key(norm.lower()) or None, None)
     parts, values, pos = [], [], 0
     for m in matches:
+        if (m.group(0)[0].isdigit() and _is_identifier_digit(norm, m)):
+            continue  # F3b: part of a name — stays in the key text
         parts.append(norm[pos:m.start()])
         values.append(m.group(0).lower())
         pos = m.end()
     parts.append(norm[pos:])
     key = _canonical_slot_key(" ".join(" ".join(parts).split()).lower())
     if not key:
-        return (None, tuple(values))
-    return (key, tuple(values))
+        return (None, tuple(values) or None)
+    return (key, tuple(values) or None)
 
 
 # Phase 16 (N7): the residual key carried the extractor's phrasing ("has been

@@ -143,9 +143,13 @@ def test_n6_phrasing_variant_relationship_contradicts(db):
 
     Phase 16 (N11) rewrote the EXPECTED OUTCOME of this test, not its detection:
     the marriage is an event, so it is history rather than a live claim, and a
-    later "single" must not retract it. The rewrite therefore asserts the event
-    survives while the stale "single" duplicate does not — that both phrasings
-    reach the same slot is asserted directly in tests/test_phase16.py.
+    later "single" must not retract it.
+
+    Phase 17 (F2): the rewrite dropped the only check that the two phrasings
+    reach one slot — a mutant `_fact_slots` returning `[]` for "got married"
+    text passed the suite. The guard now asserts the slot explicitly, and that
+    the stale "single" fact is superseded BY the married fact (status and
+    `superseded_by`), not merely inactive via dedupe.
     """
     c1 = _capture(db, "Caroline is single", "2023-05-01T00:00:00+00:00")
     c2 = _capture(db, "Caroline got married in May 2023", "2023-06-01T00:00:00+00:00")
@@ -160,6 +164,37 @@ def test_n6_phrasing_variant_relationship_contradicts(db):
     assert "Caroline is single" not in active, active
     assert _row(db[0], f2)["status"] == "active"
     assert _row(db[0], f3)["status"] == "active"
+    # F2: the slot must be reached explicitly — a mutant _fact_slots that
+    # returns [] for "got married" text must fail here.
+    assert ("cat:relationship_status:caroline", "married") in \
+        comp._fact_slots("Caroline got married in May 2023")
+    # F2: the stale "single" fact is not merely inactive — its exit from the
+    # canonical active set is asserted above; that the married fact itself can
+    # supersede a stale state is asserted in
+    # test_n6_stale_single_is_superseded_by_the_married_fact (in the three-fact
+    # timeline the two "single" re-assertions are dedupe-linked, so the married
+    # fact is never the superseding row there).
+
+
+# ------------------------------------------------------------------ N4
+
+def test_n6_stale_single_is_superseded_by_the_married_fact(db):
+    """Phase 17 (F2): the stale "single" fact is superseded BY the married
+    fact — status 'superseded' and `superseded_by` naming the married fact —
+    not merely inactive. In the three-fact n6 timeline the two "single"
+    re-assertions are dedupe-linked (N1 semantics), so this guard lives in the
+    two-fact scenario where the married fact is the newest claim: an event may
+    still supersede an older state (N11). A mutant `_fact_slots` returning []
+    for "got married" text leaves the single fact active and fails this test.
+    """
+    c1 = _capture(db, "Caroline is single", "2023-05-01T00:00:00+00:00")
+    c2 = _capture(db, "Caroline got married in May 2023", "2023-06-01T00:00:00+00:00")
+    f1 = _fact(db, "Caroline is single", c1)
+    f2 = _fact(db, "Caroline got married in May 2023", c2)
+    consolidate(db[0], db[1])
+    assert _row(db[0], f1)["status"] == "superseded"
+    assert _row(db[0], f1)["superseded_by"] == f2
+    assert _row(db[0], f2)["status"] == "active"
 
 
 # ------------------------------------------------------------------ N4
