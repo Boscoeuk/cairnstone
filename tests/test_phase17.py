@@ -394,3 +394,124 @@ def test_d3_caroline_residual_is_not_a_supersession_with_later_stamps(db):
     assert ("cat:relationship_status:caroline", "married") in \
         comp._fact_slots(t1)
 
+
+
+# ------------------------------------------------------------------ D5
+
+def test_d5_position_after_a_progress_label_supersedes(db):
+    """Tes review 6 D5: a position number after a progress label noun is a
+    value, not a name. "on episode 5" → "on episode 9" etc. must supersede;
+    before the fix the nouns in _IDENTIFIER_LABELS kept the number in the slot
+    key, so both facts stayed active."""
+    rows = [
+        ("The user is on episode 5 of The Crown",
+         "The user is on episode 9 of The Crown"),
+        ("The user is on page 120 of Dune",
+         "The user is on page 310 of Dune"),
+        ("The user reached level 30 in Elden Ring",
+         "The user reached level 45 in Elden Ring"),
+        ("The user is on chapter 4 of the novel",
+         "The user is on chapter 11 of the novel"),
+        ("The user is watching season 2 of Succession",
+         "The user is watching season 3 of Succession"),
+        ("The user's daughter is in grade 3",
+         "The user's daughter is in grade 4"),
+        ("The user finished round 2 of interviews at Google",
+         "The user finished round 3 of interviews at Google"),
+        ("The user's character is level 12",
+         "The user's character is level 20"),
+        ("The user is in week 6 of the training plan",
+         "The user is in week 9 of the training plan"),
+        ("The user's team is in stage 2 of the project",
+         "The user's team is in stage 3 of the project"),
+    ]
+    for older_text, newer_text in rows:
+        f1 = _fact(db, older_text,
+                   _capture(db, older_text, "2023-05-01T00:00:00+00:00"))
+        f2 = _fact(db, newer_text,
+                   _capture(db, newer_text, "2023-08-01T00:00:00+00:00"))
+        consolidate(db[0], db[1])
+        assert _row(db[0], f1)["status"] == "superseded", older_text
+        assert _row(db[0], f1)["superseded_by"] == f2, older_text
+        assert _row(db[0], f2)["status"] == "active", older_text
+        assert _flags(db[0]) == 0, older_text
+
+
+def test_d5_part_b_position_shapes_supersede(db):
+    """Tes review 6 D5 Part B: the three frozen ku_labels6 shapes must
+    supersede on a later position; before the fix they keyed apart and both
+    stayed active."""
+    rows = [
+        ("The user is currently on page 200 of A Short History of Nearly Everything",
+         "The user is now on page 220 of A Short History of Nearly Everything"),
+        ("The user is currently on episode 10 of the Crash Course Science series",
+         "The user is currently on episode 50 of the Crash Course Science series"),
+        ("The user's goal is to reach level 100 in Apex Legends",
+         "The user's goal is to reach level 150 in Apex Legends"),
+    ]
+    for older_text, newer_text in rows:
+        f1 = _fact(db, older_text,
+                   _capture(db, older_text, "2023-05-01T00:00:00+00:00"))
+        f2 = _fact(db, newer_text,
+                   _capture(db, newer_text, "2023-08-01T00:00:00+00:00"))
+        consolidate(db[0], db[1])
+        assert _row(db[0], f1)["status"] == "superseded", older_text
+        assert _row(db[0], f1)["superseded_by"] == f2, older_text
+        assert _row(db[0], f2)["status"] == "active", older_text
+        assert _flags(db[0]) == 0, older_text
+
+
+def test_d5_identifier_keying_is_unchanged():
+    """Tes review 6 D5: removing the progress nouns must not weaken the
+    identifier keying review-6 accepted — these pairs must still key apart."""
+    pairs = [
+        ("Phase 1 was accepted after correction.",
+         "Phase 2 was accepted after correction."),
+        ("conv-26 baseline", "conv-30 baseline"),
+        ("Cairn at budget 600 scored 91.7% accuracy at 931 tokens",
+         "Cairn at budget 1200 scored 91.7% accuracy at 1,613 tokens"),
+        ("b600 run", "b1200 run"),
+        ("Chapter 2: A League of Extraordinary Talent",
+         "Chapter 3: Rising to the Challenge"),
+    ]
+    for a, b in pairs:
+        assert comp._split_subject_slot(a)[0] != comp._split_subject_slot(b)[0], (a, b)
+    assert "page" not in comp._IDENTIFIER_LABELS
+    assert "episode" not in comp._IDENTIFIER_LABELS
+    assert "level" not in comp._IDENTIFIER_LABELS
+    assert "chapter" not in comp._IDENTIFIER_LABELS
+    assert "season" not in comp._IDENTIFIER_LABELS
+    assert "grade" not in comp._IDENTIFIER_LABELS
+    assert "round" not in comp._IDENTIFIER_LABELS
+    assert "stage" not in comp._IDENTIFIER_LABELS
+    assert "step" not in comp._IDENTIFIER_LABELS
+    assert "unit" not in comp._IDENTIFIER_LABELS
+    assert "volume" not in comp._IDENTIFIER_LABELS
+    for kept in ("phase", "conv", "budget", "section", "question"):
+        assert kept in comp._IDENTIFIER_LABELS
+
+
+def test_d5_hyphen_joined_digits_after_an_unlisted_label_stay_in_the_key():
+    """Gap G1: digits hyphen-joined to a word stay in the key even when the
+    word is not on the label list — "invoice-4471" and "invoice-4472" name
+    different invoices and must not supersede."""
+    k1 = comp._split_subject_slot("invoice-4471 was paid")[0]
+    k2 = comp._split_subject_slot("invoice-4472 was paid")[0]
+    assert k1 != k2
+    assert "4471" in k1
+    assert "4472" in k2
+
+
+def test_d5_noun_modifier_is_the_only_reason_a_status_word_is_rejected(db):
+    """Gap G2: a status word inside a noun modifier ("single-handedly") is not
+    a relationship claim; "married" → "single-handedly running the bake sale"
+    must not supersede or flag."""
+    t1 = "The user is married"
+    t2 = "The user is single-handedly running the bake sale"
+    f1 = _fact(db, t1, _capture(db, t1, "2023-05-01T00:00:00+00:00"))
+    _fact(db, t2, _capture(db, t2, "2023-08-01T00:00:00+00:00"))
+    consolidate(db[0], db[1])
+    assert _row(db[0], f1)["status"] == "active"
+    assert _flags(db[0]) == 0
+    assert comp._relationship_status_slot(
+        "The user is single-handedly running the bake sale") is None

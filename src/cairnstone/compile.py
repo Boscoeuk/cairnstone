@@ -1294,10 +1294,14 @@ def _strip_bare_as_of_tail(norm):
 # genuine knowledge update never superseded (Tes review 5, D1: 8 of 12 count
 # updates stopped resolving; 264 corpus keys had a verb or quantifier as the
 # "label").
+# Phase 17 (D5): progress nouns were taken off this list because a position
+# after them changes over time ("on page 120" → "on page 310", "reached level
+# 30" → "level 45"); those numbers are values, not names, so a later position
+# supersedes. "Chapter 2: …" / "Chapter 3: …" still key apart because the
+# titles differ.
 _IDENTIFIER_LABELS = frozenset("""
-    phase conv sample budget n v version tier step port pid issue id pr round
-    stage section chapter season episode question task ticket sprint wave
-    epoch unit model commit volume page level grade class batch trial arm
+    phase conv sample budget n v version tier port pid issue id pr section
+    question task ticket sprint wave epoch model commit class batch trial arm
     condition
 """.split())
 
