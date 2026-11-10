@@ -525,6 +525,7 @@ def test_d5_noun_modifier_is_the_only_reason_a_status_word_is_rejected(db):
 
 import json  # noqa: E402  (the base tests import nothing but pytest/sys)
 import os  # noqa: E402
+import sqlite3  # noqa: E402
 from pathlib import Path  # noqa: E402
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "eval"))
@@ -606,6 +607,17 @@ def _write_ids_config(tmp_path, ids, eligible=None):
     p = tmp_path / "ids-config.json"
     p.write_text(json.dumps(cfg))
     return p
+
+
+def _load_cfg(cfg_path):
+    """load_config plus the HEAD main() would have verified (P8.8/R1).
+
+    run_one refuses to stamp provenance without an observed HEAD: the sidecar
+    records the commit that ran, not the config's claim about it.
+    """
+    cfg = ku_paired.load_config(str(cfg_path))
+    cfg["_observed_head_sha"] = FROZEN_TEST_SHA
+    return cfg
 
 
 def _scratch_question(qid, sessions):
@@ -774,7 +786,7 @@ def test_check_sidecar_unparseable(tmp_path):
 def test_run_one_arm_a_reads_unconsolidated_brain(ku_env, tmp_path):
     db_dir, client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
-    cfg = ku_paired.load_config(str(cfg_path))
+    cfg = _load_cfg(cfg_path)
     # The brain needs enough facts for the P11 mutation-rate guard: one
     # supersession in a two-fact brain is 50%, over the 20% limit, so the pass
     # would halt and arm (b) would read the same brain as arm (a).
@@ -828,7 +840,7 @@ def test_run_one_arm_a_reads_unconsolidated_brain(ku_env, tmp_path):
 def test_run_one_pristine_sha_unchanged(ku_env, tmp_path):
     db_dir, client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
-    cfg = ku_paired.load_config(str(cfg_path))
+    cfg = _load_cfg(cfg_path)
     db_path, conn, brain, _ = _scratch_brain(db_dir, "aa11bb22",
                                              ["Caroline is single"])
     q = _ingest_haystack(db_dir, "aa11bb22", cfg_path)
@@ -858,7 +870,7 @@ def test_run_one_pristine_sha_unchanged(ku_env, tmp_path):
 def test_second_run_one_reuses_without_recompiling(ku_env, tmp_path):
     db_dir, client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
-    cfg = ku_paired.load_config(str(cfg_path))
+    cfg = _load_cfg(cfg_path)
     q = _scratch_question("aa11bb22", [
         ("2023/05/01 (Mon) 10:00",
          [{"role": "user", "content": "Melanie owns a golden retriever"}]),
@@ -883,7 +895,7 @@ def test_second_run_one_reuses_without_recompiling(ku_env, tmp_path):
 def test_missing_sidecar_recompiles_and_never_reads_stale_db(ku_env, tmp_path):
     db_dir, client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
-    cfg = ku_paired.load_config(str(cfg_path))
+    cfg = _load_cfg(cfg_path)
     # A stale brain with no sidecar: compile_all would never produce this
     # fact, so its survival would prove the stale DB was read.
     db_path = db_dir / "aa11bb22.db"
@@ -918,7 +930,7 @@ def test_mismatched_sidecar_recompiles_and_never_reads_stale_db(ku_env,
                                                                 tmp_path):
     db_dir, client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
-    cfg = ku_paired.load_config(str(cfg_path))
+    cfg = _load_cfg(cfg_path)
     db_path, conn, _, _ = _scratch_brain(db_dir, "aa11bb22",
                                          ["STALE MARKER FACT"])
     # Sidecar from pre-freeze code: wrong code_sha, everything else valid.
@@ -950,7 +962,7 @@ def test_mismatched_sidecar_recompiles_and_never_reads_stale_db(ku_env,
 def test_consolidate_receives_max_mutation_rate(ku_env, tmp_path, monkeypatch):
     db_dir, client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
-    cfg = ku_paired.load_config(str(cfg_path))
+    cfg = _load_cfg(cfg_path)
     db_path, conn, _, _ = _scratch_brain(db_dir, "aa11bb22",
                                          ["Caroline is single"])
     _write_sidecar_for(conn, db_path, "aa11bb22", cfg_path, 1, 1)
@@ -977,7 +989,7 @@ def test_consolidated_copy_rebuilt_when_source_hash_differs(ku_env, tmp_path,
                                                             monkeypatch):
     db_dir, client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
-    cfg = ku_paired.load_config(str(cfg_path))
+    cfg = _load_cfg(cfg_path)
     db_path, conn, _, _ = _scratch_brain(db_dir, "aa11bb22",
                                          ["Caroline is single"])
     _write_sidecar_for(conn, db_path, "aa11bb22", cfg_path, 1, 1)
@@ -1016,7 +1028,7 @@ def test_judge_identity_recorded_and_label_change_stops_run(ku_env, tmp_path,
                                                             monkeypatch):
     db_dir, client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
-    cfg = ku_paired.load_config(str(cfg_path))
+    cfg = _load_cfg(cfg_path)
     db_path, conn, _, _ = _scratch_brain(db_dir, "aa11bb22",
                                          ["Caroline is single"])
     _write_sidecar_for(conn, db_path, "aa11bb22", cfg_path, 1, 1)
@@ -1118,3 +1130,257 @@ def test_arm_d_score_matches_keyword_backend(monkeypatch):
     c_top3 = [si for _, si in scored[:3]]
     assert lme.keyword_backend(q)["sessions_used"] == c_top3
 
+
+
+# ---------------------------------------------------------------------------
+# P8.8/R1 and R5b: the freeze preflight, observed-HEAD provenance and the
+# resume guard (tes-review-8 at 65ea251). The preflight is what makes the
+# sidecar's code_sha mean something: without it a brain compiled from other
+# code is stamped as frozen and every later run reuses it.
+# ---------------------------------------------------------------------------
+
+_FILLER = ["User visited Paris", "User likes jazz", "User speaks French",
+           "User drives a Volvo", "User drinks tea", "User plays chess",
+           "User grew up in Leeds", "User collects stamps",
+           "User fears heights", "User enjoys hiking"]
+
+
+def _fake_pool(qid="aa11bb22"):
+    q = _scratch_question(qid, [
+        ("2023/05/01 (Mon) 10:00", [{"role": "user", "content": "hi"}]),
+        ("2023/06/01 (Thu) 10:00", [{"role": "user", "content": "hi"}])])
+    return [q]
+
+
+def _fake_row(qid):
+    arm = {"correct": True, "judge_ambiguous": False, "answer": "x"}
+    return {"question_id": qid, "arm_a": dict(arm), "arm_b": dict(arm),
+            "arm_c": dict(arm), "arm_d": dict(arm), "consolidation": {}}
+
+
+def _stub_main(monkeypatch, tmp_path, *, head, dirty, run_one=None):
+    """Point main() at a scratch dataset and a monkeypatched git state."""
+    monkeypatch.setattr(ku_paired, "load_pool", _fake_pool)
+    monkeypatch.setattr(ku_paired, "git_head", lambda *a, **k: head)
+    monkeypatch.setattr(ku_paired, "git_dirty_paths", lambda *a, **k: dirty)
+    monkeypatch.setattr(ku_paired, "RESULTS_DIR", tmp_path)
+    if run_one is not None:
+        monkeypatch.setattr(ku_paired, "run_one", run_one)
+
+
+def test_porcelain_filter_ignores_only_the_results_dir(monkeypatch):
+    """The clean-tree rule has exactly one exemption: eval/results/ (B5)."""
+    porcelain = (" M src/cairnstone/retrieve.py\n"
+                 "?? eval/results/ku-db/aa11bb22.meta.json\n"
+                 "?? eval/results/ku-paired-b600.json\n"
+                 "R  docs/old.md -> docs/new.md\n")
+    monkeypatch.setattr(ku_paired, "_git", lambda args, repo=None: porcelain)
+    assert ku_paired.git_dirty_paths() == ["src/cairnstone/retrieve.py",
+                                           "docs/new.md"]
+
+
+def test_main_refuses_when_head_is_not_the_frozen_commit(ku_env, tmp_path,
+                                                         monkeypatch):
+    """A checkout other than the frozen commit must compile nothing."""
+    db_dir, _client = ku_env
+    cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
+    calls = []
+
+    def run_one(*a, **k):
+        calls.append(a)
+        return _fake_row("aa11bb22")
+
+    _stub_main(monkeypatch, tmp_path, head="deadbeef", dirty=[], run_one=run_one)
+    out = tmp_path / "out.json"
+    monkeypatch.setattr(sys, "argv", ["ku_paired.py", "--ids-file",
+                                      str(cfg_path), "--out", str(out)])
+    with pytest.raises(SystemExit, match="freeze preflight failed"):
+        ku_paired.main()
+    assert calls == []
+    assert not out.exists()
+    # No brain, no sidecar: nothing was compiled, so nothing was stamped.
+    assert list(db_dir.iterdir()) == []
+
+
+def test_main_refuses_when_the_tree_is_dirty(ku_env, tmp_path, monkeypatch):
+    """Matching HEAD is not enough: uncommitted code must not be stamped."""
+    db_dir, _client = ku_env
+    cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
+    calls = []
+
+    def run_one(*a, **k):
+        calls.append(a)
+        return _fake_row("aa11bb22")
+
+    _stub_main(monkeypatch, tmp_path, head=FROZEN_TEST_SHA,
+               dirty=["src/cairnstone/retrieve.py"], run_one=run_one)
+    out = tmp_path / "out.json"
+    monkeypatch.setattr(sys, "argv", ["ku_paired.py", "--ids-file",
+                                      str(cfg_path), "--out", str(out)])
+    with pytest.raises(SystemExit, match="freeze preflight failed"):
+        ku_paired.main()
+    assert calls == []
+    assert not out.exists()
+    assert list(db_dir.iterdir()) == []
+
+
+def test_main_stamps_sidecars_and_results_with_the_observed_head(ku_env,
+                                                                 tmp_path,
+                                                                 monkeypatch):
+    """The preflight's HEAD is what gets recorded, end to end."""
+    db_dir, client = ku_env
+    cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
+    _stub_main(monkeypatch, tmp_path, head=FROZEN_TEST_SHA, dirty=[])
+    monkeypatch.setattr(ku_paired, "LLMClient", lambda **kw: client)
+    out = tmp_path / "out.json"
+    monkeypatch.setattr(sys, "argv", ["ku_paired.py", "--ids-file",
+                                      str(cfg_path), "--out", str(out)])
+    ku_paired.main()
+
+    sidecar = json.loads((db_dir / "aa11bb22.meta.json").read_text())
+    assert sidecar["code_sha"] == FROZEN_TEST_SHA
+    cons_sidecar = json.loads(
+        (db_dir / "aa11bb22.consolidated.meta.json").read_text())
+    assert cons_sidecar["code_sha"] == FROZEN_TEST_SHA
+    res = json.loads(out.read_text())
+    assert res["frozen_code_sha"] == FROZEN_TEST_SHA
+    assert res["partial"] is False
+    assert res["aggregate"]["n"] == 1
+    assert "policy_halts" in res["aggregate"]
+
+
+def test_run_one_stamps_the_observed_head_not_the_config_value(ku_env,
+                                                               tmp_path):
+    """run_one copies the observed HEAD, never config["frozen_code_sha"]."""
+    db_dir, _client = ku_env
+    cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
+    cfg = ku_paired.load_config(str(cfg_path))
+    cfg["_observed_head_sha"] = "observed-head-abc"
+    q = _ingest_haystack(db_dir, "aa11bb22", cfg_path)
+    # No sidecar exists, so the brain is recompiled and re-stamped.
+    ku_paired.run_one(q, 600, StubClient(), cfg)
+    sidecar = json.loads((db_dir / "aa11bb22.meta.json").read_text())
+    assert sidecar["code_sha"] == "observed-head-abc"
+    assert sidecar["code_sha"] != cfg["frozen_code_sha"]
+
+
+def test_run_one_refuses_a_config_without_an_observed_head(ku_env, tmp_path):
+    """Provenance must come from an observation, not from the config."""
+    db_dir, _client = ku_env
+    cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
+    cfg = ku_paired.load_config(str(cfg_path))
+    q = _scratch_question("aa11bb22", [
+        ("2023/05/01 (Mon) 10:00", [{"role": "user", "content": "hi"}])])
+    with pytest.raises(ValueError, match="_observed_head_sha"):
+        ku_paired.run_one(q, 600, StubClient(), cfg)
+    assert list(db_dir.iterdir()) == []
+
+
+@pytest.mark.parametrize("field,value", [
+    ("config_sha256", "SOME-OTHER-CONFIG"),
+    ("frozen_code_sha", "some-other-sha"),
+    ("budget_tokens", 1200),
+])
+def test_resume_refuses_a_results_file_from_another_run(ku_env, tmp_path,
+                                                        monkeypatch, field,
+                                                        value):
+    """A foreign results file is refused, not re-stamped with our values."""
+    _db_dir, _client = ku_env
+    cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
+    calls = []
+
+    def run_one(*a, **k):
+        calls.append(a)
+        return _fake_row("aa11bb22")
+
+    _stub_main(monkeypatch, tmp_path, head=FROZEN_TEST_SHA, dirty=[],
+               run_one=run_one)
+    out = tmp_path / "out.json"
+    prev = {"config_sha256": ku_paired.sha256_file(cfg_path),
+            "frozen_code_sha": FROZEN_TEST_SHA, "budget_tokens": 600,
+            "rows": [_fake_row("aa11bb22")], "partial": True}
+    prev[field] = value
+    out.write_text(json.dumps(prev))
+    before = out.read_text()
+    monkeypatch.setattr(sys, "argv", ["ku_paired.py", "--ids-file",
+                                      str(cfg_path), "--out", str(out),
+                                      "--resume"])
+    with pytest.raises(SystemExit, match="resume refused"):
+        ku_paired.main()
+    assert calls == []
+    assert out.read_text() == before
+
+
+def test_resume_accepts_a_results_file_from_the_same_run(ku_env, tmp_path,
+                                                         monkeypatch):
+    """The guard must not refuse the resume it exists to permit."""
+    _db_dir, _client = ku_env
+    cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
+    calls = []
+
+    def run_one(*a, **k):
+        calls.append(a)
+        return _fake_row("aa11bb22")
+
+    _stub_main(monkeypatch, tmp_path, head=FROZEN_TEST_SHA, dirty=[],
+               run_one=run_one)
+    out = tmp_path / "out.json"
+    out.write_text(json.dumps({
+        "config_sha256": ku_paired.sha256_file(cfg_path),
+        "frozen_code_sha": FROZEN_TEST_SHA, "budget_tokens": 600,
+        "rows": [_fake_row("aa11bb22")], "partial": True}))
+    monkeypatch.setattr(sys, "argv", ["ku_paired.py", "--ids-file",
+                                      str(cfg_path), "--out", str(out),
+                                      "--resume"])
+    ku_paired.main()
+    assert calls == []
+    res = json.loads(out.read_text())
+    assert [r["question_id"] for r in res["rows"]] == ["aa11bb22"]
+    assert res["aggregate"]["n"] == 1
+
+
+def test_pristine_write_during_consolidation_aborts_before_any_judge_call(
+        ku_env, tmp_path, monkeypatch):
+    """The pre-arm-(a) assertion sits directly before arm (a): a consolidation
+    that wrote to the original costs no judge calls."""
+    db_dir, client = ku_env
+    cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
+    cfg = _load_cfg(cfg_path)
+    db_path, conn, brain, fact_ids = _scratch_brain(
+        db_dir, "aa11bb22", ["Caroline is single", "Caroline is married"]
+        + _FILLER)
+    q = _ingest_haystack(db_dir, "aa11bb22", cfg_path)
+    ku_paired.warm_embedding_cache(conn, brain, q, 600)
+    _write_sidecar_for(conn, db_path, "aa11bb22", cfg_path, 2, 2)
+    conn.close()
+
+    real = comp.consolidate
+
+    def evil(c, b, max_mutation_rate=None):
+        other = sqlite3.connect(str(db_path))
+        other.execute("UPDATE facts SET status = 'superseded' WHERE id = ?",
+                      (fact_ids[0],))
+        other.commit()
+        other.close()
+        return real(c, b, max_mutation_rate=max_mutation_rate)
+
+    monkeypatch.setattr(comp, "consolidate", evil)
+    judged = []
+    monkeypatch.setattr(harness, "judge",
+                        lambda *a, **k: judged.append(1) or (True, False))
+    client.resolver = lambda m: ("single" if "single" in m[-1]["content"]
+                                 else "married")
+    with pytest.raises(ku_paired.ContaminationError, match="before arm"):
+        ku_paired.run_one(q, 600, StubClient(), cfg)
+    assert judged == []
+
+
+def test_aggregate_counts_policy_halts():
+    """A halt makes (b) == (a) by construction, so b_vs_a must be read with
+    the halt count next to it."""
+    rows = [_fake_row("aa11bb22"),
+            dict(_fake_row("cc33dd44"),
+                 consolidation={"policy_halt": True, "error": "rate"})]
+    agg = ku_paired.aggregate(rows)
+    assert agg["policy_halts"] == 1
+    assert agg["n"] == 2

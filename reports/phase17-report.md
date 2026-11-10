@@ -215,3 +215,36 @@ Suite: **193 passed** (19 base + 24 from the D1-D5 round + the P8 harness suite)
   smoke brain is quarantined pre-freeze, so the first real run is Part B itself.
 - Probe on the final tree: `superseded=0 flagged=13 duplicates_linked=39` across 27 databases,
   unchanged from the D5 round.
+
+### Tes review 8 (reject at 65ea251) — fixed in this commit
+
+Tes rejected the harness at 65ea251 (`tes-review-p8-65ea251.md`, card `t_fae33512`): the sidecar's
+`code_sha` was copied from the config, so the reuse rule could only reject hand-forged sidecars, never
+a brain compiled by other code. Two blocking findings, both fixed here, plus the two non-blocking ones
+in the same change. Part B still has not run.
+
+- **R1 — provenance now comes from the code that runs.** `main()` runs a freeze preflight before it
+  compiles anything: `git rev-parse HEAD` must equal the config's `frozen_code_sha` **and**
+  `git status --porcelain` must be empty, with `eval/results/` the only ignored prefix. A mismatch
+  exits before any `run_one`, so no brain and no sidecar is written. The sidecars (pristine and
+  consolidated) and the results JSON record the HEAD that preflight observed, not the config value;
+  `run_one` refuses to stamp provenance when no observed HEAD is set.
+- **R5b — `--resume` is refused across runs.** A prior results file is accepted only when its
+  `config_sha256`, `frozen_code_sha` and `budget_tokens` all match; otherwise `main()` exits without
+  re-stamping the file with the current values.
+- **Non-blocking.** The pre-arm-(a) pristine-hash assertion now sits directly before `arm_a = ...`,
+  so a consolidation that writes to the original aborts before the four judge calls rather than after
+  them. `aggregate()` reports `policy_halts`: a halted question answers (b) from a rolled-back copy
+  identical to (a), so it contributes a guaranteed tie to `b_vs_a` and that count has to travel with
+  the number.
+
+Suite: **205 passed** locally (193 + 12 new: the porcelain filter, HEAD/clean-tree refusals with no
+brain or sidecar written, observed-HEAD stamping end to end, `run_one` refusing a config without an
+observed HEAD, resume refusal on each of the three keys, resume accepted on a matching file, the
+consolidation-write abort with zero judge calls, and the `policy_halts` count). The freeze preflight
+was also exercised against the real repository: a dirty tree and a foreign `frozen_code_sha` are both
+refused.
+
+**Still to do before Part B:** write and commit `eval/longmemeval/ku-phase17-config.json` (B5) with
+`frozen_code_sha` set to the HEAD of that commit — the preflight makes a config that does not name the
+running commit a hard stop rather than a warning.

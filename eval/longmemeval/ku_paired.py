@@ -19,6 +19,17 @@ fail-closed provenance sidecar (<qid>.meta.json, P8.8): a brain compiled by
 pre-freeze code, or whose file hash no longer matches its sidecar, is
 recompiled, never read.
 
+That rule is only as good as the code that writes the sidecar, so main() runs a
+freeze preflight before it compiles anything (B5, P8.8/R1): `git rev-parse HEAD`
+must equal the config's frozen_code_sha and `git status --porcelain` must be
+empty (only eval/results/, the harness's own output directory, is ignored).
+Anything else exits without writing a brain or a sidecar. The sidecars record
+the HEAD observed by that preflight, never the config's claim about it.
+
+A resumed results file must come from the same config, commit and budget
+(config_sha256, frozen_code_sha, budget_tokens); a mismatch is refused rather
+than re-stamped with the current values (R5b).
+
 Question selection is config-driven (P8.5, P11): the harness takes --ids-file
 (the committed ids config) and runs the literal ids it lists, in the listed
 order. There is no random call anywhere in this module.
@@ -48,6 +59,7 @@ import hashlib
 import json
 import os
 import sqlite3
+import subprocess
 import sys
 import time
 import urllib.request
@@ -75,6 +87,10 @@ REQUIRED_CONFIG_KEYS = ("frozen_code_sha", "dataset_path", "ids",
 
 class ContaminationError(RuntimeError):
     """The pristine brain's hash changed after answering started (P8.3)."""
+
+
+class FreezeError(RuntimeError):
+    """The running code is not the frozen commit on a clean tree (P8.8/B5)."""
 
 
 # ------------------------------------------------------------------- helpers
@@ -173,6 +189,97 @@ def sqlite_backup_copy(src_path, dst_path) -> None:
             dst.close()
     finally:
         src.close()
+
+
+# ------------------------------------------------- freeze preflight (P8.8/B5)
+
+RESUME_KEYS = ("config_sha256", "frozen_code_sha", "budget_tokens")
+DIRTY_IGNORE_PREFIXES = ("eval/results/",)
+
+
+def _git(args, repo=REPO):
+    """Run git in `repo` and return stdout, or raise FreezeError."""
+    try:
+        proc = subprocess.run(["git", "-C", str(repo)] + list(args),
+                              capture_output=True, text=True, timeout=120)
+    except OSError as exc:
+        raise FreezeError("git is not runnable: %s" % exc) from exc
+    if proc.returncode != 0:
+        raise FreezeError("git %s failed: %s"
+                          % (" ".join(args), proc.stderr.strip()))
+    return proc.stdout
+
+
+def git_head(repo=REPO) -> str:
+    """The commit the code being executed actually came from."""
+    return _git(["rev-parse", "HEAD"], repo).strip()
+
+
+def _porcelain_paths(porcelain_text):
+    """Paths named by `git status --porcelain` output, rename-aware."""
+    paths = []
+    for line in porcelain_text.splitlines():
+        if not line.strip():
+            continue
+        entry = line[3:] if len(line) > 3 else ""
+        if " -> " in entry:
+            entry = entry.split(" -> ", 1)[1]
+        entry = entry.strip().strip('"')
+        if entry:
+            paths.append(entry)
+    return paths
+
+
+def git_dirty_paths(repo=REPO, ignore_prefixes=DIRTY_IGNORE_PREFIXES):
+    """Paths that make the tree dirty, minus the run-artifact prefixes.
+
+    `eval/results/` is the harness's own output directory (compiled brains,
+    sidecars, result JSONs); its contents are generated during the run, so it
+    is the only prefix excluded from the clean-tree requirement (B5).
+    """
+    text = _git(["status", "--porcelain", "--untracked-files=all"], repo)
+    return [p for p in _porcelain_paths(text)
+            if not p.startswith(tuple(ignore_prefixes))]
+
+
+def assert_frozen_checkout(config, repo=REPO) -> str:
+    """Fail closed unless HEAD is the frozen commit and the tree is clean.
+
+    A brain compiled from other code must never be stamped as frozen: the
+    sidecar records the commit that actually ran, and every later run reuses
+    that brain only because this preflight proved the two agree (P8.8).
+    Returns the observed HEAD, which is what the sidecars must record.
+    """
+    head = git_head(repo)
+    frozen = config["frozen_code_sha"]
+    if head != frozen:
+        raise FreezeError(
+            "HEAD is %s but the config freezes %s: this checkout is not the "
+            "frozen code, so nothing it compiles may be stamped as frozen"
+            % (head, frozen))
+    dirty = git_dirty_paths(repo)
+    if dirty:
+        raise FreezeError(
+            "tree is dirty (%d path(s), first: %s): the code that runs is not "
+            "the frozen commit" % (len(dirty), dirty[0]))
+    return head
+
+
+def check_resume_compatible(prev, config_sha256, code_sha, budget):
+    """Refuse a resume whose prior results file came from other settings.
+
+    Keeping rows from a different config, commit or budget and then
+    re-stamping the file with the current values would report one experiment
+    as if it were another (R5b). Fail closed instead.
+    """
+    current = {"config_sha256": config_sha256, "frozen_code_sha": code_sha,
+               "budget_tokens": budget}
+    for key in RESUME_KEYS:
+        if prev.get(key) != current[key]:
+            raise FreezeError(
+                "resume refused: %s in %s is %r but this run is %r"
+                % (key, "the prior results file", prev.get(key),
+                   current[key]))
 
 
 # ------------------------------------------------- provenance sidecars (P8.8)
@@ -375,10 +482,13 @@ def _binom(n, k):
 
 # ----------------------------------------------------------------- the brains
 
-def _open_pristine(question, db_path, client, budget, frozen_sha, config_sha,
+def _open_pristine(question, db_path, client, budget, code_sha, config_sha,
                    dataset_sha):
     """Open (or compile) the pristine brain under the fail-closed sidecar rule
     (P8.1, P8.8). Returns (conn, brain_id, compile_stats, reused, reason, sha).
+
+    `code_sha` is the HEAD main() verified as the frozen commit; the sidecar
+    records it as the provenance of whatever brain this function compiles.
 
     On reuse the brain is opened, its embedding cache warmed and its file
     re-hashed; if the hash no longer matches the sidecar (only possible when
@@ -393,7 +503,7 @@ def _open_pristine(question, db_path, client, budget, frozen_sha, config_sha,
         # brain on its first reopen, so the identity hash must be taken after
         # that rewrite (open_and_hash), never from the pre-open file.
         conn, brain_id, sha = open_and_hash(db_path)
-        ok, reason, meta = check_sidecar(db_path, frozen_sha, config_sha,
+        ok, reason, meta = check_sidecar(db_path, code_sha, config_sha,
                                          dataset_sha, current_sha=sha)
         if ok and meta is not None:
             warm_embedding_cache(conn, brain_id, question, budget)
@@ -410,7 +520,7 @@ def _open_pristine(question, db_path, client, budget, frozen_sha, config_sha,
                                                    True)
     warm_embedding_cache(conn, brain_id, question, budget)
     sha = checkpointed_sha(conn, db_path)
-    write_sidecar(db_path, question_id=qid, code_sha=frozen_sha,
+    write_sidecar(db_path, question_id=qid, code_sha=code_sha,
                   config_sha256=config_sha, dataset_sha256=dataset_sha,
                   summary=summary, started_utc=started, db_sha256=sha)
     comp = {"captures": summary["captures"],
@@ -420,7 +530,7 @@ def _open_pristine(question, db_path, client, budget, frozen_sha, config_sha,
 
 
 def _open_consolidated(db_path, cons_path, question, budget, pristine_sha,
-                       frozen_sha, config_sha, rate):
+                       code_sha, config_sha, rate):
     """Open (or rebuild) the consolidated copy (P8.2, P8.8). The nightly pass
     runs on the backup copy, never on the original. Returns
     (conn, brain_id, counts, reused)."""
@@ -430,7 +540,7 @@ def _open_consolidated(db_path, cons_path, question, budget, pristine_sha,
         warm_embedding_cache(conn, brain_id, question, budget)
         sha = checkpointed_sha(conn, cons_path)
         ok, meta = check_consolidated_sidecar(cons_path, pristine_sha,
-                                              frozen_sha, config_sha,
+                                              code_sha, config_sha,
                                               current_sha=sha)
         if ok and meta is not None:
             return conn, brain_id, meta["consolidation"], True
@@ -444,7 +554,7 @@ def _open_consolidated(db_path, cons_path, question, budget, pristine_sha,
         counts = {"policy_halt": True, "error": str(exc)}
     warm_embedding_cache(conn, brain_id, question, budget)
     cons_sha = checkpointed_sha(conn, cons_path)
-    write_consolidated_sidecar(cons_path, question_id=qid, code_sha=frozen_sha,
+    write_consolidated_sidecar(cons_path, question_id=qid, code_sha=code_sha,
                                config_sha256=config_sha,
                                source_db_sha256=pristine_sha,
                                db_sha256=cons_sha,
@@ -464,13 +574,20 @@ def run_one(question, budget, client, config, start_label=None):
     """
     qid = question["question_id"]
     db_path = KU_DB_DIR / ("%s.db" % qid)
-    frozen_sha = config["frozen_code_sha"]
+    # The sidecar records the commit main() observed and verified, never the
+    # config's claim about it (P8.8/R1): a brain compiled from other code must
+    # not be stamped as frozen.
+    code_sha = config.get("_observed_head_sha")
+    if not code_sha:
+        raise ValueError(
+            "%s: config has no _observed_head_sha; main() sets it from the "
+            "verified HEAD before any compile (P8.8)" % qid)
     config_sha = config["_config_sha256"]
     dataset_sha = config["_dataset_sha256"]
     rate = config["max_mutation_rate"]
 
     conn, brain_id, comp, reused, reason, pristine_sha = _open_pristine(
-        question, db_path, client, budget, frozen_sha, config_sha, dataset_sha)
+        question, db_path, client, budget, code_sha, config_sha, dataset_sha)
 
     row = {
         "question_id": qid,
@@ -484,18 +601,21 @@ def run_one(question, budget, client, config, start_label=None):
         "max_mutation_rate": rate,
     }
 
-    # ---- P8.3: the pristine brain is asserted unconsolidated immediately
-    # before arm (a) reads it.
-    if checkpointed_sha(conn, db_path) != pristine_sha:
-        conn.close()
-        raise ContaminationError(
-            "%s: pristine brain changed before arm (a)" % qid)
-
     # ---- the nightly pass on a backup copy, never on the original (P8.2)
     cons_path = consolidated_path(db_path)
     cons_conn, cons_brain, cons_counts, cons_reused = _open_consolidated(
-        db_path, cons_path, question, budget, pristine_sha, frozen_sha,
+        db_path, cons_path, question, budget, pristine_sha, code_sha,
         config_sha, rate)
+
+    # ---- P8.3: the pristine brain is asserted unconsolidated immediately
+    # before arm (a) reads it. The check sits here, not before consolidation,
+    # so a consolidation that wrote to the original aborts before any judge
+    # call rather than after all four.
+    if checkpointed_sha(conn, db_path) != pristine_sha:
+        conn.close()
+        cons_conn.close()
+        raise ContaminationError(
+            "%s: pristine brain changed before arm (a)" % qid)
 
     # ---- arm (a): the pristine brief (B2 (a))
     arm_a = lme.cairnstone_backend(conn, brain_id, question, budget)
@@ -583,6 +703,11 @@ def aggregate(rows):
         "questions_mutated_by_consolidation": sum(
             1 for r in rows if r["consolidation"].get("superseded")
             or r["consolidation"].get("duplicates_linked")),
+        # A PolicyHalt leaves (b) answering from a rolled-back copy that is
+        # identical to (a), so those questions contribute a guaranteed tie to
+        # b_vs_a. Count them so the report cannot quote b-vs-a without it.
+        "policy_halts": sum(1 for r in rows
+                            if r["consolidation"].get("policy_halt")),
         "total_superseded": sum(r["consolidation"].get("superseded", 0)
                                 for r in rows),
         "total_duplicates_linked": sum(r["consolidation"].get("duplicates_linked", 0)
@@ -597,6 +722,12 @@ def aggregate(rows):
 
 # ----------------------------------------------------------------------- main
 
+def load_pool():
+    """The LongMemEval dataset the ids config refers to (gitignored inputs)."""
+    path = REPO / "eval" / "datasets" / "longmemeval_s_cleaned.json"
+    return json.loads(path.read_text())
+
+
 def main():
     ap = argparse.ArgumentParser(
         description="Phase 17 four-arm paired consolidation test (P8)")
@@ -609,14 +740,41 @@ def main():
                     help="skip questions already present in --out")
     args = ap.parse_args()
 
-    pool = json.load(open(REPO / "eval" / "datasets"
-                          / "longmemeval_s_cleaned.json"))
+    pool = load_pool()
     cfg = load_config(args.ids_file, pool)
     by_id = {q["question_id"]: q for q in pool}
     missing = [qid for qid in cfg["ids"] if qid not in by_id]
     if missing:
         raise SystemExit("ids not in dataset: %s" % ", ".join(missing))
     budget = args.budget if args.budget is not None else cfg["budget_tokens"]
+
+    # ---- B5/P8.8: fail closed before anything is compiled. Every brain this
+    # process writes is stamped with the HEAD observed here, and only reaches
+    # a later run through a sidecar that names it.
+    try:
+        head = assert_frozen_checkout(cfg)
+    except FreezeError as exc:
+        raise SystemExit("freeze preflight failed: %s" % exc)
+    cfg["_observed_head_sha"] = head
+    print("frozen checkout verified: HEAD=%s clean tree" % head, flush=True)
+
+    out = Path(args.out) if args.out else RESULTS_DIR / (
+        "ku-paired-b%d-%s.json" % (budget,
+                                   datetime.now(timezone.utc)
+                                   .strftime("%Y%m%d-%H%M%SZ")))
+    rows = []
+    done = set()
+    if args.resume and out.exists():
+        prev = json.load(open(out))
+        try:
+            check_resume_compatible(prev, cfg["_config_sha256"], head, budget)
+        except FreezeError as exc:
+            raise SystemExit("%s (%s); rerun without --resume, or resume into "
+                             "a file written under this config"
+                             % (exc, out))
+        rows = prev.get("rows", [])
+        done = {r["question_id"] for r in rows}
+        print("resuming: %d questions already done" % len(done), flush=True)
 
     client = LLMClient(base_url=lme.ANSWER_BASE_URL, model=lme.ANSWER_MODEL)
     lme._client = client
@@ -627,18 +785,6 @@ def main():
     print("judge at start: name=%s label=%s upstream_model=%s"
           % (start_identity.get("name"), start_identity.get("label"),
              start_identity.get("upstream_model")), flush=True)
-
-    out = Path(args.out) if args.out else RESULTS_DIR / (
-        "ku-paired-b%d-%s.json" % (budget,
-                                   datetime.now(timezone.utc)
-                                   .strftime("%Y%m%d-%H%M%SZ")))
-    rows = []
-    done = set()
-    if args.resume and out.exists():
-        prev = json.load(open(out))
-        rows = prev.get("rows", [])
-        done = {r["question_id"] for r in rows}
-        print("resuming: %d questions already done" % len(done), flush=True)
 
     t0 = time.monotonic()
     for i, qid in enumerate(cfg["ids"], 1):
@@ -651,7 +797,7 @@ def main():
         # Write after every question so an interrupted run can be resumed
         # rather than paying for the compile of a 48-session haystack twice.
         json.dump({"config_sha256": cfg["_config_sha256"],
-                   "frozen_code_sha": cfg["frozen_code_sha"],
+                   "frozen_code_sha": head,
                    "budget_tokens": budget,
                    "max_mutation_rate": cfg["max_mutation_rate"],
                    "aggregate": aggregate(rows), "rows": rows,
@@ -661,7 +807,7 @@ def main():
 
     agg = aggregate(rows)
     json.dump({"config_sha256": cfg["_config_sha256"],
-               "frozen_code_sha": cfg["frozen_code_sha"],
+               "frozen_code_sha": head,
                "budget_tokens": budget,
                "max_mutation_rate": cfg["max_mutation_rate"],
                "aggregate": agg, "rows": rows, "partial": False,
