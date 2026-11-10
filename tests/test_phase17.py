@@ -6,6 +6,7 @@ the consolidation functions run.
 """
 
 import os
+import subprocess
 import sys
 
 import pytest
@@ -537,7 +538,9 @@ import ku_paired  # noqa: E402
 import lme_eval as lme  # noqa: E402
 from cairnstone import retrieve  # noqa: E402
 
-FROZEN_TEST_SHA = "frozen-test-sha"
+FROZEN_TEST_SHA = "0f1e2d3c4b5a69788796a5b4c3d2e1f00f1e2d3c"
+RUN_HEAD_TEST_SHA = "1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d"
+IDS_REL_TEST_PATH = "eval/longmemeval/ku-phase17-config.json"
 
 
 class StubClient:
@@ -610,13 +613,15 @@ def _write_ids_config(tmp_path, ids, eligible=None):
 
 
 def _load_cfg(cfg_path):
-    """load_config plus the HEAD main() would have verified (P8.8/R1).
+    """load_config plus the provenance main() would have verified (P8.8/R1).
 
-    run_one refuses to stamp provenance without an observed HEAD: the sidecar
-    records the commit that ran, not the config's claim about it.
+    run_one refuses to stamp provenance without it: the sidecars record the
+    frozen commit the preflight verified plus the HEAD it observed, not the
+    config's claim about either.
     """
     cfg = ku_paired.load_config(str(cfg_path))
-    cfg["_observed_head_sha"] = FROZEN_TEST_SHA
+    cfg["_observed_code_sha"] = FROZEN_TEST_SHA
+    cfg["_observed_run_head_sha"] = FROZEN_TEST_SHA
     return cfg
 
 
@@ -659,6 +664,7 @@ def _write_sidecar_for(conn, db_path, qid, cfg_path, captures, facts):
     # it: a hash taken with writes still in the WAL can never match on reuse.
     ku_paired.write_sidecar(
         db_path, question_id=qid, code_sha=FROZEN_TEST_SHA,
+        run_head_sha=FROZEN_TEST_SHA,
         config_sha256=ku_paired.sha256_file(cfg_path),
         dataset_sha256=ku_paired.sha256_file(tmp_dataset(cfg_path)),
         summary={"captures": captures, "facts_accepted": facts},
@@ -696,6 +702,7 @@ def test_check_sidecar_happy_path(tmp_path):
     cfg = _write_ids_config(tmp_path, ["aa11bb22"])
     ku_paired.write_sidecar(
         db_path, question_id="aa11bb22", code_sha=FROZEN_TEST_SHA,
+        run_head_sha=FROZEN_TEST_SHA,
         config_sha256=ku_paired.sha256_file(cfg),
         dataset_sha256=ku_paired.sha256_file(tmp_dataset(cfg)),
         summary={"captures": 1, "facts_accepted": 1},
@@ -723,6 +730,7 @@ def test_check_sidecar_code_sha_mismatch(tmp_path):
     cfg = _write_ids_config(tmp_path, ["aa11bb22"])
     ku_paired.write_sidecar(
         db_path, question_id="aa11bb22", code_sha="pre-freeze-sha",
+        run_head_sha="pre-freeze-sha",
         config_sha256=ku_paired.sha256_file(cfg),
         dataset_sha256=ku_paired.sha256_file(tmp_dataset(cfg)),
         summary={"captures": 1, "facts_accepted": 1},
@@ -740,6 +748,7 @@ def test_check_sidecar_config_sha_mismatch(tmp_path):
     cfg = _write_ids_config(tmp_path, ["aa11bb22"])
     ku_paired.write_sidecar(
         db_path, question_id="aa11bb22", code_sha=FROZEN_TEST_SHA,
+        run_head_sha=FROZEN_TEST_SHA,
         config_sha256="stale-config-sha",
         dataset_sha256=ku_paired.sha256_file(tmp_dataset(cfg)),
         summary={"captures": 1, "facts_accepted": 1},
@@ -757,6 +766,7 @@ def test_check_sidecar_db_hash_mismatch(tmp_path):
     cfg = _write_ids_config(tmp_path, ["aa11bb22"])
     ku_paired.write_sidecar(
         db_path, question_id="aa11bb22", code_sha=FROZEN_TEST_SHA,
+        run_head_sha=FROZEN_TEST_SHA,
         config_sha256=ku_paired.sha256_file(cfg),
         dataset_sha256=ku_paired.sha256_file(tmp_dataset(cfg)),
         summary={"captures": 1, "facts_accepted": 1},
@@ -936,6 +946,7 @@ def test_mismatched_sidecar_recompiles_and_never_reads_stale_db(ku_env,
     # Sidecar from pre-freeze code: wrong code_sha, everything else valid.
     ku_paired.write_sidecar(
         db_path, question_id="aa11bb22", code_sha="pre-freeze-sha",
+        run_head_sha="pre-freeze-sha",
         config_sha256=cfg["_config_sha256"],
         dataset_sha256=cfg["_dataset_sha256"],
         summary={"captures": 1, "facts_accepted": 1},
@@ -1158,30 +1169,168 @@ def _fake_row(qid):
             "arm_c": dict(arm), "arm_d": dict(arm), "consolidation": {}}
 
 
-def _stub_main(monkeypatch, tmp_path, *, head, dirty, run_one=None):
+def _stub_main(monkeypatch, tmp_path, *, head, dirty, ancestor=True,
+               changed=(), tracked=True, ids_rel=IDS_REL_TEST_PATH,
+               run_one=None):
     """Point main() at a scratch dataset and a monkeypatched git state."""
     monkeypatch.setattr(ku_paired, "load_pool", _fake_pool)
     monkeypatch.setattr(ku_paired, "git_head", lambda *a, **k: head)
     monkeypatch.setattr(ku_paired, "git_dirty_paths", lambda *a, **k: dirty)
+    monkeypatch.setattr(ku_paired, "git_commit_sha", lambda ref, *a, **k: ref)
+    monkeypatch.setattr(ku_paired, "git_is_ancestor", lambda *a, **k: ancestor)
+    monkeypatch.setattr(ku_paired, "git_diff_paths",
+                        lambda *a, **k: list(changed))
+    monkeypatch.setattr(ku_paired, "git_tracks_at", lambda *a, **k: tracked)
+    monkeypatch.setattr(ku_paired, "repo_relative", lambda *a, **k: ids_rel)
     monkeypatch.setattr(ku_paired, "RESULTS_DIR", tmp_path)
     if run_one is not None:
         monkeypatch.setattr(ku_paired, "run_one", run_one)
 
 
-def test_porcelain_filter_ignores_only_the_results_dir(monkeypatch):
-    """The clean-tree rule has exactly one exemption: eval/results/ (B5)."""
-    porcelain = (" M src/cairnstone/retrieve.py\n"
-                 "?? eval/results/ku-db/aa11bb22.meta.json\n"
-                 "?? eval/results/ku-paired-b600.json\n"
-                 "R  docs/old.md -> docs/new.md\n")
+def test_porcelain_filter_checks_both_sides_of_a_rename(monkeypatch):
+    """The clean-tree rule has exactly one exemption, eval/results/ (B5), and a
+    rename into it still deletes its tracked source — both sides count (H1)."""
+    porcelain = (" M src/cairnstone/retrieve.py\0"
+                 "?? eval/results/ku-db/aa11bb22.meta.json\0"
+                 "?? eval/results/ku-paired-b600.json\0"
+                 "R  docs/new.md\0docs/old.md\0"
+                 "R  eval/results/store.py\0src/cairnstone/store.py\0"
+                 "?? eval/results_evil/keep.json\0")
     monkeypatch.setattr(ku_paired, "_git", lambda args, repo=None: porcelain)
-    assert ku_paired.git_dirty_paths() == ["src/cairnstone/retrieve.py",
-                                           "docs/new.md"]
+    assert ku_paired.git_dirty_paths() == [
+        "src/cairnstone/retrieve.py", "docs/new.md", "docs/old.md",
+        "src/cairnstone/store.py", "eval/results_evil/keep.json"]
 
 
-def test_main_refuses_when_head_is_not_the_frozen_commit(ku_env, tmp_path,
-                                                         monkeypatch):
-    """A checkout other than the frozen commit must compile nothing."""
+def test_porcelain_paths_keep_a_space_in_a_name(monkeypatch):
+    """-z parsing keeps a path with a space intact (no C-quoting)."""
+    monkeypatch.setattr(ku_paired, "_git",
+                        lambda args, repo=None: " M src/my file.py\0")
+    assert ku_paired.git_dirty_paths() == ["src/my file.py"]
+
+
+# --- the preflight against real git: B1's accepted case and the refusals
+
+def _git_run(repo, *args):
+    proc = subprocess.run(["git", "-C", str(repo)] + list(args),
+                          capture_output=True, text=True)
+    assert proc.returncode == 0, proc.stderr
+    return proc.stdout
+
+
+def _freeze_repo(tmp_path, *, commit_config=True):
+    """A real repo: commit the code, then (optionally) a config naming it."""
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    _git_run(repo, "init", "-q", "-b", "main")
+    _git_run(repo, "config", "user.email", "tes@example.com")
+    _git_run(repo, "config", "user.name", "Tes")
+    src = repo / "src" / "cairnstone" / "store.py"
+    src.parent.mkdir(parents=True)
+    src.write_text("x = 1\n")
+    _git_run(repo, "add", "-A")
+    _git_run(repo, "commit", "-q", "-m", "frozen code")
+    code_sha = _git_run(repo, "rev-parse", "HEAD").strip()
+    ids = repo / IDS_REL_TEST_PATH
+    ids.parent.mkdir(parents=True)
+    ids.write_text(json.dumps({
+        "frozen_code_sha": code_sha, "dataset_path": "eval/datasets/x.json",
+        "ids": ["aa11bb22"], "eligible_ids": ["aa11bb22"],
+        "budget_tokens": 600, "max_mutation_rate": 0.2}))
+    if commit_config:
+        _git_run(repo, "add", "-A")
+        _git_run(repo, "commit", "-q", "-m", "ids config")
+    return repo, code_sha, ids
+
+
+def test_preflight_accepts_a_config_committed_after_the_frozen_code(tmp_path):
+    """B1: the config is necessarily committed after the code it freezes, so
+    the preflight proves the code tree is unchanged rather than sha equality."""
+    repo, code_sha, ids = _freeze_repo(tmp_path)
+    head = _git_run(repo, "rev-parse", "HEAD").strip()
+    got = ku_paired.assert_frozen_checkout({"frozen_code_sha": code_sha}, ids,
+                                          repo=repo)
+    assert got == {"code_sha": code_sha, "run_head_sha": head}
+    assert got["run_head_sha"] != code_sha
+
+
+def test_preflight_refuses_a_code_change_after_the_freeze(tmp_path):
+    """A second commit that touches code must be refused, config or not."""
+    repo, code_sha, ids = _freeze_repo(tmp_path)
+    (repo / "src" / "cairnstone" / "store.py").write_text("x = 2\n")
+    _git_run(repo, "add", "-A")
+    _git_run(repo, "commit", "-q", "-m", "later code change")
+    with pytest.raises(ku_paired.FreezeError, match="code changed"):
+        ku_paired.assert_frozen_checkout({"frozen_code_sha": code_sha}, ids,
+                                        repo=repo)
+
+
+def test_preflight_refuses_a_frozen_sha_that_is_not_an_ancestor(tmp_path):
+    """A sha from a side branch is not the code this checkout runs."""
+    repo, _code_sha, ids = _freeze_repo(tmp_path)
+    _git_run(repo, "checkout", "-q", "-b", "side")
+    (repo / "src" / "cairnstone" / "other.py").write_text("y = 1\n")
+    _git_run(repo, "add", "-A")
+    _git_run(repo, "commit", "-q", "-m", "side work")
+    side_sha = _git_run(repo, "rev-parse", "HEAD").strip()
+    _git_run(repo, "checkout", "-q", "main")
+    with pytest.raises(ku_paired.FreezeError, match="not an ancestor"):
+        ku_paired.assert_frozen_checkout({"frozen_code_sha": side_sha}, ids,
+                                        repo=repo)
+
+
+def test_preflight_refuses_an_uncommitted_ids_config(tmp_path):
+    """B5: the ids config must be committed, not just written to disk."""
+    repo, code_sha, ids = _freeze_repo(tmp_path, commit_config=False)
+    with pytest.raises(ku_paired.FreezeError, match="not tracked at HEAD"):
+        ku_paired.assert_frozen_checkout({"frozen_code_sha": code_sha}, ids,
+                                        repo=repo)
+
+
+def test_preflight_refuses_a_modified_ids_config(tmp_path):
+    """An edited, uncommitted config makes the tree dirty."""
+    repo, code_sha, ids = _freeze_repo(tmp_path)
+    ids.write_text(ids.read_text().replace("600", "1200"))
+    with pytest.raises(ku_paired.FreezeError, match="tree is dirty"):
+        ku_paired.assert_frozen_checkout({"frozen_code_sha": code_sha}, ids,
+                                        repo=repo)
+
+
+def test_preflight_refuses_a_short_frozen_sha(tmp_path):
+    """A short sha cannot be compared against the sidecar's full one."""
+    repo, code_sha, ids = _freeze_repo(tmp_path)
+    with pytest.raises(ku_paired.FreezeError, match="full 40-hex"):
+        ku_paired.assert_frozen_checkout({"frozen_code_sha": code_sha[:12]},
+                                        ids, repo=repo)
+
+
+def test_preflight_refuses_a_staged_rename_of_code_into_eval_results(tmp_path):
+    """H1: the destination is ignored, but the deleted source is not."""
+    repo, code_sha, ids = _freeze_repo(tmp_path)
+    (repo / "eval" / "results").mkdir(parents=True)
+    _git_run(repo, "mv", "src/cairnstone/store.py", "eval/results/store.py")
+    with pytest.raises(ku_paired.FreezeError, match="tree is dirty"):
+        ku_paired.assert_frozen_checkout({"frozen_code_sha": code_sha}, ids,
+                                        repo=repo)
+
+
+def test_preflight_allows_a_reports_note_after_the_config(tmp_path):
+    """A report note may be committed after the freeze; the code is identical."""
+    repo, code_sha, ids = _freeze_repo(tmp_path)
+    (repo / "reports").mkdir()
+    (repo / "reports" / "phase17-report.md").write_text("note\n")
+    _git_run(repo, "add", "-A")
+    _git_run(repo, "commit", "-q", "-m", "report note")
+    head = _git_run(repo, "rev-parse", "HEAD").strip()
+    got = ku_paired.assert_frozen_checkout({"frozen_code_sha": code_sha}, ids,
+                                          repo=repo)
+    assert got["run_head_sha"] == head
+
+
+def test_main_refuses_when_the_frozen_commit_is_not_an_ancestor(ku_env,
+                                                                tmp_path,
+                                                                monkeypatch):
+    """A checkout that does not descend from the frozen commit compiles nothing."""
     db_dir, _client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
     calls = []
@@ -1190,7 +1339,8 @@ def test_main_refuses_when_head_is_not_the_frozen_commit(ku_env, tmp_path,
         calls.append(a)
         return _fake_row("aa11bb22")
 
-    _stub_main(monkeypatch, tmp_path, head="deadbeef", dirty=[], run_one=run_one)
+    _stub_main(monkeypatch, tmp_path, head=RUN_HEAD_TEST_SHA, dirty=[],
+               ancestor=False, run_one=run_one)
     out = tmp_path / "out.json"
     monkeypatch.setattr(sys, "argv", ["ku_paired.py", "--ids-file",
                                       str(cfg_path), "--out", str(out)])
@@ -1202,8 +1352,31 @@ def test_main_refuses_when_head_is_not_the_frozen_commit(ku_env, tmp_path,
     assert list(db_dir.iterdir()) == []
 
 
+def test_main_refuses_when_code_changed_after_the_freeze(ku_env, tmp_path,
+                                                         monkeypatch):
+    """HEAD ahead of the freeze is fine only when the diff is the ids config."""
+    db_dir, _client = ku_env
+    cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
+    calls = []
+
+    def run_one(*a, **k):
+        calls.append(a)
+        return _fake_row("aa11bb22")
+
+    _stub_main(monkeypatch, tmp_path, head=RUN_HEAD_TEST_SHA, dirty=[],
+               changed=["src/cairnstone/retrieve.py"], run_one=run_one)
+    out = tmp_path / "out.json"
+    monkeypatch.setattr(sys, "argv", ["ku_paired.py", "--ids-file",
+                                      str(cfg_path), "--out", str(out)])
+    with pytest.raises(SystemExit, match="freeze preflight failed"):
+        ku_paired.main()
+    assert calls == []
+    assert not out.exists()
+    assert list(db_dir.iterdir()) == []
+
+
 def test_main_refuses_when_the_tree_is_dirty(ku_env, tmp_path, monkeypatch):
-    """Matching HEAD is not enough: uncommitted code must not be stamped."""
+    """A clean commit is not enough: uncommitted code must not be stamped."""
     db_dir, _client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
     calls = []
@@ -1224,13 +1397,14 @@ def test_main_refuses_when_the_tree_is_dirty(ku_env, tmp_path, monkeypatch):
     assert list(db_dir.iterdir()) == []
 
 
-def test_main_stamps_sidecars_and_results_with_the_observed_head(ku_env,
-                                                                 tmp_path,
-                                                                 monkeypatch):
-    """The preflight's HEAD is what gets recorded, end to end."""
+def test_main_stamps_the_verified_frozen_sha_and_the_run_head(ku_env, tmp_path,
+                                                              monkeypatch):
+    """End to end: the sidecars and results record the verified frozen sha and
+    the HEAD that ran — the config commit, which is not the frozen sha."""
     db_dir, client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
-    _stub_main(monkeypatch, tmp_path, head=FROZEN_TEST_SHA, dirty=[])
+    _stub_main(monkeypatch, tmp_path, head=RUN_HEAD_TEST_SHA, dirty=[],
+               changed=[IDS_REL_TEST_PATH])
     monkeypatch.setattr(ku_paired, "LLMClient", lambda **kw: client)
     out = tmp_path / "out.json"
     monkeypatch.setattr(sys, "argv", ["ku_paired.py", "--ids-file",
@@ -1239,39 +1413,44 @@ def test_main_stamps_sidecars_and_results_with_the_observed_head(ku_env,
 
     sidecar = json.loads((db_dir / "aa11bb22.meta.json").read_text())
     assert sidecar["code_sha"] == FROZEN_TEST_SHA
+    assert sidecar["run_head_sha"] == RUN_HEAD_TEST_SHA
     cons_sidecar = json.loads(
         (db_dir / "aa11bb22.consolidated.meta.json").read_text())
     assert cons_sidecar["code_sha"] == FROZEN_TEST_SHA
+    assert cons_sidecar["run_head_sha"] == RUN_HEAD_TEST_SHA
     res = json.loads(out.read_text())
     assert res["frozen_code_sha"] == FROZEN_TEST_SHA
+    assert res["run_head_sha"] == RUN_HEAD_TEST_SHA
     assert res["partial"] is False
     assert res["aggregate"]["n"] == 1
     assert "policy_halts" in res["aggregate"]
 
 
-def test_run_one_stamps_the_observed_head_not_the_config_value(ku_env,
-                                                               tmp_path):
-    """run_one copies the observed HEAD, never config["frozen_code_sha"]."""
+def test_run_one_stamps_the_verified_frozen_sha_and_run_head(ku_env, tmp_path):
+    """run_one records the frozen sha it was told to verify plus the HEAD that
+    ran, never config["frozen_code_sha"] directly."""
     db_dir, _client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
     cfg = ku_paired.load_config(str(cfg_path))
-    cfg["_observed_head_sha"] = "observed-head-abc"
+    cfg["_observed_code_sha"] = RUN_HEAD_TEST_SHA
+    cfg["_observed_run_head_sha"] = FROZEN_TEST_SHA
     q = _ingest_haystack(db_dir, "aa11bb22", cfg_path)
     # No sidecar exists, so the brain is recompiled and re-stamped.
     ku_paired.run_one(q, 600, StubClient(), cfg)
     sidecar = json.loads((db_dir / "aa11bb22.meta.json").read_text())
-    assert sidecar["code_sha"] == "observed-head-abc"
+    assert sidecar["code_sha"] == RUN_HEAD_TEST_SHA
+    assert sidecar["run_head_sha"] == FROZEN_TEST_SHA
     assert sidecar["code_sha"] != cfg["frozen_code_sha"]
 
 
-def test_run_one_refuses_a_config_without_an_observed_head(ku_env, tmp_path):
-    """Provenance must come from an observation, not from the config."""
+def test_run_one_refuses_a_config_without_observed_provenance(ku_env, tmp_path):
+    """Provenance must come from the preflight, not from the config."""
     db_dir, _client = ku_env
     cfg_path = _write_ids_config(tmp_path, ["aa11bb22"])
     cfg = ku_paired.load_config(str(cfg_path))
     q = _scratch_question("aa11bb22", [
         ("2023/05/01 (Mon) 10:00", [{"role": "user", "content": "hi"}])])
-    with pytest.raises(ValueError, match="_observed_head_sha"):
+    with pytest.raises(ValueError, match="_observed_code_sha"):
         ku_paired.run_one(q, 600, StubClient(), cfg)
     assert list(db_dir.iterdir()) == []
 

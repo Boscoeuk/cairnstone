@@ -20,11 +20,19 @@ pre-freeze code, or whose file hash no longer matches its sidecar, is
 recompiled, never read.
 
 That rule is only as good as the code that writes the sidecar, so main() runs a
-freeze preflight before it compiles anything (B5, P8.8/R1): `git rev-parse HEAD`
-must equal the config's frozen_code_sha and `git status --porcelain` must be
-empty (only eval/results/, the harness's own output directory, is ignored).
-Anything else exits without writing a brain or a sidecar. The sidecars record
-the HEAD observed by that preflight, never the config's claim about it.
+freeze preflight before it compiles anything (B5, P8.8/R1): the working tree must
+be clean (only eval/results/, the harness's own output directory, is ignored), the
+config's frozen_code_sha must be a full commit sha that is an ancestor of HEAD,
+and the diff from it to HEAD may touch only the tracked --ids-file plus
+docs/reports .md notes. src/, eval/**/*.py and tests/ are never allowed to
+differ. Anything else exits without writing a brain or a sidecar.
+
+A commit cannot contain its own sha, so the config is necessarily committed
+*after* the code it freezes; `HEAD == frozen_code_sha` would make Part B
+impossible. What the preflight proves instead is that the code tree at HEAD is
+identical to the frozen commit. The sidecars record that verified frozen sha as
+`code_sha`, plus the `run_head_sha` that actually ran — never the config's claim
+alone.
 
 A resumed results file must come from the same config, commit and budget
 (config_sha256, frozen_code_sha, budget_tokens); a mismatch is refused rather
@@ -195,6 +203,9 @@ def sqlite_backup_copy(src_path, dst_path) -> None:
 
 RESUME_KEYS = ("config_sha256", "frozen_code_sha", "budget_tokens")
 DIRTY_IGNORE_PREFIXES = ("eval/results/",)
+# Between the frozen code commit and HEAD only the ids config may be added, plus
+# report/doc notes. Code, tests and harness modules are never allowed to differ.
+ALLOWED_DIFF_MD_PREFIXES = ("docs/", "reports/")
 
 
 def _git(args, repo=REPO):
@@ -210,23 +221,96 @@ def _git(args, repo=REPO):
     return proc.stdout
 
 
+def _git_rc(args, repo=REPO):
+    """Run git and return (returncode, stdout, stderr) without raising."""
+    try:
+        proc = subprocess.run(["git", "-C", str(repo)] + list(args),
+                              capture_output=True, text=True, timeout=120)
+    except OSError as exc:
+        raise FreezeError("git is not runnable: %s" % exc) from exc
+    return proc.returncode, proc.stdout, proc.stderr
+
+
 def git_head(repo=REPO) -> str:
     """The commit the code being executed actually came from."""
     return _git(["rev-parse", "HEAD"], repo).strip()
 
 
+def git_commit_sha(ref, repo=REPO) -> str:
+    """Resolve `ref` to a full commit sha, or raise FreezeError."""
+    try:
+        return _git(["rev-parse", "--verify", "--quiet", ref + "^{commit}"],
+                    repo).strip()
+    except FreezeError as exc:
+        raise FreezeError("%r is not a commit in %s (%s)"
+                          % (ref, repo, exc)) from exc
+
+
+def git_is_ancestor(ancestor, descendant, repo=REPO) -> bool:
+    """True when `ancestor` is an ancestor of `descendant`."""
+    rc, _out, err = _git_rc(
+        ["merge-base", "--is-ancestor", ancestor, descendant], repo)
+    if rc not in (0, 1):
+        raise FreezeError("git merge-base --is-ancestor %s %s failed: %s"
+                          % (ancestor, descendant, err.strip()))
+    return rc == 0
+
+
+def git_diff_paths(base, head, repo=REPO):
+    """Repo-relative paths that differ between `base` and `head`.
+
+    `--no-renames` keeps both sides of a rename in the list, so a move out of
+    src/ cannot hide behind its destination name.
+    """
+    text = _git(["diff", "--name-only", "--no-renames", base, head], repo)
+    return [p for p in text.splitlines() if p.strip()]
+
+
+def git_tracks_at(path, ref, repo=REPO) -> bool:
+    """True when `path` (repo-relative) is tracked in commit `ref`."""
+    text = _git(["ls-tree", "-r", "--name-only", "--full-tree", ref, "--",
+                 path], repo)
+    return path in text.splitlines()
+
+
+def repo_relative(path, repo=REPO) -> str:
+    """The repo-relative POSIX path of `path`, or FreezeError if it is outside."""
+    root = Path(repo).resolve()
+    p = Path(path)
+    if not p.is_absolute():
+        p = Path.cwd() / p
+    p = p.resolve()
+    try:
+        return p.relative_to(root).as_posix()
+    except ValueError:
+        raise FreezeError("--ids-file %s is outside the repository %s"
+                          % (p, root)) from None
+
+
 def _porcelain_paths(porcelain_text):
-    """Paths named by `git status --porcelain` output, rename-aware."""
+    """Every path named by `git status --porcelain -z`.
+
+    The -z format is NUL-separated, so paths with spaces stay intact; for a
+    rename or copy the destination comes first and the source in the following
+    NUL field. Both sides are returned: a rename into eval/results/ still
+    deletes a tracked source, which must count as dirty (H1).
+    """
+    fields = porcelain_text.split("\0")
     paths = []
-    for line in porcelain_text.splitlines():
-        if not line.strip():
+    i = 0
+    while i < len(fields):
+        entry = fields[i]
+        i += 1
+        if not entry:
             continue
-        entry = line[3:] if len(line) > 3 else ""
-        if " -> " in entry:
-            entry = entry.split(" -> ", 1)[1]
-        entry = entry.strip().strip('"')
-        if entry:
-            paths.append(entry)
+        status = entry[:2]
+        path = entry[3:] if len(entry) > 3 else ""
+        if path:
+            paths.append(path)
+        if "R" in status or "C" in status:
+            if i < len(fields) and fields[i]:
+                paths.append(fields[i])
+            i += 1
     return paths
 
 
@@ -237,32 +321,67 @@ def git_dirty_paths(repo=REPO, ignore_prefixes=DIRTY_IGNORE_PREFIXES):
     sidecars, result JSONs); its contents are generated during the run, so it
     is the only prefix excluded from the clean-tree requirement (B5).
     """
-    text = _git(["status", "--porcelain", "--untracked-files=all"], repo)
+    text = _git(["status", "--porcelain", "-z", "--untracked-files=all"], repo)
     return [p for p in _porcelain_paths(text)
             if not p.startswith(tuple(ignore_prefixes))]
 
 
-def assert_frozen_checkout(config, repo=REPO) -> str:
-    """Fail closed unless HEAD is the frozen commit and the tree is clean.
+def _diff_allowed(path, ids_rel):
+    """Only the ids config and docs/reports notes may differ from the freeze."""
+    if path == ids_rel:
+        return True
+    return path.endswith(".md") and path.startswith(ALLOWED_DIFF_MD_PREFIXES)
 
-    A brain compiled from other code must never be stamped as frozen: the
-    sidecar records the commit that actually ran, and every later run reuses
-    that brain only because this preflight proved the two agree (P8.8).
-    Returns the observed HEAD, which is what the sidecars must record.
+
+def assert_frozen_checkout(config, ids_file, repo=REPO):
+    """Fail closed unless the code being run is the frozen code (B5, P8.8/R1).
+
+    A brain compiled from other code must never be stamped as frozen. The
+    config cannot name its own commit — it is committed after the code it
+    freezes — so the rule is: clean tree, `frozen_code_sha` a full commit sha
+    that is an ancestor of HEAD, the diff from it to HEAD limited to the
+    tracked ids config (plus docs/reports .md), and the ids file tracked at
+    HEAD. That proves the code tree is identical to the frozen commit.
+
+    Returns {"code_sha": <verified frozen sha>, "run_head_sha": <HEAD>}; the
+    sidecars record both.
     """
     head = git_head(repo)
     frozen = config["frozen_code_sha"]
-    if head != frozen:
+    if not isinstance(frozen, str) or len(frozen) != 40 \
+            or any(c not in "0123456789abcdef" for c in frozen.lower()):
         raise FreezeError(
-            "HEAD is %s but the config freezes %s: this checkout is not the "
-            "frozen code, so nothing it compiles may be stamped as frozen"
-            % (head, frozen))
+            "frozen_code_sha %r is not a full 40-hex commit sha: record the "
+            "full sha of the pre-work commit (B5)" % (frozen,))
+    resolved = git_commit_sha(frozen, repo)
+    if resolved != frozen.lower():
+        raise FreezeError(
+            "frozen_code_sha %r resolves to %s: record the full 40-hex sha "
+            "of the pre-work commit (B5)" % (frozen, resolved))
+    ids_rel = repo_relative(ids_file, repo)
+    if not git_tracks_at(ids_rel, head, repo):
+        raise FreezeError(
+            "--ids-file %s is not tracked at HEAD %s: the ids config must be "
+            "committed before the run (B5)" % (ids_rel, head))
+    if head != frozen and not git_is_ancestor(frozen, head, repo):
+        raise FreezeError(
+            "HEAD is %s but the config freezes %s, which is not an ancestor of "
+            "HEAD: this checkout is not the frozen code, so nothing it "
+            "compiles may be stamped as frozen" % (head, frozen))
+    changed = git_diff_paths(frozen, head, repo)
+    offending = [p for p in changed if not _diff_allowed(p, ids_rel)]
+    if offending:
+        raise FreezeError(
+            "the code changed between the frozen commit %s and HEAD %s "
+            "(%d path(s), first: %s): only %s may differ, so the code that "
+            "runs is not the frozen code"
+            % (frozen, head, len(offending), offending[0], ids_rel))
     dirty = git_dirty_paths(repo)
     if dirty:
         raise FreezeError(
             "tree is dirty (%d path(s), first: %s): the code that runs is not "
             "the frozen commit" % (len(dirty), dirty[0]))
-    return head
+    return {"code_sha": frozen, "run_head_sha": head}
 
 
 def check_resume_compatible(prev, config_sha256, code_sha, budget):
@@ -311,9 +430,9 @@ def check_sidecar(db_path, frozen_code_sha, config_sha256, dataset_sha256,
         return False, "sidecar-mismatch", None
     if not isinstance(meta, dict):
         return False, "sidecar-mismatch", None
-    required = ("question_id", "code_sha", "config_sha256", "dataset_sha256",
-                "compile_started_utc", "compile_finished_utc", "captures",
-                "facts", "db_sha256")
+    required = ("question_id", "code_sha", "run_head_sha", "config_sha256",
+                "dataset_sha256", "compile_started_utc", "compile_finished_utc",
+                "captures", "facts", "db_sha256")
     if any(k not in meta for k in required):
         return False, "sidecar-mismatch", None
     if current_sha is None:
@@ -327,10 +446,16 @@ def check_sidecar(db_path, frozen_code_sha, config_sha256, dataset_sha256,
     return True, "sidecar-ok", meta
 
 
-def write_sidecar(db_path, *, question_id, code_sha, config_sha256,
-                  dataset_sha256, summary, started_utc, db_sha256=None):
+def write_sidecar(db_path, *, question_id, code_sha, run_head_sha,
+                  config_sha256, dataset_sha256, summary, started_utc,
+                  db_sha256=None):
     """Write the pristine brain's provenance sidecar (P8.8). The harness owns
     it; it is never repaired by hand.
+
+    `code_sha` is the frozen commit the preflight verified the code tree
+    against; `run_head_sha` is the commit that actually ran. Both are recorded,
+    and the reuse rule keys on `code_sha` because the preflight proved the code
+    is identical to it.
 
     `db_sha256` must be the CHECKPOINTED hash (see `checkpointed_sha`). Hashing
     the file directly misses committed writes still in the WAL, so the sidecar
@@ -341,6 +466,7 @@ def write_sidecar(db_path, *, question_id, code_sha, config_sha256,
     meta = {
         "question_id": question_id,
         "code_sha": code_sha,
+        "run_head_sha": run_head_sha,
         "config_sha256": config_sha256,
         "dataset_sha256": dataset_sha256,
         "compile_started_utc": started_utc,
@@ -374,6 +500,7 @@ def check_consolidated_sidecar(cons_path, pristine_sha, frozen_code_sha,
     if current_sha is None:
         current_sha = _canonical_sha(cons_path)
     if (meta.get("code_sha") != frozen_code_sha
+            or not meta.get("run_head_sha")
             or meta.get("config_sha256") != config_sha256
             or meta.get("source_db_sha256") != pristine_sha
             or meta.get("db_sha256") != current_sha):
@@ -382,13 +509,14 @@ def check_consolidated_sidecar(cons_path, pristine_sha, frozen_code_sha,
 
 
 def write_consolidated_sidecar(cons_path, *, question_id, code_sha,
-                               config_sha256, source_db_sha256,
+                               run_head_sha, config_sha256, source_db_sha256,
                                max_mutation_rate, counts, db_sha256=None):
     """Sidecar for the consolidated copy: the pristine hash it was derived
     from, the rate used, the returned counts, and its own db hash (P8.8)."""
     meta = {
         "question_id": question_id,
         "code_sha": code_sha,
+        "run_head_sha": run_head_sha,
         "config_sha256": config_sha256,
         "source_db_sha256": source_db_sha256,
         "max_mutation_rate": max_mutation_rate,
@@ -482,13 +610,14 @@ def _binom(n, k):
 
 # ----------------------------------------------------------------- the brains
 
-def _open_pristine(question, db_path, client, budget, code_sha, config_sha,
-                   dataset_sha):
+def _open_pristine(question, db_path, client, budget, code_sha, run_head_sha,
+                   config_sha, dataset_sha):
     """Open (or compile) the pristine brain under the fail-closed sidecar rule
     (P8.1, P8.8). Returns (conn, brain_id, compile_stats, reused, reason, sha).
 
-    `code_sha` is the HEAD main() verified as the frozen commit; the sidecar
-    records it as the provenance of whatever brain this function compiles.
+    `code_sha` is the frozen commit main() verified the code tree against;
+    `run_head_sha` is the HEAD it observed. The sidecar records both, so the
+    provenance of whatever brain this function compiles is inspectable.
 
     On reuse the brain is opened, its embedding cache warmed and its file
     re-hashed; if the hash no longer matches the sidecar (only possible when
@@ -521,6 +650,7 @@ def _open_pristine(question, db_path, client, budget, code_sha, config_sha,
     warm_embedding_cache(conn, brain_id, question, budget)
     sha = checkpointed_sha(conn, db_path)
     write_sidecar(db_path, question_id=qid, code_sha=code_sha,
+                  run_head_sha=run_head_sha,
                   config_sha256=config_sha, dataset_sha256=dataset_sha,
                   summary=summary, started_utc=started, db_sha256=sha)
     comp = {"captures": summary["captures"],
@@ -530,7 +660,7 @@ def _open_pristine(question, db_path, client, budget, code_sha, config_sha,
 
 
 def _open_consolidated(db_path, cons_path, question, budget, pristine_sha,
-                       code_sha, config_sha, rate):
+                       code_sha, run_head_sha, config_sha, rate):
     """Open (or rebuild) the consolidated copy (P8.2, P8.8). The nightly pass
     runs on the backup copy, never on the original. Returns
     (conn, brain_id, counts, reused)."""
@@ -555,6 +685,7 @@ def _open_consolidated(db_path, cons_path, question, budget, pristine_sha,
     warm_embedding_cache(conn, brain_id, question, budget)
     cons_sha = checkpointed_sha(conn, cons_path)
     write_consolidated_sidecar(cons_path, question_id=qid, code_sha=code_sha,
+                               run_head_sha=run_head_sha,
                                config_sha256=config_sha,
                                source_db_sha256=pristine_sha,
                                db_sha256=cons_sha,
@@ -574,20 +705,24 @@ def run_one(question, budget, client, config, start_label=None):
     """
     qid = question["question_id"]
     db_path = KU_DB_DIR / ("%s.db" % qid)
-    # The sidecar records the commit main() observed and verified, never the
-    # config's claim about it (P8.8/R1): a brain compiled from other code must
-    # not be stamped as frozen.
-    code_sha = config.get("_observed_head_sha")
-    if not code_sha:
+    # The sidecars record the frozen commit main() verified the code tree
+    # against, plus the HEAD it actually observed — never the config's claim
+    # about either (P8.8/R1): a brain compiled from other code must not be
+    # stamped as frozen.
+    code_sha = config.get("_observed_code_sha")
+    run_head_sha = config.get("_observed_run_head_sha")
+    if not code_sha or not run_head_sha:
         raise ValueError(
-            "%s: config has no _observed_head_sha; main() sets it from the "
-            "verified HEAD before any compile (P8.8)" % qid)
+            "%s: config has no _observed_code_sha/_observed_run_head_sha; "
+            "main() sets them from the verified preflight before any compile "
+            "(P8.8)" % qid)
     config_sha = config["_config_sha256"]
     dataset_sha = config["_dataset_sha256"]
     rate = config["max_mutation_rate"]
 
     conn, brain_id, comp, reused, reason, pristine_sha = _open_pristine(
-        question, db_path, client, budget, code_sha, config_sha, dataset_sha)
+        question, db_path, client, budget, code_sha, run_head_sha,
+        config_sha, dataset_sha)
 
     row = {
         "question_id": qid,
@@ -605,7 +740,7 @@ def run_one(question, budget, client, config, start_label=None):
     cons_path = consolidated_path(db_path)
     cons_conn, cons_brain, cons_counts, cons_reused = _open_consolidated(
         db_path, cons_path, question, budget, pristine_sha, code_sha,
-        config_sha, rate)
+        run_head_sha, config_sha, rate)
 
     # ---- P8.3: the pristine brain is asserted unconsolidated immediately
     # before arm (a) reads it. The check sits here, not before consolidation,
@@ -749,14 +884,19 @@ def main():
     budget = args.budget if args.budget is not None else cfg["budget_tokens"]
 
     # ---- B5/P8.8: fail closed before anything is compiled. Every brain this
-    # process writes is stamped with the HEAD observed here, and only reaches
-    # a later run through a sidecar that names it.
+    # process writes is stamped with the frozen commit the preflight verified
+    # the code tree against, plus the HEAD it observed; only a sidecar naming
+    # that frozen sha lets a later run reuse it.
     try:
-        head = assert_frozen_checkout(cfg)
+        provenance = assert_frozen_checkout(cfg, args.ids_file)
     except FreezeError as exc:
         raise SystemExit("freeze preflight failed: %s" % exc)
-    cfg["_observed_head_sha"] = head
-    print("frozen checkout verified: HEAD=%s clean tree" % head, flush=True)
+    code_sha = provenance["code_sha"]
+    run_head_sha = provenance["run_head_sha"]
+    cfg["_observed_code_sha"] = code_sha
+    cfg["_observed_run_head_sha"] = run_head_sha
+    print("frozen checkout verified: code=%s run_head=%s clean tree"
+          % (code_sha, run_head_sha), flush=True)
 
     out = Path(args.out) if args.out else RESULTS_DIR / (
         "ku-paired-b%d-%s.json" % (budget,
@@ -767,7 +907,8 @@ def main():
     if args.resume and out.exists():
         prev = json.load(open(out))
         try:
-            check_resume_compatible(prev, cfg["_config_sha256"], head, budget)
+            check_resume_compatible(prev, cfg["_config_sha256"], code_sha,
+                                    budget)
         except FreezeError as exc:
             raise SystemExit("%s (%s); rerun without --resume, or resume into "
                              "a file written under this config"
@@ -797,7 +938,8 @@ def main():
         # Write after every question so an interrupted run can be resumed
         # rather than paying for the compile of a 48-session haystack twice.
         json.dump({"config_sha256": cfg["_config_sha256"],
-                   "frozen_code_sha": head,
+                   "frozen_code_sha": code_sha,
+                   "run_head_sha": run_head_sha,
                    "budget_tokens": budget,
                    "max_mutation_rate": cfg["max_mutation_rate"],
                    "aggregate": aggregate(rows), "rows": rows,
@@ -807,7 +949,8 @@ def main():
 
     agg = aggregate(rows)
     json.dump({"config_sha256": cfg["_config_sha256"],
-               "frozen_code_sha": head,
+               "frozen_code_sha": code_sha,
+               "run_head_sha": run_head_sha,
                "budget_tokens": budget,
                "max_mutation_rate": cfg["max_mutation_rate"],
                "aggregate": agg, "rows": rows, "partial": False,

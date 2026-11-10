@@ -224,11 +224,15 @@ a brain compiled by other code. Two blocking findings, both fixed here, plus the
 in the same change. Part B still has not run.
 
 - **R1 — provenance now comes from the code that runs.** `main()` runs a freeze preflight before it
-  compiles anything: `git rev-parse HEAD` must equal the config's `frozen_code_sha` **and**
-  `git status --porcelain` must be empty, with `eval/results/` the only ignored prefix. A mismatch
-  exits before any `run_one`, so no brain and no sidecar is written. The sidecars (pristine and
-  consolidated) and the results JSON record the HEAD that preflight observed, not the config value;
-  `run_one` refuses to stamp provenance when no observed HEAD is set.
+  compiles anything. A commit cannot contain its own sha, so the config is necessarily committed
+  *after* the code it freezes; the preflight proves the code tree instead of sha equality: the tree
+  must be clean (`eval/results/` the only ignored prefix), the config's `frozen_code_sha` must be a
+  full commit sha that is an ancestor of HEAD, the diff from it to HEAD may touch only the tracked
+  `--ids-file` (plus `docs/`/`reports/` `.md` notes), and `src/`, `eval/**/*.py` and `tests/` may
+  never differ. Anything else exits before any `run_one`, so no brain and no sidecar is written. The
+  sidecars (pristine and consolidated) and the results JSON record the verified frozen sha as
+  `code_sha` plus the `run_head_sha` that actually ran; `run_one` refuses to stamp provenance
+  without both.
 - **R5b — `--resume` is refused across runs.** A prior results file is accepted only when its
   `config_sha256`, `frozen_code_sha` and `budget_tokens` all match; otherwise `main()` exits without
   re-stamping the file with the current values.
@@ -237,14 +241,27 @@ in the same change. Part B still has not run.
   them. `aggregate()` reports `policy_halts`: a halted question answers (b) from a rolled-back copy
   identical to (a), so it contributes a guaranteed tie to `b_vs_a` and that count has to travel with
   the number.
+- **Review 9 (B1, H1).** Tes showed that the first version of the preflight — `HEAD ==
+  frozen_code_sha` — refused every config committed per B5, so Part B could never run: the config
+  commit changes HEAD after the freeze. The rule is now the ancestor + diff-whitelist one above, and
+  the sidecar's `code_sha` is the verified frozen sha with the run HEAD recorded separately. H1 is
+  fixed too: `git status` is read as `--porcelain -z` and both sides of a rename are checked, so a
+  staged `git mv src/... eval/results/...` no longer hides the deleted source behind the ignored
+  destination.
 
-Suite: **205 passed** locally (193 + 12 new: the porcelain filter, HEAD/clean-tree refusals with no
-brain or sidecar written, observed-HEAD stamping end to end, `run_one` refusing a config without an
-observed HEAD, resume refusal on each of the three keys, resume accepted on a matching file, the
-consolidation-write abort with zero judge calls, and the `policy_halts` count). The freeze preflight
-was also exercised against the real repository: a dirty tree and a foreign `frozen_code_sha` are both
-refused.
+Suite: **215 passed** locally (193 + 22 new in this round: the -z porcelain filter with both rename
+sides, real-git tmp-repo preflight cases — the accepted B5 shape, a later code change, a non-ancestor
+frozen sha, an uncommitted config, a modified config, a short sha, the staged rename into
+`eval/results/`, an allowed report note — the dirty-tree refusal with no brain or sidecar written,
+verified-frozen-sha plus run-HEAD stamping end to end, `run_one` refusing a config without provenance,
+resume refusal on each of the three keys, resume accepted on a matching file, the consolidation-write
+abort with zero judge calls, and the `policy_halts` count). The preflight was also exercised against
+a clone of this repository: the accepted B5 shape (code commit, then a config naming it) passes, and
+a dirty tree, a later code change, a non-ancestor sha, an uncommitted config, a short sha and the
+`src/ -> eval/results/` rename are all refused.
 
 **Still to do before Part B:** write and commit `eval/longmemeval/ku-phase17-config.json` (B5) with
-`frozen_code_sha` set to the HEAD of that commit — the preflight makes a config that does not name the
-running commit a hard stop rather than a warning.
+`frozen_code_sha` set to the full sha of the pre-work code commit — the commit *before* the one that
+adds the config. The preflight accepts that shape because the only difference between the frozen
+commit and HEAD is the config itself; a config naming its own commit is impossible, and a config
+naming anything else is a hard stop rather than a warning.
