@@ -291,6 +291,30 @@ def _citation(fact):
                                          fact["span_end"])
 
 
+def _stamp_day(stamp):
+    """The calendar day of a capture stamp, or None when it cannot be parsed."""
+    if not stamp:
+        return None
+    dt = store.parse_timestamp(stamp)
+    if dt is not None:
+        return dt.date().isoformat()
+    m = re.match(r"(\d{4}-\d{2}-\d{2})", stamp)
+    return m.group(1) if m else None
+
+
+def _dated_citation(fact, stamp):
+    """Citation with the capture's calendar date attached.
+
+    Phase 16: the brief is the answerer's only source of time. Without a date on
+    the record, a claim recorded as "I moved last month" can only be echoed as
+    "last month", which is why relative-date answers were the single largest
+    source of wrong temporal answers. The base citation is unchanged, so existing
+    citation assertions still hold; the date rides alongside it."""
+    base = _citation(fact)
+    day = _stamp_day(stamp)
+    return "%s (captured %s)" % (base, day) if day else base
+
+
 # Phase 6: questions that need facts combined rather than a single lookup. Two
 # signals: multiple entity-like capitalised names, or an interrogative asking
 # what/which + does/has/did + a named person (cross-fact aggregation).
@@ -606,13 +630,18 @@ def select_facts(conn, brain_id, question, budget_tokens):
     # part of the rendered block, so it counts against the budget too.
     selected = []
     per_page = {}
+    stamps = _capture_stamps(conn)
     est = _token_estimate("### Records\n")
     for score, f in winners:
         page = pages.get(f["page_id"])
         named = bool(page and set(_content_tokens(page["title"])) & q_tokens)
         if not named and per_page.get(f["page_id"], 0) >= 3:
             continue
-        cost = _token_estimate("- %s %s\n" % (f["text"], _citation(f)))
+        # Phase 16: the rendered line carries the capture date, so the budget
+        # estimate must include it — otherwise a brief can exceed its budget by
+        # the dates alone.
+        cost = _token_estimate("- %s %s\n" % (
+            f["text"], _dated_citation(f, stamps.get(f["capture_id"]))))
         if selected and est + cost > budget_tokens:
             continue
         selected.append(f)
@@ -718,17 +747,27 @@ def build_brief(conn, brain_id, question, budget_tokens=4000, category=None):
     plain dicts ({id, text, quote, status, capture_id, page_id}).
     """
     pages = _page_texts(conn, brain_id)
-    stable = "\n".join("## %s (%s)" % (p["title"], p["path"]) for p in pages)
+    # Phase 16: the time rule is constant and question-independent, so it belongs
+    # in the prefix-stable system message (P9) rather than the volatile block — it
+    # then costs nothing against the fact budget and stays cacheable.
+    stable = ("\n".join("## %s (%s)" % (p["title"], p["path"]) for p in pages)
+              + "\n\n### How to read this brief\n"
+              "- Each record shows the date its source was captured. When a record "
+              "says a time relative to its capture (\"last month\", \"yesterday\", "
+              "\"next week\"), convert it to the absolute calendar date before "
+              "answering.")
 
     selected = select_facts(conn, brain_id, question, budget_tokens)
     if selected:
+        stamps = _capture_stamps(conn)
         lines = ["### Records"]
         for f in selected:
-            lines.append("- %s %s" % (f["text"], _citation(f)))
+            lines.append("- %s %s" % (f["text"],
+                                      _dated_citation(f, stamps.get(f["capture_id"]))))
         # Phase 15 (N3): when two selected records on the same page disagree
         # on a slot value, say so in the brief text — the flag must be visible
         # to a reader of the brief, not only in the change_events log.
-        lines.extend(_contradiction_notes(selected, _capture_stamps(conn)))
+        lines.extend(_contradiction_notes(selected, stamps))
         if _looks_multi_hop(question):
             # Phase 6: quotes carry the surrounding detail the compiled claim
             # abstracts away; multi-hop questions need it to combine facts.

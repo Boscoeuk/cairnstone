@@ -89,10 +89,38 @@ from that span at write time and a fact whose quote cannot be located in its cap
 rejected, not guessed at. `cairnstone history` shows the chain for any fact; `cairnstone brief` and
 the Markdown export print it under every claim.
 
+## What it is good at — and what it is not
+
+Cairnstone's value is **not** that it answers better than retrieval. Every measurement so far says it
+does not: on LoCoMo it is level with full context outside temporal questions (63/89 vs 60/89), on
+LongMemEval S it is level with keyword retrieval (13/20 vs 12/20, exact McNemar p = 1.0), and on a
+20-question dogfood transcript the difference is not significant. If you want the best possible
+answer, a big context window or a good RAG pipeline will match it.
+
+What it gives you that those do not:
+
+1. **Every claim is traceable to its exact source.** A fact is written with the character span of the
+   quote that supports it, and a fact whose quote cannot be located in its capture is rejected rather
+   than guessed at. An independent review checked the invariant on real data and found 1,640 of 1,640
+   facts had a quote equal to the cited span. You can audit a claim, not just read it.
+2. **It reaches comparable accuracy at a fraction of the context.** 1,276 mean context tokens against
+   13,278 for full context on LoCoMo; on LongMemEval S, 2,760 prompt tokens against keyword's 8,097
+   (34%) and full context's 104,949 (2.6%).
+3. **It runs entirely locally**, with no cloud fallback and no embedding service required — search and
+   briefs degrade to lexical when the embedding sidecar is absent.
+4. **It keeps history instead of overwriting it.** Facts are superseded, never deleted; duplicates are
+   linked as corroboration; and a model-free consolidation pass runs nightly to resolve what it can
+   and flag what it cannot.
+
+And what it is **not** good at: commonsense questions needing inference beyond the recorded claims
+(63.6% against 72.7% for full context), single-hop questions, where it trails slightly (73.7% vs
+76.3%), and knowledge-update questions, where every backend tested scored 1 of 3. Those are stated
+here rather than buried, because the honest claim is auditability and cost, not superiority.
+
 ## Measured results
 
-150 LoCoMo questions across 2 conversations. The table and the figures in this section were measured
-on 2026-11-06 on pre-phase-13 code (result
+The table below is evidence for the claims above, not a leaderboard position. 150 LoCoMo questions
+across 2 conversations, measured on 2026-11-06 on pre-phase-13 code (result
 `eval/results/2026-11-06-cairnstone-b600-ps75-s2-q150-130032Z.json`). A like-for-like re-measure of
 the cairnstone row on 2026-11-07 at commit `fe71ff1` (phase 16) scored 76.7% (115/150), 1,275 mean
 context tokens and 2.79 s median latency: a change within noise (12 questions lost, 10 gained,
