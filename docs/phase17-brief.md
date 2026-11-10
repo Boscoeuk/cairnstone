@@ -1,11 +1,23 @@
 # Phase 17 brief — consolidation knowledge-update test
 
-Written by Polly, 2026-11-10 (rev 3, after Tes review round 2 at `a068e4b`; rev 2 followed round 1 at
-`fdfb816`). Tes reviews this
+Written by Polly, 2026-11-10 (rev 4, after Tes review round 3 at `b08e3a5`; rev 3 followed round 2 at
+`a068e4b`, rev 2 round 1 at `fdfb816`). Tes reviews this
 **before any run** and re-checks the result before it is called accepted. No measurement run has
 been made: the only executions of this code path are one 1-question smoke (`71315a70`) and a stray
 20-question run stopped at question 1 before any answer was judged. Neither is a result; both are
 excluded from the question set and quarantined (§P8.9).
+
+**Revision 4 (this version) — round-3 change, one item, no design change:** the date-only column in
+`eval/longmemeval/p17_recall_check.py` was broken. `DAY_FMT = "%Y/%m/%d"` was passed the full haystack
+string `2023/04/23 (Sun) 08:57`, so `strptime` raised `unconverted data remains`, `parse()` returned
+`None` for **every** session, and the "date-only" rule silently degenerated to score order — i.e. (c)'s
+top 3, which is why rev 3's table read 68 at every k. The script now parses the date prefix
+(`str(date)[:10]`) and **asserts** that every haystack date parses under both rules (3,513 of 3,513
+today), so an all-`None` regression fails loudly instead of producing a plausible table. Consequences
+corrected in this revision: the differing-keep-set figure at k=4 is **6 of 74, not 59** (§B2, this note,
+appendix), the date-only column is 67/63/60/57/48 for k=4/5/6/8/10, and the "why it differs from rev 2"
+paragraph now says the difference was this bug, not an unstated tie-break. The pre-registered
+full-timestamp rule, k=4, the arms, the ids, the criterion and the gates are unchanged.
 
 Two parts, in this order:
 
@@ -37,7 +49,7 @@ re-litigate them. The defects and the measurements behind them are Tes's, in `re
    tie-break score descending then session index; unparseable last. The recall table is regenerated
    under that rule by committed `eval/longmemeval/p17_recall_check.py` and pasted with its output.
    26 of the 74 questions have a same-day tie inside the relevance top 4, and at k=4 the full-timestamp
-   and date-only rules keep a **different** set on **59 of 74** questions — so the parse rule is part
+   and date-only rules keep a **different** set on **6 of 74** questions — so the parse rule is part
    of the pre-registration, not a detail.
 
 **Revision 2 — round-1 changes (retained):** arm (d) redefined as
@@ -313,47 +325,52 @@ only **36/74** questions (against 71/74 for (c)), so beating it would have prove
 
 **Date granularity is pre-registered as the full timestamp, and it is load-bearing.** The haystack
 dates carry times (`2023/04/23 (Sun) 08:57`). 26 of the 74 questions have a same-day tie inside the
-relevance top 4, and at k=4 the full-timestamp rule and a date-only rule keep a **different set on 59
+relevance top 4, and at k=4 the full-timestamp rule and a date-only rule keep a **different set on 6
 of 74** questions. The parse format is therefore frozen in the config (§B5), not left to the
 implementation. Recall under the pre-registered rule, computed by committed
-`eval/longmemeval/p17_recall_check.py` (dataset-only, no model calls, no brains; run 2026-11-10):
+`eval/longmemeval/p17_recall_check.py` (dataset-only, no model calls, no brains; run 2026-11-10 after
+the rev-4 parse fix):
 
 ```
 $ PYTHONPATH=src:. .venv/bin/python eval/longmemeval/p17_recall_check.py
+dates_total 3513 parsed_full 3513 parsed_day 3513
 eligible_n 74
 sessions_per_q mean 47.5 min 39 max 55
 sessions_with_overlap mean 28.4 min 7
 answer_sessions_per_q set [2]
 unparsed_full_timestamp 0
 questions_with_same_day_tie_in_top4 26
-questions_where_full_and_day_k4_keep_differ 59
+questions_where_full_and_day_k4_keep_differ 6
 c_top3_any_answer 71/74 latest 68/74
 k  full_any full_latest day_any day_latest
 3  71       68          71      68
-4  67       67          71      68
-5  61       61          71      68
-6  60       60          71      68
-8  54       54          71      68
-10 45       45          71      68
+4  67       67          67      67
+5  61       61          63      63
+6  60       60          60      60
+8  54       54          57      57
+10 45       45          48      48
 ```
 
 | (d) candidate set | **pre-registered: full timestamp** — latest answer session kept | pre-registered: any answer session kept | date-only variant (NOT used) — latest kept |
 |---|---|---|---|
 | k=3 (same set as (c), reordered) | 68/74 | 71/74 | 68/74 |
-| **k=4 (pre-registered)** | **67/74** | **67/74** | 68/74 |
-| k=5 | 61/74 | 61/74 | 68/74 |
-| k=6 | 60/74 | 60/74 | 68/74 |
-| k=8 | 54/74 | 54/74 | 68/74 |
-| k=10 | 45/74 | 45/74 | 68/74 |
+| **k=4 (pre-registered)** | **67/74** | **67/74** | 67/74 |
+| k=5 | 61/74 | 61/74 | 63/74 |
+| k=6 | 60/74 | 60/74 | 60/74 |
+| k=8 | 54/74 | 54/74 | 57/74 |
+| k=10 | 45/74 | 45/74 | 48/74 |
 | (c) top-3 by score, for reference | 68/74 | 71/74 | — |
 | (d) as originally written (all overlap>0, newest 3) | 36/74 | — | — |
 
-**Why the date-only column differs from the rev-2 table.** Rev 2 quoted 67 (k=4), 63 (k=5), 60 (k=6),
-57 (k=8), 47 (k=10) from Tes's `p17_dcheck.py`, which parsed dates but did not state how same-day ties
-were broken — and 26 of the 74 questions have such a tie. The committed script fixes the tie-break
-(score descending) and gets 68 for every k≥3 on the date-only rule, because the newest three days then
-almost always carry an answer session. That ambiguity is the reason the full timestamp is now pinned:
-one rule, one table, no tie-break left to choice.
+**Why the date-only column changed from rev 3 — it was a bug in the script, not a tie-break choice.**
+Rev 3 printed 68 for every k≥3 because `DAY_FMT = "%Y/%m/%d"` was handed the full timestamp
+`"2023/04/23 (Sun) 08:57"`; `strptime` raised `unconverted data remains`, `parse()` returned `None` for
+all 3,513 sessions, and the sort fell back to the score order already in `scored`, i.e. (c)'s top 3.
+Rev 4 parses the date prefix instead, and the script now asserts that every date parses under both
+rules, so this cannot recur silently. Rev 2's date-only numbers (67/63/60/57/47) were therefore
+essentially right; the fixed script gives 67/63/60/57/48. The pre-registered rule stays the full
+timestamp: it is the format the haystack actually carries, 26 questions have same-day ties in the top
+4, and 6 of 74 questions keep a different set at k=4 — a real but smaller effect than rev 3 claimed.
 
 **k = 4 is pre-registered** rather than 3, because at k=3 (d) shares (c)'s candidate set exactly and
 differs only in ordering — a contrast too weak to mean anything in the other direction. At k=4 one
@@ -654,7 +671,7 @@ change is doing something else.
 | literal 74 ids and the 20 pilot ids | produced by committed `eval/longmemeval/p17_ids.py` (dataset-only); reproduced 2026-11-10 |
 | (d) as originally written keeps an answer session in the top 3 on 36/74; (c) on 71/74 (any answer session) / 68/74 (latest); pre-registered full-timestamp k=4 gives 67/74 latest, k=3 68/74, k=5 61/74, k=6 60/74, k=8 54/74, k=10 45/74 | measured 2026-11-10 by committed `eval/longmemeval/p17_recall_check.py` (`.venv/bin/python`, dataset-only, no model calls); output pasted in §B2 |
 | 47.5 sessions/question, 28.4 with overlap>0 (min 7), 0 unparsed full timestamps, 2 answer sessions per question in all 74 | same committed script, same run |
-| 26 of 74 questions have a same-day tie inside the relevance top 4; at k=4 the full-timestamp and date-only rules keep a different set on 59/74 | same committed script |
+| 26 of 74 questions have a same-day tie inside the relevance top 4; at k=4 the full-timestamp and date-only rules keep a different set on 6/74 (rev 3's 59/74 was a parse bug — `DAY_FMT` was passed the full timestamp and never parsed a single date; rev 4 fixes the parse and asserts 3,513/3,513 dates parse under both rules) | same committed script, re-run 2026-11-10 after the fix; output pasted in §B2 |
 | the stray pre-freeze `ku_paired` run (pid 45392) is stopped and wrote no JSON | verified 2026-11-10 16:29 by `ps -p 45392` (gone) and `ls eval/results/ku-paired-20q.json` (absent) |
 | all pre-freeze KU artifacts moved to `eval/results/ku-quarantine-20261110-pre-freeze/` with sha256s in `MANIFEST.md` | done and hashed 2026-11-10 16:30 (`shasum -a 256` output pasted into the manifest); `eval/results/ku-db/` is empty |
 | the quarantined smoke brain is complete: 228 captures, 388 facts, sha256 `b6560579…c92c3` | read with `sqlite3` after the run stopped |

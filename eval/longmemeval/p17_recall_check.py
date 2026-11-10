@@ -36,11 +36,32 @@ KS = [3, 4, 5, 6, 8, 10]
 EXCLUDED = {"08e075c7", "0f05491a", "2133c1b5_abs", "71315a70"}
 
 
-def parse(date: str, fmt: str):
+def parse_full(date: str):
+    """Parse the full haystack timestamp, e.g. \"2023/04/23 (Sun) 08:57\"."""
     try:
-        return datetime.strptime(date, fmt)
+        return datetime.strptime(date, FULL_FMT)
     except (ValueError, TypeError):
         return None
+
+
+def parse_day(date: str):
+    """Parse the date-only prefix of the same string. Slicing is required: the
+    haystack always carries a time, so strptime(date, DAY_FMT) would raise
+    \"unconverted data remains\" and silently return None for every session."""
+    try:
+        return datetime.strptime(str(date)[:10], DAY_FMT)
+    except (ValueError, TypeError):
+        return None
+
+
+def parse(date: str, fmt: str):
+    """Dispatch on the requested rule; never silently returns None for a
+    well-formed haystack date."""
+    if fmt == FULL_FMT:
+        return parse_full(date)
+    if fmt == DAY_FMT:
+        return parse_day(date)
+    raise ValueError("unknown format %r" % (fmt,))
 
 
 def scored_sessions(question: dict):
@@ -91,8 +112,17 @@ def main() -> int:
     day = {k: {"any": 0, "latest": 0} for k in KS}
     c_any = 0
     c_latest = 0
+    parsed_full_dates = 0
+    parsed_day_dates = 0
+    total_dates = 0
 
     for q in eligible:
+        for date in q["haystack_dates"]:
+            total_dates += 1
+            if parse(date, FULL_FMT) is not None:
+                parsed_full_dates += 1
+            if parse(date, DAY_FMT) is not None:
+                parsed_day_dates += 1
         scored = scored_sessions(q)
         sessions_per_q.append(len(q["haystack_sessions"]))
         overlap_per_q.append(len(scored))
@@ -133,6 +163,12 @@ def main() -> int:
                 rule_disagrees += 1
 
     n = len(eligible)
+    # Guard: a silently all-None parse is exactly the bug this script had, so
+    # fail loudly instead of degenerating to score order.
+    assert parsed_full_dates == total_dates, (parsed_full_dates, total_dates)
+    assert parsed_day_dates == total_dates, (parsed_day_dates, total_dates)
+    print("dates_total %d parsed_full %d parsed_day %d" %
+          (total_dates, parsed_full_dates, parsed_day_dates))
     print("eligible_n %d" % n)
     print("sessions_per_q mean %.1f min %d max %d" %
           (sum(sessions_per_q) / n, min(sessions_per_q), max(sessions_per_q)))
