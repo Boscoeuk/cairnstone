@@ -216,3 +216,181 @@ def test_f1_same_page_genuine_contradiction_still_supersedes(db):
     assert _row(db[0], f1)["status"] == "superseded"
     assert _row(db[0], f1)["superseded_by"] == f2
     assert _row(db[0], f2)["status"] == "active"
+
+
+# ------------------------------------------------------- D1 (tes-review-5)
+
+# Same-page, older -> newer knowledge updates from Tes review 5 D1: at d9a4da7
+# eight of these twelve stopped superseding because F3b froze the count into
+# the slot key ("owns 15" and "owns 17" were different claims). A verb or
+# quantifier before a number is a VALUE context, not an identifier label.
+D1_COUNT_UPDATES = [
+    ("The user owns 15 Funko Pops", "The user owns 17 Funko Pops"),
+    ("The user has 3 cats", "The user has 4 cats"),
+    ("The user has read 12 books this year",
+     "The user has read 15 books this year"),
+    ("The user ran 5 km on Saturday", "The user ran 10 km on Saturday"),
+    ("The user's personal best 5K time is 25 minutes",
+     "The user's personal best 5K time is 23 minutes"),
+    ("The user has recorded over 30 bird species",
+     "The user has recorded over 45 bird species"),
+    ("The user practices guitar for at least 30 minutes every day",
+     "The user practices guitar for at least 45 minutes every day"),
+    ("The user has watched 12 episodes of The Crown",
+     "The user has watched 20 episodes of The Crown"),
+    ("The user's rent is 1200 per month",
+     "The user's rent is 1400 per month"),
+    ("The user completed 70% of the storyline",
+     "The user completed 90% of the storyline"),
+    ("The user's Instagram has 500 followers",
+     "The user's Instagram has 650 followers"),
+    ("The user saved 300 dollars for the trip",
+     "The user saved 450 dollars for the trip"),
+]
+
+
+@pytest.mark.parametrize("older,newer", D1_COUNT_UPDATES)
+def test_d1_count_update_after_a_verb_still_supersedes(db, older, newer):
+    """Tes review 5 D1: a count that follows a verb or a quantifier is a value,
+    so a later, different count must supersede it. At d9a4da7 the number was
+    frozen into the key and the update never resolved (8 of these 12 were
+    active together)."""
+    f1 = _fact(db, older, _capture(db, older, "2023-05-01T00:00:00+00:00"),
+               path="people/user", title="user")
+    f2 = _fact(db, newer, _capture(db, newer, "2023-08-01T00:00:00+00:00"),
+               path="people/user", title="user")
+    consolidate(db[0], db[1])
+    assert _row(db[0], f1)["status"] == "superseded"
+    assert _row(db[0], f1)["superseded_by"] == f2
+    assert _row(db[0], f2)["status"] == "active"
+
+
+def test_d1_verb_and_quantifier_labels_do_not_enter_the_key():
+    """Unit view: the numbers after a verb or quantifier are values, so the two
+    texts key identically; identifier labels still key apart."""
+    assert (comp._split_subject_slot("The user owns 15 Funko Pops")[0]
+            == comp._split_subject_slot("The user owns 17 Funko Pops")[0])
+    assert (comp._split_subject_slot("The user has read 12 books this year")[0]
+            == comp._split_subject_slot("The user has read 15 books this year")[0])
+    assert comp._split_subject_slot("The user ran 5 km")[1] == ("5",)
+    assert comp._split_subject_slot("The user has recorded over 30 bird species")[1] \
+        == ("30",)
+    # Identifier labels are unchanged: phase/conv/budget/attached digits stay
+    # part of the name, so those pairs keep distinct keys.
+    assert (comp._split_subject_slot("Phase 1 was accepted")[0]
+            != comp._split_subject_slot("Phase 2 was accepted")[0])
+    assert (comp._split_subject_slot("conv-26 baseline")[0]
+            != comp._split_subject_slot("conv-30 baseline")[0])
+    assert (comp._split_subject_slot("budget 600 run")[0]
+            != comp._split_subject_slot("budget 1200 run")[0])
+    assert (comp._split_subject_slot("b600 run")[0]
+            != comp._split_subject_slot("b1200 run")[0])
+    # A month/weekday is a value, not a label.
+    assert comp._split_subject_slot("Billing v2 ships Mar 31")[1] == ("mar", "31")
+
+
+# ----------------------------------------------------- D2/D3 (tes-review-5)
+
+# Same-page, older -> newer pairs where the later fact carries an INCIDENTAL
+# relationship word. At d9a4da7 the F4 subject cut put each of these on the
+# subject's bare relationship slot, so the later fact superseded a true status.
+D2_INCIDENTAL_PAIRS = [
+    ("The user is married",
+     "The user is working on new comedy material about online dating"),
+    ("The user is married",
+     "User has been using a single-action airbrush so far"),
+    ("The user is married",
+     "User is planning a themed dinner party and asked for ideas to keep "
+     "guests engaged"),
+    ("The user is single",
+     "The user bought a gift for her friend who is getting married"),
+    ("The user is single", "The user works with a colleague who is divorced"),
+    ("Caroline is married", "Caroline is planning to become a single parent"),
+    ("Caroline is married", "Caroline is thinking about becoming a single parent"),
+    ("Caroline is married", "Caroline is becoming a single parent"),
+    ("Caroline is married", "Caroline plans to become a single parent"),
+    ("Caroline is married", "Caroline wants to adopt as a single parent"),
+]
+
+
+@pytest.mark.parametrize("status,incidental", D2_INCIDENTAL_PAIRS)
+def test_d2_incidental_category_word_does_not_supersede_status(db, status,
+                                                               incidental):
+    """Tes review 5 D2: only a main-clause predicate forms the relationship
+    slot. A relative clause, a prepositional phrase or a noun modifier must not
+    retire the subject's true status."""
+    path = "people/caroline" if status.startswith("Caroline") else "people/user"
+    title = "Caroline" if status.startswith("Caroline") else "user"
+    f1 = _fact(db, status, _capture(db, status, "2023-05-01T00:00:00+00:00"),
+               path=path, title=title)
+    f2 = _fact(db, incidental,
+               _capture(db, incidental, "2023-08-01T00:00:00+00:00"),
+               path=path, title=title)
+    result = consolidate(db[0], db[1])
+    assert _row(db[0], f1)["status"] == "active"
+    assert _row(db[0], f2)["status"] == "active"
+    assert _row(db[0], f1)["superseded_by"] is None
+    assert result["superseded"] == 0, result
+    assert result["flagged"] == 0, result
+
+
+def test_d2_relationship_slot_requires_a_main_clause_predicate():
+    """Unit view of the D2 predicate rule: accepted shapes form the slot,
+    incidental shapes form none."""
+    assert comp._relationship_status_slot("Caroline is married") == \
+        ("caroline", "married")
+    assert comp._relationship_status_slot("Caroline got married in May 2023") == \
+        ("caroline", "married")
+    assert comp._relationship_status_slot("Caroline is now dating someone") == \
+        ("caroline", "dating")
+    assert comp._relationship_status_slot("Caroline is happily married") == \
+        ("caroline", "married")
+    assert comp._relationship_status_slot("The user got married recently") == \
+        ("the user", "married")
+    assert comp._relationship_status_slot(
+        "Caroline has been married for five years") == ("caroline", "married")
+    assert comp._relationship_status_slot(
+        "The user has been single since 2020") == ("the user", "single")
+    assert comp._relationship_status_slot(
+        "Pocahontas married John Rolfe in 1614") == ("pocahontas", "married")
+    assert comp._relationship_status_slot(
+        "Caroline met her husband through work and is married") == \
+        ("caroline", "married")
+    # Rejected: relative clauses, prepositional phrases, noun modifiers, plans.
+    for text in (
+        "The user is working on new comedy material about online dating",
+        "User has been using a single-action airbrush so far",
+        "User is planning a themed dinner party to keep guests engaged",
+        "The user bought a gift for her friend who is getting married",
+        "The user works with a colleague who is divorced",
+        "Caroline is planning to become a single parent",
+        "Caroline is becoming a single parent",
+        "Caroline is getting married",
+        "Caroline wants to adopt as a single parent",
+        "Kikuchi-san and Fumiya Tomozaki started dating after the festival",
+        "User reflected on their dating history",
+        "The user is happy that her sister is married",
+    ):
+        assert comp._relationship_status_slot(text) is None, text
+
+
+def test_d3_caroline_residual_is_not_a_supersession_with_later_stamps(db):
+    """Tes review 5 D3: the documented Caroline residual is a SUPERSESSION, not
+    just a flag, once the timestamps differ. In the dogfood DB the two captures
+    share a date, so only a flag showed up. With a later stamp on "becoming a
+    single parent" the true status must stay active."""
+    t1 = "Caroline is married"
+    t2 = "Caroline is becoming a single parent"
+    f1 = _fact(db, t1, _capture(db, t1, "2023-05-01T00:00:00+00:00"))
+    f2 = _fact(db, t2, _capture(db, t2, "2023-08-01T00:00:00+00:00"))
+    consolidate(db[0], db[1])
+    assert _row(db[0], f1)["status"] == "active"
+    assert _row(db[0], f2)["status"] == "active"
+    assert _row(db[0], f1)["superseded_by"] is None
+    assert _flags(db[0]) == 0
+    # The transition is not a relationship claim at all.
+    assert ("cat:relationship_status:caroline", "single") not in \
+        comp._fact_slots(t2)
+    assert ("cat:relationship_status:caroline", "married") in \
+        comp._fact_slots(t1)
+

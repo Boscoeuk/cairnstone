@@ -50,14 +50,19 @@ review and neither is superseded — ambiguity is recorded, not resolved by coin
 
 **Scope of the comparison (phase 17, F1):** the scan compares facts **within one page**. A fact on
 page A cannot supersede or flag a fact on page B. This is deliberate: a brain-wide scan at `fe71ff1`
-paired 20 of 43 new supersessions/flags across pages, including plainly wrong pairs such as
-`projects/alpha` "first CI run failed" being superseded by a `projects/beta` fact. Restoring page
-scope removed those false pairs but also loses genuine cross-page contradictions. **Known
-limitation:** the same entity can be split across pages (`misc/user` and `people/user`), so a real
-contradiction between those pages is neither superseded nor flagged. Measured example: in
-`eval/results/lme-db/08e075c7.db` the Fitbit tenure facts sit on `misc/user` ("6 months as of
-2023-06-18") and `people/user` ("9 months as of 2023-09-02"); they stay active together. Keying on
-entity rather than page is the fix, and is out of scope for phase 17.
+paired 20 of 43 new supersessions/flags across pages, including plainly wrong pairs. Restoring page
+scope removed those false pairs but also loses genuine cross-page contradictions. Measured on the
+27-database probe corpus, 3 genuine supersessions are lost and 2 of them are cross-page: the Dear
+Evan Hansen "since December 2022 -> since 2022-12-01" pair in
+`eval/results/lme-db/gpt4_76048e76.db`, and the Fitbit tenure pair in
+`eval/results/lme-db/08e075c7.db` whose facts sit on `misc/user` and `people/user`. The third lost
+supersession is **same-page** and is not a page-scope loss at all: it is the dogfood
+`projects/cairnstone` "first CI run failed" fact against the same sentence restamped
+"as of 2026-11-06", which the F3a provenance-stamp rule (see P7) correctly treats as one claim.
+**Known limitation:** the same entity can be split across pages (`misc/user` and `people/user`), so
+a real contradiction between those pages is neither superseded nor flagged — the Fitbit pair above
+stays active together. Keying on entity rather than page is the fix, and is out of scope for phase
+17.
 
 ## P7 — Dedupe by evidence, not by wording
 
@@ -66,6 +71,11 @@ differently. Dedupe keeps the **latest** capture as the canonical citation (phas
 version kept the earliest, which hid later re-assertions from contradiction detection) and links the
 others to it as corroboration. It does not delete them; it links them, and `duplicate_of` always
 names a live canonical fact rather than forming a chain.
+
+**Two duplicate measurements, two names.** `duplicates_linked` is the counter `consolidate()`
+returns: new `duplicate_of` links the pass created (35 at `fe71ff1`, 39 at `d9a4da7`). "Rows whose
+`duplicate_of` changed" is a different measure: every row the pass rewrote (57 at `fe71ff1`, 61 at
+`d9a4da7`). They are not interchangeable; quote one name with its own number, never the other's.
 
 ## P8 — Re-entry is earned
 

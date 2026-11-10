@@ -1068,6 +1068,129 @@ def _subject_prefix(text):
     return " ".join(tokens)
 
 
+# Phase 17 (D2): a relationship category word only forms a live slot when it is
+# the PREDICATE of the main clause. F4's subject cut moved every incidental
+# match ("online dating", "single parent", "single-action", "engaged guests",
+# "friend who is getting married", "colleague who is divorced") onto the
+# subject's bare key, so a later off-topic fact superseded a true status (Tes
+# review 5, D2/D3: 49 corpus texts moved onto a bare live subject key).
+#
+# Accepted shape: subject + copula/state verb + optional short adverb +
+# category word ("Caroline is married", "The user is now dating someone",
+# "Caroline got married"), where the copula is the main clause's first
+# predicate or is conjoined with "and".
+# Rejected: relative clauses ("who is married"), matches after a preposition or
+# any non-copula word ("about online dating", "is working on ..."),
+# noun modifiers ("single parent", "single-action", "engaged guests") and
+# plans ("is getting married", "plans to become a single parent").
+_RELATION_WORDS = frozenset("single married divorced widowed engaged dating".split())
+
+_STATE_AUX_TOKENS = frozenset("""
+    is are was were am got get gets been become becomes became has have had
+""".split())
+
+_RELATION_ADVERBS = frozenset("""
+    now currently still recently already also just then later very really quite
+    happily newly both not never definitely probably actually today soon again
+    once yesterday
+""".split())
+
+_RELATIVE_PRONOUNS = frozenset("who which that whose whom".split())
+
+# Function words, pronouns, adverbs and punctuation after the category word
+# leave it a predicate ("married to Tomas", "dating someone", "single now",
+# "got married recently"); a content word there makes it a noun modifier
+# ("single parent", "engaged guests", "single-action").
+_RELATION_FOLLOW_OK = frozenset("""
+    a an the and or but with without to for from in on at by of about after
+    before during since until as than someone somebody something anyone anybody
+    anything nobody everyone everybody everything i you he she we they it me
+    him her us them this these those
+""".split()) | _RELATION_ADVERBS
+
+# Punctuation right after the category word ends the predicate; what follows is
+# a new clause, not a modifier.
+_CLAUSE_END_PUNCT = ".,;:!?)]\"'"
+
+
+def _relationship_status_slot(text):
+    """(subject prefix, value) for the main-clause relationship predicate, or None.
+
+    Phase 17 (D2/D3). See the block comment above for the accepted and rejected
+    shapes. The prefix runs through `_subject_prefix`, so a coordinated main
+    clause ("Caroline met her husband through work and is married") keys on
+    `caroline`.
+    """
+    norm = _norm(text).lower()
+    toks = [(m.group(0), m.start(), m.end())
+            for m in re.finditer(r"[a-z0-9']+", norm)]
+    words = [t[0] for t in toks]
+    if not words:
+        return None
+    first_pred = None
+    for idx, word in enumerate(words):
+        if word in _STATE_AUX_TOKENS or word in _VERB_TOKENS:
+            first_pred = idx
+            break
+    if first_pred is None:
+        return None
+    for i, word in enumerate(words):
+        if word not in _RELATION_WORDS:
+            continue
+        # Copula/state verb, optionally with a short adverb, directly before it.
+        if i >= 1 and words[i - 1] in _STATE_AUX_TOKENS:
+            copula = i - 1
+        elif (i >= 2 and words[i - 1] in _RELATION_ADVERBS
+              and words[i - 2] in _STATE_AUX_TOKENS):
+            copula = i - 2
+        elif (i == first_pred and i >= 1
+              and words[i - 1] not in _RELATIVE_PRONOUNS
+              and words[i - 1] not in _RELATION_FOLLOW_OK
+              and words[i - 1] not in _RELATION_ADVERBS
+              and not any(w in _RELATION_WORDS for w in words[:i])):
+            # Verb form: the category word is the main clause's first predicate
+            # ("Caroline married Tomas", "Pocahontas married John Rolfe"). Its
+            # object may be a content noun, so no modifier check here. A
+            # relationship word earlier in the prefix means the clause is ABOUT
+            # the status ("... includes single-vs-married"), not a predicate
+            # about the subject, so that is left alone.
+            prefix = _subject_prefix(" ".join(words[:i]))
+            if prefix:
+                return prefix, word
+            continue
+        else:
+            continue
+        # Adjective form: a content word immediately after the category word,
+        # with no punctuation between, makes it a noun modifier.
+        nxt = i + 1
+        if nxt < len(words):
+            gap = norm[toks[i][2]:toks[nxt][1]]
+            if (not any(ch in _CLAUSE_END_PUNCT for ch in gap)
+                    and words[nxt].isalpha()
+                    and words[nxt] not in _RELATION_FOLLOW_OK):
+                continue
+        # Main clause only: the copula is the first predicate (possibly with a
+        # leading auxiliary chain, "has been married"), or is coordinated with
+        # "and" after one. This rejects subordinate/relative clauses
+        # ("The user is happy that her sister is married").
+        if copula == first_pred:
+            pass
+        elif copula >= 1 and words[copula - 1] == "and":
+            pass
+        elif all(w in _STATE_AUX_TOKENS or w in _RELATION_ADVERBS
+                 for w in words[first_pred:copula]):
+            pass
+        else:
+            continue
+        if copula >= 1 and words[copula - 1] in _RELATIVE_PRONOUNS:
+            continue
+        prefix = _subject_prefix(" ".join(words[:copula]))
+        if not prefix:
+            continue
+        return prefix, word
+    return None
+
+
 def _fact_slots(text):
     """All (slot key, value) pairs a fact asserts: numeric/date slots from
     _split_subject_slot plus one entry per categorical lexicon match.
@@ -1082,6 +1205,8 @@ def _fact_slots(text):
         slots.append((key, value))
     norm = _norm(text)
     for slot, rx, _advisory in _CATEGORY_SLOTS:
+        if slot == "relationship_status":
+            continue  # phase 17 D2: main-clause predicate rule below
         m = rx.search(norm)
         if m:
             if slot == "occupation":
@@ -1100,6 +1225,11 @@ def _fact_slots(text):
                 value = _slot_value(slot, m.group(1))
             if prefix and value is not None:
                 slots.append(("cat:%s:%s" % (slot, prefix), value))
+    # Phase 17 (D2): the relationship slot comes from the main-clause predicate
+    # rule, not from an anywhere-in-the-sentence lexicon match.
+    rel = _relationship_status_slot(text)
+    if rel is not None:
+        slots.append(("cat:relationship_status:%s" % rel[0], rel[1]))
     # Phase 16 (N11): a spouse implies married — a documented inference, so
     # "Caroline's spouse is Tomas" carries the same relationship_status slot
     # (and value) as a same-time "Caroline is married" — no false flag — and
@@ -1154,35 +1284,42 @@ def _strip_bare_as_of_tail(norm):
     return norm
 
 
-# Phase 17 (F3b): digits after these words describe a quantity or a date (the
-# value side of the claim); digits after any other word are labelled by it and
-# name the thing ("phase 1", "budget 600", "n=12").
-_VALUE_CONTEXT_WORDS = frozenset("""
-    in on at by from to since during after before until near about around
-    with without and or than per
+# Phase 17 (D1): the identifier rule is INVERTED from F3b. A digit is part of a
+# NAME only when it is attached to a word ("b600", "v2"), hyphen-joined to a
+# label ("conv-26", "phase-1"), or preceded by a short identifier label
+# ("phase 1", "budget 600", "n=12"). Any other preceding word — a verb, a
+# quantifier, an adjective — leaves the number as a VALUE that changes over
+# time. F3b's first cut treated every non-boilerplate word as a label, which
+# froze counts into the slot key: "owns 15" and "owns 17" keyed apart, so a
+# genuine knowledge update never superseded (Tes review 5, D1: 8 of 12 count
+# updates stopped resolving; 264 corpus keys had a verb or quantifier as the
+# "label").
+_IDENTIFIER_LABELS = frozenset("""
+    phase conv sample budget n v version tier step port pid issue id pr round
+    stage section chapter season episode question task ticket sprint wave
+    epoch unit model commit volume page level grade class batch trial arm
+    condition
 """.split())
 
 
 def _is_identifier_digit(norm, match):
-    """True when the digit match is part of a name, not a value (F3b).
+    """True when the digit match is part of a name, not a value (F3b/D1).
 
-    Two signals: the digits are attached to a preceding word ("b600", "v2"), or
-    the preceding token is a content word that labels them ("phase 1",
-    "conv-26", "budget 600", "n=12"). Digits after boilerplate, prepositions,
-    month/weekday tokens or other digits stay values ("for 6 months", "in 2022",
-    "has 1 child", "1,613").
+    Three signals: the digits are attached to a preceding word ("b600", "v2"),
+    hyphen-joined to a label ("conv-26", "phase-1"), or the preceding token is
+    on the short identifier-label list ("phase 1", "budget 600", "n=12"). Every
+    other preceding word leaves the digits a value ("owns 15", "ran 5 km",
+    "over 30", "saved 300", "for 6 months", "in 2022", "has 1 child", "1,613").
     """
-    if match.start() > 0 and norm[match.start() - 1].isalpha():
+    start = match.start()
+    if start > 0 and norm[start - 1].isalpha():
         return True
-    label = re.search(r"([A-Za-z]+)[^A-Za-z]*$", norm[:match.start()])
+    if start > 1 and norm[start - 1] == "-" and norm[start - 2].isalpha():
+        return True
+    label = re.search(r"([A-Za-z]+)[^A-Za-z]*$", norm[:start])
     if not label:
         return False
-    word = label.group(1).lower()
-    if (word in _SLOT_KEY_BOILERPLATE
-            or word in _VALUE_CONTEXT_WORDS
-            or _VALUE_RE.fullmatch(word)):
-        return False
-    return True
+    return label.group(1).lower() in _IDENTIFIER_LABELS
 
 
 def _split_subject_slot(text):

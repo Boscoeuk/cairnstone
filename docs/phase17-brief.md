@@ -70,9 +70,10 @@ corrected to `ebee5f6` and the 1,540-row evidence path named (§C3).
 ## P1 — F1: contradiction scope
 
 `_supersede_contradictions` built one `claims` dict across the whole brain. At `fe71ff1` 20 of 43 new
-supersessions/flags paired facts on **different pages**, and several are plainly wrong
-(`projects/alpha` "first CI run failed" superseded by a `projects/beta` fact; phase-1 vs phase-2
-acceptance; conv-26 vs conv-30 counts).
+supersessions/flags paired facts on **different pages**, and several are plainly wrong (phase-1 vs
+phase-2 acceptance and conv-26 vs conv-30 counts in the 27-DB corpus; the `projects/alpha` "first CI
+run failed" superseded by a `projects/beta` fact example comes from the review-4 probe, not that
+corpus).
 
 **Decision:** the scan resets its comparison state **per page**, as policy P6 and the phase-16 brief
 already specify. Do not invent an entity-key scheme in this phase.
