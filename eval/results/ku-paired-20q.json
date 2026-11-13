@@ -1,0 +1,2491 @@
+{
+ "config_sha256": "9e24486081157264d3b20b18790ba6aa49e31d0818e96dc12363e139167a6004",
+ "frozen_code_sha": "028e3240cd0f289ae271c1e8d51cfdf61bc22811",
+ "run_head_sha": "a84e55a111f40e9f5d6e6f207155d9b91f0fa50c",
+ "budget_tokens": 600,
+ "max_mutation_rate": 0.2,
+ "aggregate": {
+  "label": "LOCAL-JUDGED",
+  "n": 20,
+  "arm_accuracy": {
+   "a": 0.75,
+   "b": 0.75,
+   "c": 0.85,
+   "d": 0.7
+  },
+  "b_vs_a": {
+   "gained": 0,
+   "lost": 0,
+   "mcnemar_exact_p": 1.0
+  },
+  "b_vs_d": {
+   "gained": 4,
+   "lost": 3,
+   "mcnemar_exact_p": 1.0
+  },
+  "questions_mutated_by_consolidation": 0,
+  "policy_halts": 0,
+  "total_superseded": 0,
+  "total_duplicates_linked": 0,
+  "total_flagged": 0,
+  "judge_ambiguous_count": 0
+ },
+ "rows": [
+  {
+   "question_id": "2698e78f_abs",
+   "question": "How often do I see Dr. Johnson?",
+   "gold": "The information provided is not enough. You mentioned seeing Dr. Smith but not Dr. Johnson.",
+   "answer_session_ids": [
+    "answer_9282283d_abs_1",
+    "answer_9282283d_abs_2"
+   ],
+   "compile": {
+    "captures": 221,
+    "facts": 355
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "d84b7fdaabf1d5f06f0f80377fc6b9a4ea54e20082fd4b4833db031574026395",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:06:53Z"
+   },
+   "arm_a": {
+    "answer": "The records show you see **Dr. Smith** (not Dr. Johnson) \u2014 every two weeks, though a later record says every week.",
+    "latency_s": 11.135,
+    "brief_tokens": 2535,
+    "prompt_tokens": 2846,
+    "citations_used": 26,
+    "citations": [
+     "longmemeval:2698e78f_abs:session0:chunk2",
+     "longmemeval:2698e78f_abs:session0:chunk2",
+     "longmemeval:2698e78f_abs:session0:chunk2",
+     "longmemeval:2698e78f_abs:session9:chunk1",
+     "longmemeval:2698e78f_abs:session9:chunk3",
+     "longmemeval:2698e78f_abs:session16:chunk2",
+     "longmemeval:2698e78f_abs:session16:chunk3",
+     "longmemeval:2698e78f_abs:session16:chunk3",
+     "longmemeval:2698e78f_abs:session16:chunk4",
+     "longmemeval:2698e78f_abs:session25:chunk1",
+     "longmemeval:2698e78f_abs:session30:chunk0",
+     "longmemeval:2698e78f_abs:session30:chunk1",
+     "longmemeval:2698e78f_abs:session30:chunk3",
+     "longmemeval:2698e78f_abs:session30:chunk3",
+     "longmemeval:2698e78f_abs:session36:chunk1",
+     "longmemeval:2698e78f_abs:session36:chunk4",
+     "longmemeval:2698e78f_abs:session40:chunk0",
+     "longmemeval:2698e78f_abs:session40:chunk2"
+    ],
+    "gold_support_in_brief": false,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "The records show you see **Dr. Smith** (not Dr. Johnson) \u2014 every two weeks, though a later record says every week.",
+    "latency_s": 1.211,
+    "brief_tokens": 2535,
+    "prompt_tokens": 2846,
+    "citations_used": 26,
+    "citations": [
+     "longmemeval:2698e78f_abs:session0:chunk2",
+     "longmemeval:2698e78f_abs:session0:chunk2",
+     "longmemeval:2698e78f_abs:session0:chunk2",
+     "longmemeval:2698e78f_abs:session9:chunk1",
+     "longmemeval:2698e78f_abs:session9:chunk3",
+     "longmemeval:2698e78f_abs:session16:chunk2",
+     "longmemeval:2698e78f_abs:session16:chunk3",
+     "longmemeval:2698e78f_abs:session16:chunk3",
+     "longmemeval:2698e78f_abs:session16:chunk4",
+     "longmemeval:2698e78f_abs:session25:chunk1",
+     "longmemeval:2698e78f_abs:session30:chunk0",
+     "longmemeval:2698e78f_abs:session30:chunk1",
+     "longmemeval:2698e78f_abs:session30:chunk3",
+     "longmemeval:2698e78f_abs:session30:chunk3",
+     "longmemeval:2698e78f_abs:session36:chunk1",
+     "longmemeval:2698e78f_abs:session36:chunk4",
+     "longmemeval:2698e78f_abs:session40:chunk0",
+     "longmemeval:2698e78f_abs:session40:chunk2"
+    ],
+    "gold_support_in_brief": false,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "The session excerpts do not mention Dr. Johnson.",
+    "latency_s": 10.152,
+    "prompt_tokens": 4365,
+    "sessions_used": [
+     45,
+     33,
+     24
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "The session excerpts don't mention Dr. Johnson or any appointment schedule.",
+    "latency_s": 10.765,
+    "prompt_tokens": 5089,
+    "sessions_used": [
+     45,
+     39,
+     33
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "4aed6010e68c2d748013274fb295d510f7a8feb5a9645eed6c05a942436ecc46",
+   "facts": {
+    "active_pristine": 355,
+    "superseded_pristine": 0,
+    "active_consolidated": 355,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "45dc21b6",
+   "question": "How many of Emma's recipes have I tried out?",
+   "gold": "3",
+   "answer_session_ids": [
+    "answer_07664d43_1",
+    "answer_07664d43_2"
+   ],
+   "compile": {
+    "captures": 221,
+    "facts": 433
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "cb30c1cf2b3fe81efc7312734d242e75fbe381828b058cd76cb59bbe4999d72e",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:07:41Z"
+   },
+   "arm_a": {
+    "answer": "3",
+    "latency_s": 11.288,
+    "brief_tokens": 3429,
+    "prompt_tokens": 3829,
+    "citations_used": 26,
+    "citations": [
+     "longmemeval:45dc21b6:session8:chunk1",
+     "longmemeval:45dc21b6:session14:chunk1",
+     "longmemeval:45dc21b6:session14:chunk1",
+     "longmemeval:45dc21b6:session14:chunk1",
+     "longmemeval:45dc21b6:session14:chunk1",
+     "longmemeval:45dc21b6:session18:chunk5",
+     "longmemeval:45dc21b6:session15:chunk0",
+     "longmemeval:45dc21b6:session15:chunk0",
+     "longmemeval:45dc21b6:session15:chunk2",
+     "longmemeval:45dc21b6:session15:chunk2",
+     "longmemeval:45dc21b6:session25:chunk2",
+     "longmemeval:45dc21b6:session24:chunk0",
+     "longmemeval:45dc21b6:session24:chunk3",
+     "longmemeval:45dc21b6:session38:chunk2",
+     "longmemeval:45dc21b6:session43:chunk1",
+     "longmemeval:45dc21b6:session43:chunk3",
+     "longmemeval:45dc21b6:session44:chunk2",
+     "longmemeval:45dc21b6:session44:chunk4"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "3",
+    "latency_s": 0.162,
+    "brief_tokens": 3429,
+    "prompt_tokens": 3829,
+    "citations_used": 26,
+    "citations": [
+     "longmemeval:45dc21b6:session8:chunk1",
+     "longmemeval:45dc21b6:session14:chunk1",
+     "longmemeval:45dc21b6:session14:chunk1",
+     "longmemeval:45dc21b6:session14:chunk1",
+     "longmemeval:45dc21b6:session14:chunk1",
+     "longmemeval:45dc21b6:session18:chunk5",
+     "longmemeval:45dc21b6:session15:chunk0",
+     "longmemeval:45dc21b6:session15:chunk0",
+     "longmemeval:45dc21b6:session15:chunk2",
+     "longmemeval:45dc21b6:session15:chunk2",
+     "longmemeval:45dc21b6:session25:chunk2",
+     "longmemeval:45dc21b6:session24:chunk0",
+     "longmemeval:45dc21b6:session24:chunk3",
+     "longmemeval:45dc21b6:session38:chunk2",
+     "longmemeval:45dc21b6:session43:chunk1",
+     "longmemeval:45dc21b6:session43:chunk3",
+     "longmemeval:45dc21b6:session44:chunk2",
+     "longmemeval:45dc21b6:session44:chunk4"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "3",
+    "latency_s": 17.32,
+    "prompt_tokens": 8387,
+    "sessions_used": [
+     15,
+     44,
+     41
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "3",
+    "latency_s": 17.308,
+    "prompt_tokens": 8387,
+    "sessions_used": [
+     41,
+     44,
+     15
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "3f30c852935a192e4f93aae5215b7cc0dec258fe300708f9debd9e440e078507",
+   "facts": {
+    "active_pristine": 433,
+    "superseded_pristine": 0,
+    "active_consolidated": 433,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "4b24c848",
+   "question": "How many tops have I bought from H&M so far?",
+   "gold": "five",
+   "answer_session_ids": [
+    "answer_2cec623b_1",
+    "answer_2cec623b_2"
+   ],
+   "compile": {
+    "captures": 235,
+    "facts": 463
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "7ee34707f93fdd74d3d26f6b0958f121cdfc71a00c0405f282bb392622f77b85",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:08:22Z"
+   },
+   "arm_a": {
+    "answer": "Five",
+    "latency_s": 8.243,
+    "brief_tokens": 2303,
+    "prompt_tokens": 2519,
+    "citations_used": 18,
+    "citations": [
+     "longmemeval:4b24c848:session2:chunk1",
+     "longmemeval:4b24c848:session2:chunk1",
+     "longmemeval:4b24c848:session7:chunk0",
+     "longmemeval:4b24c848:session7:chunk1",
+     "longmemeval:4b24c848:session7:chunk1",
+     "longmemeval:4b24c848:session15:chunk0",
+     "longmemeval:4b24c848:session15:chunk1",
+     "longmemeval:4b24c848:session15:chunk1",
+     "longmemeval:4b24c848:session15:chunk1",
+     "longmemeval:4b24c848:session28:chunk2",
+     "longmemeval:4b24c848:session30:chunk5",
+     "longmemeval:4b24c848:session34:chunk2",
+     "longmemeval:4b24c848:session44:chunk4",
+     "longmemeval:4b24c848:session46:chunk0",
+     "longmemeval:4b24c848:session50:chunk4",
+     "longmemeval:4b24c848:session50:chunk5",
+     "longmemeval:4b24c848:session50:chunk5",
+     "longmemeval:4b24c848:session50:chunk5"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "Five",
+    "latency_s": 0.165,
+    "brief_tokens": 2303,
+    "prompt_tokens": 2519,
+    "citations_used": 18,
+    "citations": [
+     "longmemeval:4b24c848:session2:chunk1",
+     "longmemeval:4b24c848:session2:chunk1",
+     "longmemeval:4b24c848:session7:chunk0",
+     "longmemeval:4b24c848:session7:chunk1",
+     "longmemeval:4b24c848:session7:chunk1",
+     "longmemeval:4b24c848:session15:chunk0",
+     "longmemeval:4b24c848:session15:chunk1",
+     "longmemeval:4b24c848:session15:chunk1",
+     "longmemeval:4b24c848:session15:chunk1",
+     "longmemeval:4b24c848:session28:chunk2",
+     "longmemeval:4b24c848:session30:chunk5",
+     "longmemeval:4b24c848:session34:chunk2",
+     "longmemeval:4b24c848:session44:chunk4",
+     "longmemeval:4b24c848:session46:chunk0",
+     "longmemeval:4b24c848:session50:chunk4",
+     "longmemeval:4b24c848:session50:chunk5",
+     "longmemeval:4b24c848:session50:chunk5",
+     "longmemeval:4b24c848:session50:chunk5"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Five",
+    "latency_s": 15.717,
+    "prompt_tokens": 7529,
+    "sessions_used": [
+     46,
+     7,
+     44
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "Five",
+    "latency_s": 15.663,
+    "prompt_tokens": 7501,
+    "sessions_used": [
+     46,
+     44,
+     28
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "e9564fe318d7508e69cea68513fc8252b1d0729447f7759c4e7d71f2d9cc9ec5",
+   "facts": {
+    "active_pristine": 463,
+    "superseded_pristine": 0,
+    "active_consolidated": 463,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "50635ada",
+   "question": "What was my previous frequent flyer status on United Airlines before I got the current status?",
+   "gold": "Premier Silver",
+   "answer_session_ids": [
+    "answer_dcd74827_1",
+    "answer_dcd74827_2"
+   ],
+   "compile": {
+    "captures": 222,
+    "facts": 440
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "75e9e1e93af0d783ccde97b28c7b24ea717510ced27da725a5a40f7a417a60eb",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:09:11Z"
+   },
+   "arm_a": {
+    "answer": "Premier Silver",
+    "latency_s": 9.566,
+    "brief_tokens": 2429,
+    "prompt_tokens": 2696,
+    "citations_used": 24,
+    "citations": [
+     "longmemeval:50635ada:session8:chunk3",
+     "longmemeval:50635ada:session15:chunk2",
+     "longmemeval:50635ada:session17:chunk3",
+     "longmemeval:50635ada:session19:chunk0",
+     "longmemeval:50635ada:session19:chunk1",
+     "longmemeval:50635ada:session19:chunk2",
+     "longmemeval:50635ada:session40:chunk1",
+     "longmemeval:50635ada:session42:chunk0",
+     "longmemeval:50635ada:session42:chunk0",
+     "longmemeval:50635ada:session42:chunk1",
+     "longmemeval:50635ada:session42:chunk1",
+     "longmemeval:50635ada:session42:chunk1",
+     "longmemeval:50635ada:session42:chunk2",
+     "longmemeval:50635ada:session42:chunk2",
+     "longmemeval:50635ada:session45:chunk4",
+     "longmemeval:50635ada:session46:chunk0"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "Premier Silver",
+    "latency_s": 0.162,
+    "brief_tokens": 2429,
+    "prompt_tokens": 2696,
+    "citations_used": 24,
+    "citations": [
+     "longmemeval:50635ada:session8:chunk3",
+     "longmemeval:50635ada:session15:chunk2",
+     "longmemeval:50635ada:session17:chunk3",
+     "longmemeval:50635ada:session19:chunk0",
+     "longmemeval:50635ada:session19:chunk1",
+     "longmemeval:50635ada:session19:chunk2",
+     "longmemeval:50635ada:session40:chunk1",
+     "longmemeval:50635ada:session42:chunk0",
+     "longmemeval:50635ada:session42:chunk0",
+     "longmemeval:50635ada:session42:chunk1",
+     "longmemeval:50635ada:session42:chunk1",
+     "longmemeval:50635ada:session42:chunk1",
+     "longmemeval:50635ada:session42:chunk2",
+     "longmemeval:50635ada:session42:chunk2",
+     "longmemeval:50635ada:session45:chunk4",
+     "longmemeval:50635ada:session46:chunk0"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Premier Silver",
+    "latency_s": 18.038,
+    "prompt_tokens": 8652,
+    "sessions_used": [
+     19,
+     42,
+     33
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "Premier Gold",
+    "latency_s": 18.774,
+    "prompt_tokens": 9019,
+    "sessions_used": [
+     42,
+     35,
+     33
+    ],
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "9c71c5668d6fa4b2c4d1b29eca28605947ec652784971fa94b0f1c3d57a5729a",
+   "facts": {
+    "active_pristine": 440,
+    "superseded_pristine": 0,
+    "active_consolidated": 440,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "5a4f22c0",
+   "question": "What company is Rachel, an old colleague from my previous company, currently working at?",
+   "gold": "TechCorp",
+   "answer_session_ids": [
+    "answer_b0f3dfff_1",
+    "answer_b0f3dfff_2"
+   ],
+   "compile": {
+    "captures": 230,
+    "facts": 430
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "6c9f38a93979f900069718886a78bc68b95519bcdbf3cd3a71867f8b1edb9328",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:10:04Z"
+   },
+   "arm_a": {
+    "answer": "TechCorp",
+    "latency_s": 10.308,
+    "brief_tokens": 2771,
+    "prompt_tokens": 2924,
+    "citations_used": 25,
+    "citations": [
+     "longmemeval:5a4f22c0:session2:chunk2",
+     "longmemeval:5a4f22c0:session2:chunk2",
+     "longmemeval:5a4f22c0:session4:chunk1",
+     "longmemeval:5a4f22c0:session11:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk3",
+     "longmemeval:5a4f22c0:session22:chunk1",
+     "longmemeval:5a4f22c0:session17:chunk4",
+     "longmemeval:5a4f22c0:session17:chunk4",
+     "longmemeval:5a4f22c0:session32:chunk1",
+     "longmemeval:5a4f22c0:session29:chunk3",
+     "longmemeval:5a4f22c0:session40:chunk0",
+     "longmemeval:5a4f22c0:session40:chunk0",
+     "longmemeval:5a4f22c0:session43:chunk2"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "TechCorp",
+    "latency_s": 0.143,
+    "brief_tokens": 2771,
+    "prompt_tokens": 2924,
+    "citations_used": 25,
+    "citations": [
+     "longmemeval:5a4f22c0:session2:chunk2",
+     "longmemeval:5a4f22c0:session2:chunk2",
+     "longmemeval:5a4f22c0:session4:chunk1",
+     "longmemeval:5a4f22c0:session11:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk0",
+     "longmemeval:5a4f22c0:session7:chunk3",
+     "longmemeval:5a4f22c0:session22:chunk1",
+     "longmemeval:5a4f22c0:session17:chunk4",
+     "longmemeval:5a4f22c0:session17:chunk4",
+     "longmemeval:5a4f22c0:session32:chunk1",
+     "longmemeval:5a4f22c0:session29:chunk3",
+     "longmemeval:5a4f22c0:session40:chunk0",
+     "longmemeval:5a4f22c0:session40:chunk0",
+     "longmemeval:5a4f22c0:session43:chunk2"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "TechCorp",
+    "latency_s": 19.704,
+    "prompt_tokens": 9487,
+    "sessions_used": [
+     40,
+     7,
+     26
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "TechCorp",
+    "latency_s": 17.037,
+    "prompt_tokens": 8168,
+    "sessions_used": [
+     40,
+     33,
+     26
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "669a4888c2a789569236b2491314629e86550af376b10acd72ba78c08553a70b",
+   "facts": {
+    "active_pristine": 430,
+    "superseded_pristine": 0,
+    "active_consolidated": 430,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "5c40ec5b",
+   "question": "How many times have I met up with Alex from Germany?",
+   "gold": "We've met up twice.",
+   "answer_session_ids": [
+    "answer_1cb52d0a_1",
+    "answer_1cb52d0a_2"
+   ],
+   "compile": {
+    "captures": 215,
+    "facts": 433
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "4b045d7dda13a69a22d10a438b8552b1d4aecf3d9f0b47b8e7e2888f1d085276",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:10:53Z"
+   },
+   "arm_a": {
+    "answer": "Twice",
+    "latency_s": 10.075,
+    "brief_tokens": 2877,
+    "prompt_tokens": 3165,
+    "citations_used": 25,
+    "citations": [
+     "longmemeval:5c40ec5b:session6:chunk4",
+     "longmemeval:5c40ec5b:session16:chunk1",
+     "longmemeval:5c40ec5b:session16:chunk1",
+     "longmemeval:5c40ec5b:session16:chunk3",
+     "longmemeval:5c40ec5b:session16:chunk3",
+     "longmemeval:5c40ec5b:session16:chunk4",
+     "longmemeval:5c40ec5b:session18:chunk0",
+     "longmemeval:5c40ec5b:session18:chunk4",
+     "longmemeval:5c40ec5b:session28:chunk0",
+     "longmemeval:5c40ec5b:session36:chunk0",
+     "longmemeval:5c40ec5b:session40:chunk0",
+     "longmemeval:5c40ec5b:session50:chunk0",
+     "longmemeval:5c40ec5b:session50:chunk0",
+     "longmemeval:5c40ec5b:session50:chunk0",
+     "longmemeval:5c40ec5b:session50:chunk3",
+     "longmemeval:5c40ec5b:session50:chunk3",
+     "longmemeval:5c40ec5b:session50:chunk3"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "Twice",
+    "latency_s": 0.142,
+    "brief_tokens": 2877,
+    "prompt_tokens": 3165,
+    "citations_used": 25,
+    "citations": [
+     "longmemeval:5c40ec5b:session6:chunk4",
+     "longmemeval:5c40ec5b:session16:chunk1",
+     "longmemeval:5c40ec5b:session16:chunk1",
+     "longmemeval:5c40ec5b:session16:chunk3",
+     "longmemeval:5c40ec5b:session16:chunk3",
+     "longmemeval:5c40ec5b:session16:chunk4",
+     "longmemeval:5c40ec5b:session18:chunk0",
+     "longmemeval:5c40ec5b:session18:chunk4",
+     "longmemeval:5c40ec5b:session28:chunk0",
+     "longmemeval:5c40ec5b:session36:chunk0",
+     "longmemeval:5c40ec5b:session40:chunk0",
+     "longmemeval:5c40ec5b:session50:chunk0",
+     "longmemeval:5c40ec5b:session50:chunk0",
+     "longmemeval:5c40ec5b:session50:chunk0",
+     "longmemeval:5c40ec5b:session50:chunk3",
+     "longmemeval:5c40ec5b:session50:chunk3",
+     "longmemeval:5c40ec5b:session50:chunk3"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Twice",
+    "latency_s": 18.1,
+    "prompt_tokens": 8747,
+    "sessions_used": [
+     50,
+     16,
+     18
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "Twice",
+    "latency_s": 18.057,
+    "prompt_tokens": 8747,
+    "sessions_used": [
+     50,
+     18,
+     16
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "a854d4b404e476f3eb2b1bb5e50fc5b7c368e59ef2027eb170148028a4bca187",
+   "facts": {
+    "active_pristine": 433,
+    "superseded_pristine": 0,
+    "active_consolidated": 433,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "6aeb4375_abs",
+   "question": "How many Italian restaurants have I tried in my city?",
+   "gold": "The information provided is not enough. You mentioned trying Korean restaurants but not Italian restaurants.",
+   "answer_session_ids": [
+    "answer_3f9693b7_abs_1",
+    "answer_3f9693b7_abs_2"
+   ],
+   "compile": {
+    "captures": 222,
+    "facts": 406
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "34bf8f1b9a5f4bfa0c39bfd247e1c0db927f11937c812f66306d48559ea65a2b",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:11:33Z"
+   },
+   "arm_a": {
+    "answer": "The records don't mention any Italian restaurants \u2014 they only cover Korean restaurants (four tried in your city as of 2023-05-26).",
+    "latency_s": 10.949,
+    "brief_tokens": 3020,
+    "prompt_tokens": 3153,
+    "citations_used": 23,
+    "citations": [
+     "longmemeval:6aeb4375_abs:session0:chunk0",
+     "longmemeval:6aeb4375_abs:session0:chunk1",
+     "longmemeval:6aeb4375_abs:session0:chunk2",
+     "longmemeval:6aeb4375_abs:session3:chunk0",
+     "longmemeval:6aeb4375_abs:session5:chunk4",
+     "longmemeval:6aeb4375_abs:session16:chunk2",
+     "longmemeval:6aeb4375_abs:session19:chunk2",
+     "longmemeval:6aeb4375_abs:session19:chunk5",
+     "longmemeval:6aeb4375_abs:session26:chunk0",
+     "longmemeval:6aeb4375_abs:session26:chunk2",
+     "longmemeval:6aeb4375_abs:session32:chunk3",
+     "longmemeval:6aeb4375_abs:session32:chunk4",
+     "longmemeval:6aeb4375_abs:session32:chunk4",
+     "longmemeval:6aeb4375_abs:session36:chunk0",
+     "longmemeval:6aeb4375_abs:session42:chunk2"
+    ],
+    "gold_support_in_brief": false,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "The records don't mention any Italian restaurants \u2014 they only cover Korean restaurants (four tried in your city as of 2023-05-26).",
+    "latency_s": 0.55,
+    "brief_tokens": 3020,
+    "prompt_tokens": 3153,
+    "citations_used": 23,
+    "citations": [
+     "longmemeval:6aeb4375_abs:session0:chunk0",
+     "longmemeval:6aeb4375_abs:session0:chunk1",
+     "longmemeval:6aeb4375_abs:session0:chunk2",
+     "longmemeval:6aeb4375_abs:session3:chunk0",
+     "longmemeval:6aeb4375_abs:session5:chunk4",
+     "longmemeval:6aeb4375_abs:session16:chunk2",
+     "longmemeval:6aeb4375_abs:session19:chunk2",
+     "longmemeval:6aeb4375_abs:session19:chunk5",
+     "longmemeval:6aeb4375_abs:session26:chunk0",
+     "longmemeval:6aeb4375_abs:session26:chunk2",
+     "longmemeval:6aeb4375_abs:session32:chunk3",
+     "longmemeval:6aeb4375_abs:session32:chunk4",
+     "longmemeval:6aeb4375_abs:session32:chunk4",
+     "longmemeval:6aeb4375_abs:session36:chunk0",
+     "longmemeval:6aeb4375_abs:session42:chunk2"
+    ],
+    "gold_support_in_brief": false,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "I haven't mentioned any Italian restaurants in our conversations.",
+    "latency_s": 13.348,
+    "prompt_tokens": 6479,
+    "sessions_used": [
+     36,
+     32,
+     34
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "The session excerpts don't mention any Italian restaurants you've tried.",
+    "latency_s": 13.322,
+    "prompt_tokens": 6479,
+    "sessions_used": [
+     36,
+     34,
+     32
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "527a88076ac2f8c2f2c2af2de232d64c8958b0d2a4778d9df70246c478b326dd",
+   "facts": {
+    "active_pristine": 406,
+    "superseded_pristine": 0,
+    "active_consolidated": 406,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "72e3ee87",
+   "question": "How many episodes of the Science series have I completed on Crash Course?",
+   "gold": "50",
+   "answer_session_ids": [
+    "answer_d7de9a6a_1",
+    "answer_d7de9a6a_2"
+   ],
+   "compile": {
+    "captures": 234,
+    "facts": 397
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "22e02897782de2764b48113c0d2ca29c624674111cc8cdf47d68cd5143787928",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:12:27Z"
+   },
+   "arm_a": {
+    "answer": "50",
+    "latency_s": 9.479,
+    "brief_tokens": 2744,
+    "prompt_tokens": 2874,
+    "citations_used": 22,
+    "citations": [
+     "longmemeval:72e3ee87:session19:chunk0",
+     "longmemeval:72e3ee87:session19:chunk0",
+     "longmemeval:72e3ee87:session19:chunk4",
+     "longmemeval:72e3ee87:session38:chunk2",
+     "longmemeval:72e3ee87:session38:chunk4",
+     "longmemeval:72e3ee87:session37:chunk2",
+     "longmemeval:72e3ee87:session45:chunk0",
+     "longmemeval:72e3ee87:session45:chunk0",
+     "longmemeval:72e3ee87:session45:chunk1",
+     "longmemeval:72e3ee87:session45:chunk1",
+     "longmemeval:72e3ee87:session45:chunk3",
+     "longmemeval:72e3ee87:session45:chunk4",
+     "longmemeval:72e3ee87:session44:chunk1",
+     "longmemeval:72e3ee87:session43:chunk3"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "50",
+    "latency_s": 0.169,
+    "brief_tokens": 2744,
+    "prompt_tokens": 2874,
+    "citations_used": 22,
+    "citations": [
+     "longmemeval:72e3ee87:session19:chunk0",
+     "longmemeval:72e3ee87:session19:chunk0",
+     "longmemeval:72e3ee87:session19:chunk4",
+     "longmemeval:72e3ee87:session38:chunk2",
+     "longmemeval:72e3ee87:session38:chunk4",
+     "longmemeval:72e3ee87:session37:chunk2",
+     "longmemeval:72e3ee87:session45:chunk0",
+     "longmemeval:72e3ee87:session45:chunk0",
+     "longmemeval:72e3ee87:session45:chunk1",
+     "longmemeval:72e3ee87:session45:chunk1",
+     "longmemeval:72e3ee87:session45:chunk3",
+     "longmemeval:72e3ee87:session45:chunk4",
+     "longmemeval:72e3ee87:session44:chunk1",
+     "longmemeval:72e3ee87:session43:chunk3"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "50",
+    "latency_s": 21.237,
+    "prompt_tokens": 10527,
+    "sessions_used": [
+     45,
+     19,
+     41
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "50",
+    "latency_s": 21.244,
+    "prompt_tokens": 10527,
+    "sessions_used": [
+     45,
+     41,
+     19
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "029631a8b8747346e4162187ea53b56821ae118489f0296459f23fbb9725f79a",
+   "facts": {
+    "active_pristine": 397,
+    "superseded_pristine": 0,
+    "active_consolidated": 397,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "7a87bd0c",
+   "question": "How long have I been sticking to my daily tidying routine?",
+   "gold": "4 weeks",
+   "answer_session_ids": [
+    "answer_d08a934d_1",
+    "answer_d08a934d_2"
+   ],
+   "compile": {
+    "captures": 225,
+    "facts": 410
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "e5f787b115b28ed81a6590d68ebb2eb16c66b4ef46ce053c2b395437d5994947",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:13:12Z"
+   },
+   "arm_a": {
+    "answer": "4 weeks (as of 2023-09-30)",
+    "latency_s": 8.592,
+    "brief_tokens": 2392,
+    "prompt_tokens": 2658,
+    "citations_used": 18,
+    "citations": [
+     "longmemeval:7a87bd0c:session0:chunk0",
+     "longmemeval:7a87bd0c:session0:chunk4",
+     "longmemeval:7a87bd0c:session0:chunk4",
+     "longmemeval:7a87bd0c:session0:chunk4",
+     "longmemeval:7a87bd0c:session0:chunk5",
+     "longmemeval:7a87bd0c:session0:chunk5",
+     "longmemeval:7a87bd0c:session2:chunk0",
+     "longmemeval:7a87bd0c:session2:chunk4",
+     "longmemeval:7a87bd0c:session2:chunk4",
+     "longmemeval:7a87bd0c:session25:chunk1",
+     "longmemeval:7a87bd0c:session25:chunk2",
+     "longmemeval:7a87bd0c:session33:chunk0",
+     "longmemeval:7a87bd0c:session38:chunk4",
+     "longmemeval:7a87bd0c:session38:chunk5",
+     "longmemeval:7a87bd0c:session36:chunk0",
+     "longmemeval:7a87bd0c:session36:chunk0",
+     "longmemeval:7a87bd0c:session36:chunk2",
+     "longmemeval:7a87bd0c:session35:chunk1"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "4 weeks (as of 2023-09-30)",
+    "latency_s": 0.309,
+    "brief_tokens": 2392,
+    "prompt_tokens": 2658,
+    "citations_used": 18,
+    "citations": [
+     "longmemeval:7a87bd0c:session0:chunk0",
+     "longmemeval:7a87bd0c:session0:chunk4",
+     "longmemeval:7a87bd0c:session0:chunk4",
+     "longmemeval:7a87bd0c:session0:chunk4",
+     "longmemeval:7a87bd0c:session0:chunk5",
+     "longmemeval:7a87bd0c:session0:chunk5",
+     "longmemeval:7a87bd0c:session2:chunk0",
+     "longmemeval:7a87bd0c:session2:chunk4",
+     "longmemeval:7a87bd0c:session2:chunk4",
+     "longmemeval:7a87bd0c:session25:chunk1",
+     "longmemeval:7a87bd0c:session25:chunk2",
+     "longmemeval:7a87bd0c:session33:chunk0",
+     "longmemeval:7a87bd0c:session38:chunk4",
+     "longmemeval:7a87bd0c:session38:chunk5",
+     "longmemeval:7a87bd0c:session36:chunk0",
+     "longmemeval:7a87bd0c:session36:chunk0",
+     "longmemeval:7a87bd0c:session36:chunk2",
+     "longmemeval:7a87bd0c:session35:chunk1"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "4 weeks",
+    "latency_s": 17.028,
+    "prompt_tokens": 8366,
+    "sessions_used": [
+     36,
+     0,
+     10
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "4 weeks",
+    "latency_s": 17.85,
+    "prompt_tokens": 8776,
+    "sessions_used": [
+     36,
+     10,
+     8
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "fc24cbd1659497a279bc3c9b12950d9d6c45b74dd7203d678bff5d718749fb2e",
+   "facts": {
+    "active_pristine": 410,
+    "superseded_pristine": 0,
+    "active_consolidated": 410,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "7e974930",
+   "question": "How much did I earn at the Downtown Farmers Market on my most recent visit?",
+   "gold": "$420",
+   "answer_session_ids": [
+    "answer_c9f5693c_1",
+    "answer_c9f5693c_2"
+   ],
+   "compile": {
+    "captures": 217,
+    "facts": 415
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "8c73556cccb80d4005bd8111c2ed43eba96c01c89d0b9f25b6f8115a9bb9ac90",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:13:54Z"
+   },
+   "arm_a": {
+    "answer": "$420",
+    "latency_s": 10.037,
+    "brief_tokens": 2907,
+    "prompt_tokens": 3284,
+    "citations_used": 23,
+    "citations": [
+     "longmemeval:7e974930:session7:chunk2",
+     "longmemeval:7e974930:session12:chunk0",
+     "longmemeval:7e974930:session12:chunk0",
+     "longmemeval:7e974930:session14:chunk0",
+     "longmemeval:7e974930:session14:chunk1",
+     "longmemeval:7e974930:session14:chunk2",
+     "longmemeval:7e974930:session14:chunk2",
+     "longmemeval:7e974930:session14:chunk3",
+     "longmemeval:7e974930:session14:chunk3",
+     "longmemeval:7e974930:session18:chunk0",
+     "longmemeval:7e974930:session21:chunk4",
+     "longmemeval:7e974930:session36:chunk4",
+     "longmemeval:7e974930:session41:chunk0",
+     "longmemeval:7e974930:session44:chunk0",
+     "longmemeval:7e974930:session44:chunk1"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "$420",
+    "latency_s": 0.15,
+    "brief_tokens": 2907,
+    "prompt_tokens": 3284,
+    "citations_used": 23,
+    "citations": [
+     "longmemeval:7e974930:session7:chunk2",
+     "longmemeval:7e974930:session12:chunk0",
+     "longmemeval:7e974930:session12:chunk0",
+     "longmemeval:7e974930:session14:chunk0",
+     "longmemeval:7e974930:session14:chunk1",
+     "longmemeval:7e974930:session14:chunk2",
+     "longmemeval:7e974930:session14:chunk2",
+     "longmemeval:7e974930:session14:chunk3",
+     "longmemeval:7e974930:session14:chunk3",
+     "longmemeval:7e974930:session18:chunk0",
+     "longmemeval:7e974930:session21:chunk4",
+     "longmemeval:7e974930:session36:chunk4",
+     "longmemeval:7e974930:session41:chunk0",
+     "longmemeval:7e974930:session44:chunk0",
+     "longmemeval:7e974930:session44:chunk1"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "$420",
+    "latency_s": 13.597,
+    "prompt_tokens": 6770,
+    "sessions_used": [
+     44,
+     14,
+     26
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "$420",
+    "latency_s": 15.704,
+    "prompt_tokens": 7694,
+    "sessions_used": [
+     44,
+     33,
+     26
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "5496211bd73a3052bea0731c96c6a1216abaee70c69c06f3fbd7374aa2c5a8de",
+   "facts": {
+    "active_pristine": 415,
+    "superseded_pristine": 0,
+    "active_consolidated": 415,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "89941a93",
+   "question": "How many bikes do I currently own?",
+   "gold": "4",
+   "answer_session_ids": [
+    "answer_e1403127_1",
+    "answer_e1403127_2"
+   ],
+   "compile": {
+    "captures": 225,
+    "facts": 446
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "d01b19a32fec07175a6572c19e05801a8dca393513627d5a5782506997b150ac",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:14:19Z"
+   },
+   "arm_a": {
+    "answer": "Three",
+    "latency_s": 6.966,
+    "brief_tokens": 1723,
+    "prompt_tokens": 1917,
+    "citations_used": 17,
+    "citations": [
+     "longmemeval:89941a93:session4:chunk1",
+     "longmemeval:89941a93:session6:chunk2",
+     "longmemeval:89941a93:session6:chunk2",
+     "longmemeval:89941a93:session6:chunk4",
+     "longmemeval:89941a93:session6:chunk5",
+     "longmemeval:89941a93:session6:chunk6",
+     "longmemeval:89941a93:session12:chunk3",
+     "longmemeval:89941a93:session23:chunk2",
+     "longmemeval:89941a93:session29:chunk0",
+     "longmemeval:89941a93:session29:chunk2",
+     "longmemeval:89941a93:session29:chunk3",
+     "longmemeval:89941a93:session30:chunk3",
+     "longmemeval:89941a93:session33:chunk0",
+     "longmemeval:89941a93:session38:chunk1",
+     "longmemeval:89941a93:session38:chunk5",
+     "longmemeval:89941a93:session38:chunk5",
+     "longmemeval:89941a93:session49:chunk5"
+    ],
+    "gold_support_in_brief": false,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "Three",
+    "latency_s": 0.171,
+    "brief_tokens": 1723,
+    "prompt_tokens": 1917,
+    "citations_used": 17,
+    "citations": [
+     "longmemeval:89941a93:session4:chunk1",
+     "longmemeval:89941a93:session6:chunk2",
+     "longmemeval:89941a93:session6:chunk2",
+     "longmemeval:89941a93:session6:chunk4",
+     "longmemeval:89941a93:session6:chunk5",
+     "longmemeval:89941a93:session6:chunk6",
+     "longmemeval:89941a93:session12:chunk3",
+     "longmemeval:89941a93:session23:chunk2",
+     "longmemeval:89941a93:session29:chunk0",
+     "longmemeval:89941a93:session29:chunk2",
+     "longmemeval:89941a93:session29:chunk3",
+     "longmemeval:89941a93:session30:chunk3",
+     "longmemeval:89941a93:session33:chunk0",
+     "longmemeval:89941a93:session38:chunk1",
+     "longmemeval:89941a93:session38:chunk5",
+     "longmemeval:89941a93:session38:chunk5",
+     "longmemeval:89941a93:session49:chunk5"
+    ],
+    "gold_support_in_brief": false,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Three",
+    "latency_s": 10.809,
+    "prompt_tokens": 5327,
+    "sessions_used": [
+     6,
+     13,
+     39
+    ],
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "I don't have that information.",
+    "latency_s": 5.379,
+    "prompt_tokens": 2441,
+    "sessions_used": [
+     48,
+     39,
+     13
+    ],
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "3eb4068d3a14e494c4d9a482825313f5238bf1ee3d8ef7e9ac2a3ed2974b6543",
+   "facts": {
+    "active_pristine": 446,
+    "superseded_pristine": 0,
+    "active_consolidated": 446,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "8fb83627",
+   "question": "How many issues of National Geographic have I finished reading?",
+   "gold": "Five",
+   "answer_session_ids": [
+    "answer_966cecbb_1",
+    "answer_966cecbb_2"
+   ],
+   "compile": {
+    "captures": 223,
+    "facts": 426
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "badb98701c13552980245aba264a0fab229a62222351b697213eefe77415012c",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:15:03Z"
+   },
+   "arm_a": {
+    "answer": "Five",
+    "latency_s": 9.537,
+    "brief_tokens": 2786,
+    "prompt_tokens": 2984,
+    "citations_used": 23,
+    "citations": [
+     "longmemeval:8fb83627:session2:chunk4",
+     "longmemeval:8fb83627:session6:chunk7",
+     "longmemeval:8fb83627:session20:chunk1",
+     "longmemeval:8fb83627:session20:chunk1",
+     "longmemeval:8fb83627:session24:chunk0",
+     "longmemeval:8fb83627:session24:chunk2",
+     "longmemeval:8fb83627:session25:chunk8",
+     "longmemeval:8fb83627:session27:chunk1",
+     "longmemeval:8fb83627:session31:chunk0",
+     "longmemeval:8fb83627:session37:chunk2",
+     "longmemeval:8fb83627:session41:chunk5",
+     "longmemeval:8fb83627:session41:chunk5",
+     "longmemeval:8fb83627:session42:chunk2",
+     "longmemeval:8fb83627:session42:chunk5",
+     "longmemeval:8fb83627:session42:chunk6"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "Five",
+    "latency_s": 0.151,
+    "brief_tokens": 2786,
+    "prompt_tokens": 2984,
+    "citations_used": 23,
+    "citations": [
+     "longmemeval:8fb83627:session2:chunk4",
+     "longmemeval:8fb83627:session6:chunk7",
+     "longmemeval:8fb83627:session20:chunk1",
+     "longmemeval:8fb83627:session20:chunk1",
+     "longmemeval:8fb83627:session24:chunk0",
+     "longmemeval:8fb83627:session24:chunk2",
+     "longmemeval:8fb83627:session25:chunk8",
+     "longmemeval:8fb83627:session27:chunk1",
+     "longmemeval:8fb83627:session31:chunk0",
+     "longmemeval:8fb83627:session37:chunk2",
+     "longmemeval:8fb83627:session41:chunk5",
+     "longmemeval:8fb83627:session41:chunk5",
+     "longmemeval:8fb83627:session42:chunk2",
+     "longmemeval:8fb83627:session42:chunk5",
+     "longmemeval:8fb83627:session42:chunk6"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Five",
+    "latency_s": 16.733,
+    "prompt_tokens": 8219,
+    "sessions_used": [
+     24,
+     42,
+     31
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "Three",
+    "latency_s": 16.739,
+    "prompt_tokens": 8219,
+    "sessions_used": [
+     42,
+     31,
+     24
+    ],
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "02f6afe535051bb42b155b0fec3134a80a592e9e98698b81d9bef6c894943fb6",
+   "facts": {
+    "active_pristine": 426,
+    "superseded_pristine": 0,
+    "active_consolidated": 426,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "945e3d21",
+   "question": "How often do I attend yoga classes to help with my anxiety?",
+   "gold": "Three times a week.",
+   "answer_session_ids": [
+    "answer_6a4f8626_1",
+    "answer_6a4f8626_2"
+   ],
+   "compile": {
+    "captures": 224,
+    "facts": 534
+   },
+   "reused": true,
+   "reuse_reason": "sidecar-ok",
+   "pristine_db_sha256": "206ac3172eecbe8aa7ac6d7710bd536979a448da0714d90daa771fc030f3716c",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:15:46Z"
+   },
+   "arm_a": {
+    "answer": "Three times a week",
+    "latency_s": 8.584,
+    "brief_tokens": 2430,
+    "prompt_tokens": 2582,
+    "citations_used": 18,
+    "citations": [
+     "longmemeval:945e3d21:session3:chunk1",
+     "longmemeval:945e3d21:session3:chunk6",
+     "longmemeval:945e3d21:session3:chunk6",
+     "longmemeval:945e3d21:session19:chunk0",
+     "longmemeval:945e3d21:session24:chunk2",
+     "longmemeval:945e3d21:session29:chunk6",
+     "longmemeval:945e3d21:session29:chunk6",
+     "longmemeval:945e3d21:session29:chunk8",
+     "longmemeval:945e3d21:session36:chunk0",
+     "longmemeval:945e3d21:session36:chunk0",
+     "longmemeval:945e3d21:session36:chunk0",
+     "longmemeval:945e3d21:session36:chunk0",
+     "longmemeval:945e3d21:session36:chunk1",
+     "longmemeval:945e3d21:session39:chunk1",
+     "longmemeval:945e3d21:session41:chunk2",
+     "longmemeval:945e3d21:session41:chunk3",
+     "longmemeval:945e3d21:session41:chunk3",
+     "longmemeval:945e3d21:session41:chunk3"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "Three times a week",
+    "latency_s": 0.217,
+    "brief_tokens": 2430,
+    "prompt_tokens": 2582,
+    "citations_used": 18,
+    "citations": [
+     "longmemeval:945e3d21:session3:chunk1",
+     "longmemeval:945e3d21:session3:chunk6",
+     "longmemeval:945e3d21:session3:chunk6",
+     "longmemeval:945e3d21:session19:chunk0",
+     "longmemeval:945e3d21:session24:chunk2",
+     "longmemeval:945e3d21:session29:chunk6",
+     "longmemeval:945e3d21:session29:chunk6",
+     "longmemeval:945e3d21:session29:chunk8",
+     "longmemeval:945e3d21:session36:chunk0",
+     "longmemeval:945e3d21:session36:chunk0",
+     "longmemeval:945e3d21:session36:chunk0",
+     "longmemeval:945e3d21:session36:chunk0",
+     "longmemeval:945e3d21:session36:chunk1",
+     "longmemeval:945e3d21:session39:chunk1",
+     "longmemeval:945e3d21:session41:chunk2",
+     "longmemeval:945e3d21:session41:chunk3",
+     "longmemeval:945e3d21:session41:chunk3",
+     "longmemeval:945e3d21:session41:chunk3"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Three times a week",
+    "latency_s": 17.017,
+    "prompt_tokens": 8266,
+    "sessions_used": [
+     33,
+     36,
+     19
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "The session excerpts do not contain this information.",
+    "latency_s": 14.663,
+    "prompt_tokens": 7250,
+    "sessions_used": [
+     39,
+     36,
+     33
+    ],
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "flagged": 0,
+    "superseded": 0
+   },
+   "consolidated_reused": true,
+   "consolidated_db_sha256": "88cb444db8c466d44f0a17c3715691149fa9b5a168fb93eae8453b42482cb71e",
+   "facts": {
+    "active_pristine": 534,
+    "superseded_pristine": 0,
+    "active_consolidated": 534,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "a2f3aa27",
+   "question": "How many followers do I have on Instagram now?",
+   "gold": 1300,
+   "answer_session_ids": [
+    "answer_5126c02d_1",
+    "answer_5126c02d_2"
+   ],
+   "compile": {
+    "captures": 219,
+    "facts": 439,
+    "report": {
+     "captures": 219,
+     "facts_accepted": 439,
+     "facts_rejected": 60,
+     "rejections_by_reason": {
+      "subject_mismatch": 6,
+      "subject_unresolved": 53,
+      "weak_quote": 1
+     },
+     "failed_captures": 0,
+     "reject_rate": 0.12,
+     "reject_rate_high": false,
+     "duplicates_linked": 3,
+     "superseded": 0
+    }
+   },
+   "reused": false,
+   "reuse_reason": "db-missing",
+   "pristine_db_sha256": "90389ca5db0fe6154643d35040ac84e0550c1744e9bac0ddb6ebc1261f9bffd9",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:31:53Z"
+   },
+   "arm_a": {
+    "answer": "1,250",
+    "latency_s": 10.09,
+    "brief_tokens": 3145,
+    "prompt_tokens": 3317,
+    "citations_used": 25,
+    "citations": [
+     "longmemeval:a2f3aa27:session10:chunk0",
+     "longmemeval:a2f3aa27:session13:chunk8",
+     "longmemeval:a2f3aa27:session12:chunk0",
+     "longmemeval:a2f3aa27:session12:chunk1",
+     "longmemeval:a2f3aa27:session12:chunk1",
+     "longmemeval:a2f3aa27:session12:chunk2",
+     "longmemeval:a2f3aa27:session12:chunk3",
+     "longmemeval:a2f3aa27:session12:chunk4",
+     "longmemeval:a2f3aa27:session39:chunk0",
+     "longmemeval:a2f3aa27:session39:chunk2",
+     "longmemeval:a2f3aa27:session39:chunk4",
+     "longmemeval:a2f3aa27:session28:chunk2",
+     "longmemeval:a2f3aa27:session29:chunk2",
+     "longmemeval:a2f3aa27:session29:chunk9",
+     "longmemeval:a2f3aa27:session35:chunk0",
+     "longmemeval:a2f3aa27:session35:chunk1",
+     "longmemeval:a2f3aa27:session35:chunk1"
+    ],
+    "gold_support_in_brief": false,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "1,250",
+    "latency_s": 0.138,
+    "brief_tokens": 3145,
+    "prompt_tokens": 3317,
+    "citations_used": 25,
+    "citations": [
+     "longmemeval:a2f3aa27:session10:chunk0",
+     "longmemeval:a2f3aa27:session13:chunk8",
+     "longmemeval:a2f3aa27:session12:chunk0",
+     "longmemeval:a2f3aa27:session12:chunk1",
+     "longmemeval:a2f3aa27:session12:chunk1",
+     "longmemeval:a2f3aa27:session12:chunk2",
+     "longmemeval:a2f3aa27:session12:chunk3",
+     "longmemeval:a2f3aa27:session12:chunk4",
+     "longmemeval:a2f3aa27:session39:chunk0",
+     "longmemeval:a2f3aa27:session39:chunk2",
+     "longmemeval:a2f3aa27:session39:chunk4",
+     "longmemeval:a2f3aa27:session28:chunk2",
+     "longmemeval:a2f3aa27:session29:chunk2",
+     "longmemeval:a2f3aa27:session29:chunk9",
+     "longmemeval:a2f3aa27:session35:chunk0",
+     "longmemeval:a2f3aa27:session35:chunk1",
+     "longmemeval:a2f3aa27:session35:chunk1"
+    ],
+    "gold_support_in_brief": false,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "1250",
+    "latency_s": 17.061,
+    "prompt_tokens": 8408,
+    "sessions_used": [
+     39,
+     12,
+     26
+    ],
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "Close to 1300",
+    "latency_s": 12.823,
+    "prompt_tokens": 6363,
+    "sessions_used": [
+     26,
+     39,
+     25
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "superseded": 0,
+    "flagged": 0
+   },
+   "consolidated_reused": false,
+   "consolidated_db_sha256": "b326cec4949726a9a5007469f44991ef92b4b7846330ff1a39fc0988cc4fc1fd",
+   "facts": {
+    "active_pristine": 439,
+    "superseded_pristine": 0,
+    "active_consolidated": 439,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "affe2881",
+   "question": "How many different species of birds have I seen in my local park?",
+   "gold": "32",
+   "answer_session_ids": [
+    "answer_90de9b4d_1",
+    "answer_90de9b4d_2"
+   ],
+   "compile": {
+    "captures": 220,
+    "facts": 424,
+    "report": {
+     "captures": 220,
+     "facts_accepted": 424,
+     "facts_rejected": 93,
+     "rejections_by_reason": {
+      "quote not found in capture": 2,
+      "subject_mismatch": 2,
+      "subject_unresolved": 89
+     },
+     "failed_captures": 0,
+     "reject_rate": 0.18,
+     "reject_rate_high": false,
+     "duplicates_linked": 5,
+     "superseded": 0
+    }
+   },
+   "reused": false,
+   "reuse_reason": "db-missing",
+   "pristine_db_sha256": "fdd6de732b6fd063e1ab89bc66a136d60a9c9c134e42f41be9ae008371051c46",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T19:47:51Z"
+   },
+   "arm_a": {
+    "answer": "32",
+    "latency_s": 7.993,
+    "brief_tokens": 1881,
+    "prompt_tokens": 2066,
+    "citations_used": 16,
+    "citations": [
+     "longmemeval:affe2881:session1:chunk2",
+     "longmemeval:affe2881:session5:chunk1",
+     "longmemeval:affe2881:session11:chunk0",
+     "longmemeval:affe2881:session14:chunk2",
+     "longmemeval:affe2881:session16:chunk4",
+     "longmemeval:affe2881:session16:chunk4",
+     "longmemeval:affe2881:session17:chunk0",
+     "longmemeval:affe2881:session17:chunk1",
+     "longmemeval:affe2881:session20:chunk0",
+     "longmemeval:affe2881:session21:chunk4",
+     "longmemeval:affe2881:session24:chunk0",
+     "longmemeval:affe2881:session24:chunk0",
+     "longmemeval:affe2881:session24:chunk0",
+     "longmemeval:affe2881:session24:chunk0",
+     "longmemeval:affe2881:session24:chunk1",
+     "longmemeval:affe2881:session32:chunk2"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "32",
+    "latency_s": 0.151,
+    "brief_tokens": 1881,
+    "prompt_tokens": 2066,
+    "citations_used": 16,
+    "citations": [
+     "longmemeval:affe2881:session1:chunk2",
+     "longmemeval:affe2881:session5:chunk1",
+     "longmemeval:affe2881:session11:chunk0",
+     "longmemeval:affe2881:session14:chunk2",
+     "longmemeval:affe2881:session16:chunk4",
+     "longmemeval:affe2881:session16:chunk4",
+     "longmemeval:affe2881:session17:chunk0",
+     "longmemeval:affe2881:session17:chunk1",
+     "longmemeval:affe2881:session20:chunk0",
+     "longmemeval:affe2881:session21:chunk4",
+     "longmemeval:affe2881:session24:chunk0",
+     "longmemeval:affe2881:session24:chunk0",
+     "longmemeval:affe2881:session24:chunk0",
+     "longmemeval:affe2881:session24:chunk0",
+     "longmemeval:affe2881:session24:chunk1",
+     "longmemeval:affe2881:session32:chunk2"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "32",
+    "latency_s": 19.13,
+    "prompt_tokens": 9440,
+    "sessions_used": [
+     16,
+     24,
+     1
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "32",
+    "latency_s": 15.685,
+    "prompt_tokens": 7695,
+    "sessions_used": [
+     24,
+     16,
+     3
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "superseded": 0,
+    "flagged": 0
+   },
+   "consolidated_reused": false,
+   "consolidated_db_sha256": "88036f0188718c884d7578ec3be04ec9000e32c50b25e03c513f012236cbfc4b",
+   "facts": {
+    "active_pristine": 424,
+    "superseded_pristine": 0,
+    "active_consolidated": 424,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "ce6d2d27",
+   "question": "What day of the week do I take a cocktail-making class?",
+   "gold": "Friday",
+   "answer_session_ids": [
+    "answer_73540165_1",
+    "answer_73540165_2"
+   ],
+   "compile": {
+    "captures": 225,
+    "facts": 385,
+    "report": {
+     "captures": 225,
+     "facts_accepted": 385,
+     "facts_rejected": 79,
+     "rejections_by_reason": {
+      "quote not found in capture": 8,
+      "subject_unresolved": 69,
+      "weak_quote": 2
+     },
+     "failed_captures": 0,
+     "reject_rate": 0.17,
+     "reject_rate_high": false,
+     "duplicates_linked": 1,
+     "superseded": 0
+    }
+   },
+   "reused": false,
+   "reuse_reason": "db-missing",
+   "pristine_db_sha256": "cd9c3c0e6ce330f68152e9dff22edcf85ca98a8f152615ee125e4a38ba8e9019",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T20:03:12Z"
+   },
+   "arm_a": {
+    "answer": "Friday",
+    "latency_s": 8.132,
+    "brief_tokens": 1938,
+    "prompt_tokens": 2181,
+    "citations_used": 16,
+    "citations": [
+     "longmemeval:ce6d2d27:session0:chunk0",
+     "longmemeval:ce6d2d27:session1:chunk1",
+     "longmemeval:ce6d2d27:session2:chunk1",
+     "longmemeval:ce6d2d27:session8:chunk0",
+     "longmemeval:ce6d2d27:session8:chunk4",
+     "longmemeval:ce6d2d27:session8:chunk5",
+     "longmemeval:ce6d2d27:session12:chunk6",
+     "longmemeval:ce6d2d27:session15:chunk3",
+     "longmemeval:ce6d2d27:session16:chunk0",
+     "longmemeval:ce6d2d27:session16:chunk0",
+     "longmemeval:ce6d2d27:session16:chunk0",
+     "longmemeval:ce6d2d27:session18:chunk2",
+     "longmemeval:ce6d2d27:session17:chunk0",
+     "longmemeval:ce6d2d27:session17:chunk3",
+     "longmemeval:ce6d2d27:session17:chunk4",
+     "longmemeval:ce6d2d27:session30:chunk1"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "Friday",
+    "latency_s": 0.141,
+    "brief_tokens": 1938,
+    "prompt_tokens": 2181,
+    "citations_used": 16,
+    "citations": [
+     "longmemeval:ce6d2d27:session0:chunk0",
+     "longmemeval:ce6d2d27:session1:chunk1",
+     "longmemeval:ce6d2d27:session2:chunk1",
+     "longmemeval:ce6d2d27:session8:chunk0",
+     "longmemeval:ce6d2d27:session8:chunk4",
+     "longmemeval:ce6d2d27:session8:chunk5",
+     "longmemeval:ce6d2d27:session12:chunk6",
+     "longmemeval:ce6d2d27:session15:chunk3",
+     "longmemeval:ce6d2d27:session16:chunk0",
+     "longmemeval:ce6d2d27:session16:chunk0",
+     "longmemeval:ce6d2d27:session16:chunk0",
+     "longmemeval:ce6d2d27:session18:chunk2",
+     "longmemeval:ce6d2d27:session17:chunk0",
+     "longmemeval:ce6d2d27:session17:chunk3",
+     "longmemeval:ce6d2d27:session17:chunk4",
+     "longmemeval:ce6d2d27:session30:chunk1"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Friday",
+    "latency_s": 18.882,
+    "prompt_tokens": 9332,
+    "sessions_used": [
+     17,
+     1,
+     12
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "Friday",
+    "latency_s": 18.189,
+    "prompt_tokens": 8982,
+    "sessions_used": [
+     17,
+     16,
+     12
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "superseded": 0,
+    "flagged": 0
+   },
+   "consolidated_reused": false,
+   "consolidated_db_sha256": "e60ee3d0e311b95d5be55d98a14bc57daa950ca1f44ea24bb863d66ffe8851f8",
+   "facts": {
+    "active_pristine": 385,
+    "superseded_pristine": 0,
+    "active_consolidated": 385,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "d7c942c3",
+   "question": "Is my mom using the same grocery list method as me?",
+   "gold": "Yes.",
+   "answer_session_ids": [
+    "answer_eecb10d9_1",
+    "answer_eecb10d9_2"
+   ],
+   "compile": {
+    "captures": 221,
+    "facts": 414,
+    "report": {
+     "captures": 221,
+     "facts_accepted": 414,
+     "facts_rejected": 72,
+     "rejections_by_reason": {
+      "quote not found in capture": 1,
+      "subject_mismatch": 5,
+      "subject_unresolved": 66
+     },
+     "failed_captures": 0,
+     "reject_rate": 0.148,
+     "reject_rate_high": false,
+     "duplicates_linked": 2,
+     "superseded": 0
+    }
+   },
+   "reused": false,
+   "reuse_reason": "db-missing",
+   "pristine_db_sha256": "f0c5e3e9fb90814bc9ed8236d157dc15ba4cbb628c560098ea66e52ec48652ec",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T20:19:08Z"
+   },
+   "arm_a": {
+    "answer": "No",
+    "latency_s": 8.312,
+    "brief_tokens": 1869,
+    "prompt_tokens": 2114,
+    "citations_used": 16,
+    "citations": [
+     "longmemeval:d7c942c3:session1:chunk1",
+     "longmemeval:d7c942c3:session1:chunk2",
+     "longmemeval:d7c942c3:session1:chunk3",
+     "longmemeval:d7c942c3:session1:chunk3",
+     "longmemeval:d7c942c3:session20:chunk2",
+     "longmemeval:d7c942c3:session21:chunk2",
+     "longmemeval:d7c942c3:session21:chunk2",
+     "longmemeval:d7c942c3:session33:chunk4",
+     "longmemeval:d7c942c3:session33:chunk4",
+     "longmemeval:d7c942c3:session36:chunk0",
+     "longmemeval:d7c942c3:session36:chunk1",
+     "longmemeval:d7c942c3:session43:chunk2",
+     "longmemeval:d7c942c3:session48:chunk0",
+     "longmemeval:d7c942c3:session48:chunk2",
+     "longmemeval:d7c942c3:session48:chunk2",
+     "longmemeval:d7c942c3:session48:chunk2"
+    ],
+    "gold_support_in_brief": false,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "No",
+    "latency_s": 0.147,
+    "brief_tokens": 1869,
+    "prompt_tokens": 2114,
+    "citations_used": 16,
+    "citations": [
+     "longmemeval:d7c942c3:session1:chunk1",
+     "longmemeval:d7c942c3:session1:chunk2",
+     "longmemeval:d7c942c3:session1:chunk3",
+     "longmemeval:d7c942c3:session1:chunk3",
+     "longmemeval:d7c942c3:session20:chunk2",
+     "longmemeval:d7c942c3:session21:chunk2",
+     "longmemeval:d7c942c3:session21:chunk2",
+     "longmemeval:d7c942c3:session33:chunk4",
+     "longmemeval:d7c942c3:session33:chunk4",
+     "longmemeval:d7c942c3:session36:chunk0",
+     "longmemeval:d7c942c3:session36:chunk1",
+     "longmemeval:d7c942c3:session43:chunk2",
+     "longmemeval:d7c942c3:session48:chunk0",
+     "longmemeval:d7c942c3:session48:chunk2",
+     "longmemeval:d7c942c3:session48:chunk2",
+     "longmemeval:d7c942c3:session48:chunk2"
+    ],
+    "gold_support_in_brief": false,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Yes",
+    "latency_s": 11.799,
+    "prompt_tokens": 5824,
+    "sessions_used": [
+     36,
+     1,
+     38
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "Yes, a shared grocery list app",
+    "latency_s": 9.168,
+    "prompt_tokens": 4403,
+    "sessions_used": [
+     38,
+     36,
+     3
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "superseded": 0,
+    "flagged": 0
+   },
+   "consolidated_reused": false,
+   "consolidated_db_sha256": "509f704cef11b52b86494ae77c852451692cf8522ecc5c23469ab33e6a5a38d8",
+   "facts": {
+    "active_pristine": 414,
+    "superseded_pristine": 0,
+    "active_consolidated": 414,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "e61a7584",
+   "question": "How long have I had my cat, Luna?",
+   "gold": "9 months",
+   "answer_session_ids": [
+    "answer_f25c32f5_1",
+    "answer_f25c32f5_2"
+   ],
+   "compile": {
+    "captures": 232,
+    "facts": 403,
+    "report": {
+     "captures": 232,
+     "facts_accepted": 403,
+     "facts_rejected": 80,
+     "rejections_by_reason": {
+      "quote not found in capture": 1,
+      "subject_mismatch": 1,
+      "subject_unresolved": 78
+     },
+     "failed_captures": 0,
+     "reject_rate": 0.166,
+     "reject_rate_high": false,
+     "duplicates_linked": 5,
+     "superseded": 0
+    }
+   },
+   "reused": false,
+   "reuse_reason": "db-missing",
+   "pristine_db_sha256": "8646ec311371aace8599f7911acd6d1713af409a8a5116a214b65a8eda83d67b",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T20:34:25Z"
+   },
+   "arm_a": {
+    "answer": "About 6 months (as of August 11, 2023)",
+    "latency_s": 9.697,
+    "brief_tokens": 2633,
+    "prompt_tokens": 2942,
+    "citations_used": 30,
+    "citations": [
+     "longmemeval:e61a7584:session9:chunk1",
+     "longmemeval:e61a7584:session9:chunk1",
+     "longmemeval:e61a7584:session9:chunk1",
+     "longmemeval:e61a7584:session16:chunk0",
+     "longmemeval:e61a7584:session16:chunk0",
+     "longmemeval:e61a7584:session16:chunk1",
+     "longmemeval:e61a7584:session16:chunk2",
+     "longmemeval:e61a7584:session16:chunk2",
+     "longmemeval:e61a7584:session16:chunk3",
+     "longmemeval:e61a7584:session16:chunk4",
+     "longmemeval:e61a7584:session16:chunk5",
+     "longmemeval:e61a7584:session31:chunk0",
+     "longmemeval:e61a7584:session31:chunk1",
+     "longmemeval:e61a7584:session31:chunk1",
+     "longmemeval:e61a7584:session31:chunk1",
+     "longmemeval:e61a7584:session31:chunk2",
+     "longmemeval:e61a7584:session31:chunk2",
+     "longmemeval:e61a7584:session31:chunk3",
+     "longmemeval:e61a7584:session31:chunk4",
+     "longmemeval:e61a7584:session31:chunk4"
+    ],
+    "gold_support_in_brief": true,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "About 6 months (as of August 11, 2023)",
+    "latency_s": 0.358,
+    "brief_tokens": 2633,
+    "prompt_tokens": 2942,
+    "citations_used": 30,
+    "citations": [
+     "longmemeval:e61a7584:session9:chunk1",
+     "longmemeval:e61a7584:session9:chunk1",
+     "longmemeval:e61a7584:session9:chunk1",
+     "longmemeval:e61a7584:session16:chunk0",
+     "longmemeval:e61a7584:session16:chunk0",
+     "longmemeval:e61a7584:session16:chunk1",
+     "longmemeval:e61a7584:session16:chunk2",
+     "longmemeval:e61a7584:session16:chunk2",
+     "longmemeval:e61a7584:session16:chunk3",
+     "longmemeval:e61a7584:session16:chunk4",
+     "longmemeval:e61a7584:session16:chunk5",
+     "longmemeval:e61a7584:session31:chunk0",
+     "longmemeval:e61a7584:session31:chunk1",
+     "longmemeval:e61a7584:session31:chunk1",
+     "longmemeval:e61a7584:session31:chunk1",
+     "longmemeval:e61a7584:session31:chunk2",
+     "longmemeval:e61a7584:session31:chunk2",
+     "longmemeval:e61a7584:session31:chunk3",
+     "longmemeval:e61a7584:session31:chunk4",
+     "longmemeval:e61a7584:session31:chunk4"
+    ],
+    "gold_support_in_brief": true,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "About 9 months",
+    "latency_s": 12.183,
+    "prompt_tokens": 6032,
+    "sessions_used": [
+     16,
+     31,
+     32
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "About 9 months",
+    "latency_s": 8.533,
+    "prompt_tokens": 4118,
+    "sessions_used": [
+     32,
+     31,
+     34
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "superseded": 0,
+    "flagged": 0
+   },
+   "consolidated_reused": false,
+   "consolidated_db_sha256": "9102ce4992f57abc98df13280aa16536dd1273233b11af2f9ee0b3b9a11d9bbb",
+   "facts": {
+    "active_pristine": 403,
+    "superseded_pristine": 0,
+    "active_consolidated": 403,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "f685340e",
+   "question": "How often do I play tennis with my friends at the local park previously? How often do I play now?",
+   "gold": "Previously, you play tennis with your friends at the local park every week (on Sunday). Currently, you play tennis every other week (on Sunday).",
+   "answer_session_ids": [
+    "answer_25df025b_1",
+    "answer_25df025b_2"
+   ],
+   "compile": {
+    "captures": 225,
+    "facts": 438,
+    "report": {
+     "captures": 225,
+     "facts_accepted": 438,
+     "facts_rejected": 99,
+     "rejections_by_reason": {
+      "quote not found in capture": 3,
+      "subject_mismatch": 1,
+      "subject_unresolved": 94,
+      "weak_quote": 1
+     },
+     "failed_captures": 0,
+     "reject_rate": 0.184,
+     "reject_rate_high": false,
+     "duplicates_linked": 5,
+     "superseded": 0
+    }
+   },
+   "reused": false,
+   "reuse_reason": "db-missing",
+   "pristine_db_sha256": "d1f96b0cb6942aa992f62db0ffec48d3ec0b95063e6e574a83e5747cda289b54",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T20:50:31Z"
+   },
+   "arm_a": {
+    "answer": "Previously weekly; now every other week (next: 2023-08-06).",
+    "latency_s": 8.233,
+    "brief_tokens": 2119,
+    "prompt_tokens": 2228,
+    "citations_used": 16,
+    "citations": [
+     "longmemeval:f685340e:session1:chunk0",
+     "longmemeval:f685340e:session1:chunk1",
+     "longmemeval:f685340e:session1:chunk1",
+     "longmemeval:f685340e:session5:chunk2",
+     "longmemeval:f685340e:session5:chunk5",
+     "longmemeval:f685340e:session9:chunk0",
+     "longmemeval:f685340e:session9:chunk5",
+     "longmemeval:f685340e:session14:chunk0",
+     "longmemeval:f685340e:session18:chunk7",
+     "longmemeval:f685340e:session21:chunk3",
+     "longmemeval:f685340e:session25:chunk1",
+     "longmemeval:f685340e:session36:chunk6",
+     "longmemeval:f685340e:session37:chunk1",
+     "longmemeval:f685340e:session38:chunk0",
+     "longmemeval:f685340e:session38:chunk4",
+     "longmemeval:f685340e:session39:chunk0"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "Previously weekly; now every other week (next: 2023-08-06).",
+    "latency_s": 0.412,
+    "brief_tokens": 2119,
+    "prompt_tokens": 2228,
+    "citations_used": 16,
+    "citations": [
+     "longmemeval:f685340e:session1:chunk0",
+     "longmemeval:f685340e:session1:chunk1",
+     "longmemeval:f685340e:session1:chunk1",
+     "longmemeval:f685340e:session5:chunk2",
+     "longmemeval:f685340e:session5:chunk5",
+     "longmemeval:f685340e:session9:chunk0",
+     "longmemeval:f685340e:session9:chunk5",
+     "longmemeval:f685340e:session14:chunk0",
+     "longmemeval:f685340e:session18:chunk7",
+     "longmemeval:f685340e:session21:chunk3",
+     "longmemeval:f685340e:session25:chunk1",
+     "longmemeval:f685340e:session36:chunk6",
+     "longmemeval:f685340e:session37:chunk1",
+     "longmemeval:f685340e:session38:chunk0",
+     "longmemeval:f685340e:session38:chunk4",
+     "longmemeval:f685340e:session39:chunk0"
+    ],
+    "gold_support_in_brief": true,
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Previously: every week; Now: every other week",
+    "latency_s": 14.585,
+    "prompt_tokens": 7236,
+    "sessions_used": [
+     1,
+     38,
+     31
+    ],
+    "correct": true,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "Every other week (previously); no new frequency mentioned \u2014 you still have a game this Sunday.",
+    "latency_s": 17.886,
+    "prompt_tokens": 8625,
+    "sessions_used": [
+     38,
+     31,
+     10
+    ],
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "superseded": 0,
+    "flagged": 0
+   },
+   "consolidated_reused": false,
+   "consolidated_db_sha256": "5805b146b8339d95c22b6f4ddf13d97524a3f825f7ccc985fddc1491af79dada",
+   "facts": {
+    "active_pristine": 438,
+    "superseded_pristine": 0,
+    "active_consolidated": 438,
+    "superseded_consolidated": 0
+   }
+  },
+  {
+   "question_id": "f685340e_abs",
+   "question": "How often do I play table tennis with my friends at the local park?",
+   "gold": "The information provided is not enough. You mentioned playing tennis but not table tennis.",
+   "answer_session_ids": [
+    "answer_25df025b_abs_1",
+    "answer_25df025b_abs_2"
+   ],
+   "compile": {
+    "captures": 227,
+    "facts": 393,
+    "report": {
+     "captures": 227,
+     "facts_accepted": 393,
+     "facts_rejected": 76,
+     "rejections_by_reason": {
+      "quote not found in capture": 1,
+      "subject_unresolved": 70,
+      "weak_quote": 5
+     },
+     "failed_captures": 0,
+     "reject_rate": 0.162,
+     "reject_rate_high": false,
+     "duplicates_linked": 7,
+     "superseded": 0
+    }
+   },
+   "reused": false,
+   "reuse_reason": "db-missing",
+   "pristine_db_sha256": "2181ae257138c61fc8a17bc7c9e85d964feb6cd58433016a5434e8a8321819f1",
+   "max_mutation_rate": 0.2,
+   "judge_identity": {
+    "name": "spark-side-model",
+    "label": "spark-side-model",
+    "upstream_model": "DeepSeek-V4.1-Flash-1017",
+    "utc": "2026-11-13T21:05:43Z"
+   },
+   "arm_a": {
+    "answer": "Every other week",
+    "latency_s": 8.84,
+    "brief_tokens": 2077,
+    "prompt_tokens": 2244,
+    "citations_used": 17,
+    "citations": [
+     "longmemeval:f685340e_abs:session0:chunk0",
+     "longmemeval:f685340e_abs:session0:chunk1",
+     "longmemeval:f685340e_abs:session7:chunk4",
+     "longmemeval:f685340e_abs:session5:chunk0",
+     "longmemeval:f685340e_abs:session5:chunk0",
+     "longmemeval:f685340e_abs:session3:chunk4",
+     "longmemeval:f685340e_abs:session3:chunk5",
+     "longmemeval:f685340e_abs:session32:chunk3",
+     "longmemeval:f685340e_abs:session30:chunk0",
+     "longmemeval:f685340e_abs:session30:chunk0",
+     "longmemeval:f685340e_abs:session30:chunk8",
+     "longmemeval:f685340e_abs:session26:chunk3",
+     "longmemeval:f685340e_abs:session19:chunk2",
+     "longmemeval:f685340e_abs:session19:chunk3",
+     "longmemeval:f685340e_abs:session40:chunk0",
+     "longmemeval:f685340e_abs:session40:chunk0",
+     "longmemeval:f685340e_abs:session23:chunk0"
+    ],
+    "gold_support_in_brief": false,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_b": {
+    "answer": "Every other week",
+    "latency_s": 0.133,
+    "brief_tokens": 2077,
+    "prompt_tokens": 2244,
+    "citations_used": 17,
+    "citations": [
+     "longmemeval:f685340e_abs:session0:chunk0",
+     "longmemeval:f685340e_abs:session0:chunk1",
+     "longmemeval:f685340e_abs:session7:chunk4",
+     "longmemeval:f685340e_abs:session5:chunk0",
+     "longmemeval:f685340e_abs:session5:chunk0",
+     "longmemeval:f685340e_abs:session3:chunk4",
+     "longmemeval:f685340e_abs:session3:chunk5",
+     "longmemeval:f685340e_abs:session32:chunk3",
+     "longmemeval:f685340e_abs:session30:chunk0",
+     "longmemeval:f685340e_abs:session30:chunk0",
+     "longmemeval:f685340e_abs:session30:chunk8",
+     "longmemeval:f685340e_abs:session26:chunk3",
+     "longmemeval:f685340e_abs:session19:chunk2",
+     "longmemeval:f685340e_abs:session19:chunk3",
+     "longmemeval:f685340e_abs:session40:chunk0",
+     "longmemeval:f685340e_abs:session40:chunk0",
+     "longmemeval:f685340e_abs:session23:chunk0"
+    ],
+    "gold_support_in_brief": false,
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_c": {
+    "answer": "Every other week",
+    "latency_s": 12.904,
+    "prompt_tokens": 6427,
+    "sessions_used": [
+     0,
+     40,
+     10
+    ],
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "arm_d": {
+    "answer": "Every other week",
+    "latency_s": 13.982,
+    "prompt_tokens": 6987,
+    "sessions_used": [
+     40,
+     3,
+     10
+    ],
+    "correct": false,
+    "judge_ambiguous": false
+   },
+   "consolidation": {
+    "duplicates_linked": 0,
+    "superseded": 0,
+    "flagged": 0
+   },
+   "consolidated_reused": false,
+   "consolidated_db_sha256": "76681f0625091a2b21a7b26fd757887dbd407d76fee529d039ebad92031bdafd",
+   "facts": {
+    "active_pristine": 393,
+    "superseded_pristine": 0,
+    "active_consolidated": 393,
+    "superseded_consolidated": 0
+   }
+  }
+ ],
+ "partial": false,
+ "elapsed_s": 7165.4
+}
