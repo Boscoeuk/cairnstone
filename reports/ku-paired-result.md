@@ -1,7 +1,8 @@
 # Knowledge-update experiment (phase 17 Part B): measured result
 
 **LOCAL-JUDGED. Frozen code `028e324`, run head `a84e55a`, budget 600 tokens,
-mutation rate 0.2, n=20, complete, 7,165 s.**
+mutation rate 0.2, n=20, complete. Disclosure: the 7,165 s session compiled 7 brains; 13 were
+compiled earlier and reused through their sidecars.**
 
 This is the decisive test of the consolidation thesis: for each knowledge-update question, answer
 from a pristine brain, run the consolidation pass on a copy, and answer again from the copy. If the
@@ -27,9 +28,16 @@ Mutations produced by the consolidation pass across all 20 brains:
     total_flagged: 0
 
 The pass changed nothing, so arms (a) and (b) are the same brain read twice. This is not a failure of
-the harness — the harness did what it was built to do, and the provenance sidecars prove arm (a) read
-an unconsolidated brain while arm (b) read the copy. It is a failure of the mechanism to recognise a
-knowledge update at all.
+the harness — the provenance sidecars prove arm (a) read an unconsolidated brain while arm (b) read
+the copy.
+
+**Corrected by Tes review (t_d67491f3): (b) = (a) was guaranteed by construction.** `compile_all`
+already runs `dedupe()` and `supersede_contradictions()`, and `consolidate()` runs the same two
+deterministic functions again; it is idempotent on an unchanged brain by design. So the paired
+comparison cannot see the pass at work even with perfect update detection — arm (a) would have to be
+a brain compiled *without* that pass for the comparison to mean anything. The evidence that the
+mechanism misses updates is a different number: **0 supersessions at compile time across all 20
+brains**. That number is what causes 1-3 explain, and it is the number that matters.
 
 ## Why it happened — measured, not guessed
 
@@ -60,12 +68,14 @@ So the honest statement is: **consolidation, as implemented, is a no-op on LongM
 knowledge-update haystacks.** The thesis is not disproved — it is untested, because the pass has no
 mechanism to detect the updates it is meant to resolve.
 
-## A second, unwelcome data point
+## Footnote: keyword retrieval on these questions
 
-Keyword retrieval (arm c) scored **0.85 against 0.75** for the compiled brain on these questions. On
-the LoCoMo mix the compiled brief led; on knowledge updates specifically it trails raw keyword
-retrieval. That is consistent with the diagnosis: on this question type the compiled brain adds
-structure and cost but carries no consolidated state to exploit.
+Arm (c) was right on 2 questions where arm (a) was wrong (`d7c942c3`, `e61a7584`) and never the
+reverse: exact p=0.5, which is the smallest p two discordant pairs can produce. At n=20 this is
+uninformative, not a direction. `e61a7584` ("How long have I had my cat Luna?", gold 9 months) is
+worth naming as a case study: the stale 6-month fact stayed active because the two facts differ in
+subject and verb ("Luna has been with her owner" vs "the user has had Luna"), which no proposed fix
+catches. Extraction also mislabels Luna as a dog and merges two different Alexes on `people/alex`.
 
 ## What this means for the product claim
 
