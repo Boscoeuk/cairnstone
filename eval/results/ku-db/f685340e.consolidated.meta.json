@@ -1,0 +1,15 @@
+{
+ "code_sha": "028e3240cd0f289ae271c1e8d51cfdf61bc22811",
+ "config_sha256": "9e24486081157264d3b20b18790ba6aa49e31d0818e96dc12363e139167a6004",
+ "consolidation": {
+  "duplicates_linked": 0,
+  "flagged": 0,
+  "superseded": 0
+ },
+ "created_utc": "2026-11-13T20:49:50Z",
+ "db_sha256": "5805b146b8339d95c22b6f4ddf13d97524a3f825f7ccc985fddc1491af79dada",
+ "max_mutation_rate": 0.2,
+ "question_id": "f685340e",
+ "run_head_sha": "a84e55a111f40e9f5d6e6f207155d9b91f0fa50c",
+ "source_db_sha256": "d1f96b0cb6942aa992f62db0ffec48d3ec0b95063e6e574a83e5747cda289b54"
+}

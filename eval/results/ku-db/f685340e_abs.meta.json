@@ -1,0 +1,12 @@
+{
+ "captures": 227,
+ "code_sha": "028e3240cd0f289ae271c1e8d51cfdf61bc22811",
+ "compile_finished_utc": "2026-11-13T21:05:07Z",
+ "compile_started_utc": "2026-11-13T20:50:33Z",
+ "config_sha256": "9e24486081157264d3b20b18790ba6aa49e31d0818e96dc12363e139167a6004",
+ "dataset_sha256": "d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442",
+ "db_sha256": "2181ae257138c61fc8a17bc7c9e85d964feb6cd58433016a5434e8a8321819f1",
+ "facts": 393,
+ "question_id": "f685340e_abs",
+ "run_head_sha": "a84e55a111f40e9f5d6e6f207155d9b91f0fa50c"
+}

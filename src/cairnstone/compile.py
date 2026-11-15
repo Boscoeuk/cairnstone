@@ -1347,6 +1347,46 @@ def _is_identifier_digit(norm, match):
     return label.group(1).lower() in _IDENTIFIER_LABELS
 
 
+# Phase 18 (rev 4): a number attached to a unit of measure is a
+# specification of the thing being described ("a 5 kW solar system",
+# "a 2 TB drive"), not a value that changes. Two facts about different
+# specifications are different claims, so the number stays in the key.
+# Measured: "Average cost for a 5 kW solar system ... $12,500" was being
+# superseded by "Average cost for a 10 kW solar system ... $25,000".
+_SPEC_UNIT_TOKENS = frozenset("""
+    kw kwh mw mhz ghz hz khz gb tb mb kb kg mg ml km cm mm mph ft
+    inch inches mile miles litre liter litres liters gram grams
+    watt watts volt volts amp amps
+""".split())
+
+_SPEC_STOPWORDS = frozenset("""
+    and or but of in on at to for with from by per as is are was were
+    the a an this that these those it its
+""".split())
+
+_SPEC_UNIT_RE = re.compile(r"\s*(%s)\b" % "|".join(sorted(_SPEC_UNIT_TOKENS,
+                                                          key=len, reverse=True)),
+                           re.I)
+
+
+_SPEC_NOUN_RE = re.compile(r"\s+([a-z][a-z'-]{2,})\b")
+
+
+def _is_spec_digit(norm, match):
+    """True when the digit at `match` is followed by a unit of measure AND a
+    noun after it — a specification of that noun ("5 kW solar system"), not a
+    quantity ("ran 5 km"). The noun requirement is what separates the two:
+    a trailing "5 km" is a value that can change, a leading "5 kW" describes
+    the thing being priced, sized or compared."""
+    unit = _SPEC_UNIT_RE.match(norm, match.end())
+    if not unit:
+        return False
+    noun = _SPEC_NOUN_RE.match(norm, unit.end())
+    if not noun:
+        return False
+    return noun.group(1) not in _SPEC_STOPWORDS
+
+
 def _split_subject_slot(text):
     """Split a fact into (subject/slot key, value tuple).
 
@@ -1380,8 +1420,9 @@ def _split_subject_slot(text):
         return (_canonical_slot_key(norm.lower()) or None, None)
     parts, values, pos = [], [], 0
     for m in matches:
-        if (m.group(0)[0].isdigit() and _is_identifier_digit(norm, m)):
-            continue  # F3b: part of a name — stays in the key text
+        if (m.group(0)[0].isdigit() and (_is_identifier_digit(norm, m)
+                                         or _is_spec_digit(norm, m))):
+            continue  # F3b/F19: part of a name or a specification — key text
         parts.append(norm[pos:m.start()])
         values.append(m.group(0).lower())
         pos = m.end()
@@ -1430,17 +1471,17 @@ def _canonical_slot_key(residual):
     return " ".join(tokens)
 
 
-# Phase 18 (A1-A3): quantity slots. Counts, durations and frequencies become
-# slots of their own, so a changed number supersedes the older claim even when
-# the extractor's phrasing differs. Key shape: cat:qty:<subject>:<attribute>:<unit>
-# with the normalised value. The attribute is the object head noun (counts) or
-# the measured noun (durations/frequencies): the first content noun after the
-# quantity, skipping prepositions and possessives; when no noun follows (the
-# common shape of duration and frequency claims — "for about 6 months", "twice
-# a week") it is the nearest content noun before the quantity, scanning
-# backward past verbs, prepositions and possessive phrases, with compound heads
-# ("yoga classes") folding to their modifier ("yoga"). The subject is the
-# nearest content noun before the quantity, found by the same backward scan.
+# Phase 18 (A1-A3), tightened rev 3: quantity slots. Counts, durations and
+# frequencies become slots of their own, so a changed number supersedes the
+# older claim even when the extractor's phrasing differs. Key shape:
+# cat:qty:<subject>:<attribute>:<unit> with the normalised value. The
+# attribute is the object head noun after the number for a count (skipping
+# prepositions and possessives, rule 4); for a duration or frequency it is
+# the measured/activity head noun — the nearest content noun before the
+# quantity, scanning backward past verbs, prepositions and possessive
+# phrases, with compound heads ("yoga classes") folding to their modifier
+# ("yoga") — the same scan that yields the subject, so it lands on the
+# object when there is one and on the subject otherwise.
 #
 # A2: number and frequency words are normalised on the KEY PATH only — the
 # stored fact text, quotes and citations are never rewritten.
@@ -1516,11 +1557,86 @@ _QTY_FREQ_TIMES_RE = re.compile(
 _QTY_FREQ_EVERY_RE = re.compile(
     r"\bevery\s+(?:(?P<n>" + _QTY_NUM_ALT + r")\s+)?"
     r"(?P<unit>day|week|month|year)s?\b", re.I)
+# Phase 18 rev 3 (rule 5): durations fire only on the shape "<subject> <verb>
+# [object] for/about <number> <time-unit>" — a bare "<number> <unit>" no longer
+# fires, so "her 18th birthday was ten years before 2023-06-27" is not a
+# duration. "for about 6 months" is covered by the optional second "about".
 _QTY_DUR_RE = re.compile(
-    r"\b(?P<n>" + _QTY_NUM_ALT + r")\s+(?P<unit>day|week|month|year)s?\b",
-    re.I)
+    r"\b(?:for|about)\s+(?:about\s+)?(?P<n>" + _QTY_NUM_ALT + r")\s+"
+    r"(?P<unit>day|week|month|year)s?\b", re.I)
 
 _QTY_COUPLE_RE = re.compile(r"\ba\s+(couple|dozen)\b", re.IGNORECASE)
+
+# Phase 18 rev 3 (rule 2): the closed counting set. A count slot fires only
+# when the number is the object of one of these verbs.
+_COUNTING_VERBS = frozenset(
+    "own have bought purchase got read watch run try visit attend complete "
+    "spend save earn score collect lead take eat drink play write paint "
+    "make do".split())
+
+# Irregular inflections the stem/-ed rules cannot reach.
+_IRREGULAR_COUNTING_FORMS = {
+    "has": "have", "had": "have", "does": "do", "did": "do", "made": "make",
+    "wrote": "write", "ran": "run", "took": "take", "spent": "spend",
+    "ate": "eat", "drank": "drink", "led": "lead",
+}
+
+# Prepositions whose phrase a count must not fire inside (rule 1): a number
+# preceded by one of these — with only nouns/adjectives between — is a
+# measurement or PP-internal number ("at 15,043 tokens", "with 2 samples"),
+# not a direct-object quantity.
+_QTY_PREPOSITIONS = frozenset("""
+    in on at by from with about for of to around since during after before
+    under over through between against without within near off out up down
+    until past behind beside among across along beyond toward towards
+""".split())
+
+
+def _counting_verb(token):
+    """Canonical counting-set member for an inflected verb token, or None
+    (rule 2). Handles s-stems ("owns" -> "own"), the irregular map and regular
+    -ed pasts ("scored" -> "score", "tried" -> "try")."""
+    if token in _COUNTING_VERBS:
+        return token
+    if token in _IRREGULAR_COUNTING_FORMS:
+        return _IRREGULAR_COUNTING_FORMS[token]
+    stem = token[:-1] if token.endswith("s") and not token.endswith("ss") \
+        else token
+    if stem in _COUNTING_VERBS:
+        return stem
+    if token.endswith("ed") and len(token) > 4:
+        for cand in (token[:-1], token[:-2], token[:-3] + "y"):
+            if cand in _COUNTING_VERBS:
+                return cand
+    return None
+
+
+def _qty_verb_before(tokens, start):
+    """The nearest verb (any verb-equivalence verb, A3) before position
+    `start`, scanning backward past nouns, skip-set tokens and possessive
+    pronouns. None when no verb precedes."""
+    for token, tstart, _end in reversed(tokens):
+        if tstart >= start:
+            continue
+        if _is_qty_verb(token):
+            return token
+    return None
+
+
+def _count_governance(tokens, number_start):
+    """Backward scan for a count candidate (rules 1-2): returns
+    (verb_token, crossed_preposition). A preposition reached before any verb
+    means the number sits inside a prepositional phrase ("with mean 770
+    tokens" — the intervening noun does not end the phrase); a verb reached
+    first means the number is its object."""
+    for token, tstart, _end in reversed(tokens):
+        if tstart >= number_start:
+            continue
+        if token in _QTY_PREPOSITIONS:
+            return (None, True)
+        if _is_qty_verb(token) or _counting_verb(token) is not None:
+            return (token, False)
+    return (None, False)
 
 
 def _qty_tokens(text):
@@ -1607,33 +1723,47 @@ def _qty_attribute_after(tokens, quantity_end):
 
 
 def _quantity_slots(text):
-    """All (slot key, value) quantity pairs a fact asserts (phase 18 A1/A2).
+    """The single (slot key, value) quantity pair a fact asserts (phase 18
+    A1/A2, tightened rev 3).
 
     Three shapes, each normalised before keying:
 
-    - counts: a number (digits, number words, "a couple", "a dozen") followed
-      by a noun — unit "count", value the number;
-    - durations: "<number> <unit>" with unit day/week/month/year — normalised
-      to days (month = 30, year = 365), unit "day";
-    - frequencies: "once/twice a week", "N times a week", "every [N] weeks" —
-      normalised to a per-week rate ("every two weeks" = 0.5), unit "per_week".
+    - counts (rules 1-4): a number (digits, number words, "a couple", "a
+      dozen") followed directly by a noun — allowing one "of" — that is the
+      object of a closed-set counting verb, does not sit inside a
+      prepositional phrase ("at 15,043 tokens", "with 2 samples") and is
+      neither an ordinal nor a noun-label number ("Day 2", "18th") — unit
+      "count", value the number;
+    - durations (rule 5): "<subject> <verb> [object] for/about <number>
+      <time-unit>" — normalised to days (month = 30, year = 365), unit "day";
+    - frequencies (rule 6): "once/twice a week", "N times a week",
+      "every [N] weeks" — normalised to a per-week rate ("every two weeks" =
+      0.5), unit "per_week".
 
-    The attribute is the first content noun after the quantity: the object
-    noun for a count, the unit word ("month", "week") for a duration or
-    frequency. The subject is the nearest content noun before the quantity
-    (_qty_subject_prefix). A fact carrying identifier digits (phase 17 D1 —
+    The attribute is the head noun of the object phrase after the number for
+    a count (skipping prepositions and possessives, rule 4). For a duration
+    or frequency it is the measured/activity head noun — the nearest content
+    noun before the quantity, found by the same backward scan as the subject
+    (_qty_subject_prefix): it lands on the object when there is one ("has had
+    Luna for about 9 months" -> luna) and on the subject otherwise ("Luna has
+    been with her owner for about 6 months" -> luna). The subject always
+    comes from _qty_subject_prefix, never a word inside the object.
+
+    Rule 7: at most one quantity slot per fact, keyed on the first
+    direct-object or duration/frequency quantity — no extra slots for
+    incidental numbers. A fact carrying identifier digits (phase 17 D1 —
     "phase 1", "budget 600") is contextualised and forms no quantity slots;
     neither do hyphen-attached compounds ("12-week"), percents, money, clock
-    times or bare years. Number and frequency words are normalised on the key
-    path only (A2): the stored fact text is never rewritten.
+    times or bare years. Number and frequency words are normalised on the
+    key path only (A2): the stored fact text is never rewritten.
     """
     norm = _strip_bare_as_of_tail(_norm(text))
     if any(_is_identifier_digit(norm, m) for m in _QTY_NUM_RE.finditer(norm)
            if m.group(0)[0].isdigit()):
         return []
     tokens = _qty_tokens(norm)
-    slots = []
     claimed = []
+    candidates = []  # (position, key, value): rule 7 keeps the first
 
     def _free(start, end):
         return all(end <= s or start >= e for s, e in claimed)
@@ -1667,25 +1797,34 @@ def _quantity_slots(text):
             if subject is None:
                 continue
             claimed.append((m.start(), m.end()))
-            slots.append(("cat:qty:%s:%s:per_week"
-                          % (subject, _canonical_slot_key(unit)),
-                          _value_text(rate)))
-    # Durations: "<number> <unit>" normalised to days.
+            # Rule 6: the attribute is the activity head noun — the same
+            # backward scan as the subject.
+            candidates.append((m.start(),
+                               "cat:qty:%s:%s:per_week" % (subject, subject),
+                               _value_text(rate)))
+    # Durations (rule 5): "for/about <number> <unit>" governed by a verb,
+    # normalised to days.
     for m in _QTY_DUR_RE.finditer(norm):
         if not _free(m.start(), m.end()):
             continue
         n = _qty_number_value(m.group("n").lower())
         if not n:
             continue
+        if _qty_verb_before(tokens, m.start()) is None:
+            continue  # no verb -> not "<subject> <verb> ... for/about <n>"
         unit = m.group("unit").lower()
         subject = _qty_subject_prefix(tokens, m.start())
         if subject is None:
             continue
         claimed.append((m.start(), m.end()))
-        slots.append(("cat:qty:%s:%s:day"
-                      % (subject, _canonical_slot_key(unit)),
-                      _value_text(n * _DURATION_UNIT_DAYS[unit])))
-    # Counts: a number followed by an object noun.
+        # Rule 5: the attribute is the object head noun when present (the
+        # backward scan lands on it), otherwise the subject — one scan
+        # covers both readings.
+        candidates.append((m.start(),
+                           "cat:qty:%s:%s:day" % (subject, subject),
+                           _value_text(n * _DURATION_UNIT_DAYS[unit])))
+    # Counts (rules 1-4): a number followed directly by an object noun,
+    # governed by a counting verb, outside prepositional phrases.
     for m in _QTY_NUM_RE.finditer(norm):
         if not _free(m.start(), m.end()):
             continue
@@ -1702,20 +1841,34 @@ def _quantity_slots(text):
                     and not re.match(r"\s*(?:day|week|month|year)s?\b", after,
                                      re.I):
                 continue  # a bare year, not a count
+            # Rule 3: ordinal endings ("18th", "21st") are not counts.
+            if re.match(r"(?:st|nd|rd|th)\b", after, re.I):
+                continue
         else:
             # "two hundred" / "three thousand" fold into one value.
             mult = re.match(r"\s*(hundred|thousand)\b", norm[end:], re.I)
             if mult and value < 100:
                 value *= _NUMBER_WORDS[mult.group(1).lower()]
                 end += mult.end()
+        # Rule 3: a number directly after a capitalised noun-label
+        # ("Day 2", "Phase 11", "April 23") labels the number, not a count.
+        label = re.search(r"([A-Za-z][A-Za-z']*)\s*$", norm[:m.start()])
+        if label and label.group(1)[0].isupper():
+            continue
         noun = _qty_attribute_after(tokens, end)
         if noun is None:
-            continue
+            continue  # rule 1: the number must be followed by a noun
+        verb, crossed_pp = _count_governance(tokens, m.start())
+        if crossed_pp:
+            continue  # rule 1: the number sits inside a prepositional phrase
+        if verb is None or _counting_verb(verb) is None:
+            continue  # rule 2: not the object of a counting verb
         subject = _qty_subject_prefix(tokens, m.start())
         if subject is None:
             continue
-        slots.append(("cat:qty:%s:%s:count" % (subject, noun),
-                      _value_text(value)))
+        candidates.append((m.start(),
+                           "cat:qty:%s:%s:count" % (subject, noun),
+                           _value_text(value)))
     # "a couple of N" / "a dozen N" (A2): a count of two / twelve.
     for m in _QTY_COUPLE_RE.finditer(norm):
         if not _free(m.start(), m.end()):
@@ -1723,24 +1876,26 @@ def _quantity_slots(text):
         noun = _qty_attribute_after(tokens, m.end())
         if noun is None:
             continue
+        verb, crossed_pp = _count_governance(tokens, m.start())
+        if crossed_pp:
+            continue
+        if verb is None or _counting_verb(verb) is None:
+            continue
         subject = _qty_subject_prefix(tokens, m.start())
         if subject is None:
             continue
         value = 2 if m.group(1).lower() == "couple" else 12
-        slots.append(("cat:qty:%s:%s:count" % (subject, noun),
-                      _value_text(value)))
-    # A fact that states two different values for one attribute is
-    # enumerating ("weights including 140 lb, 200 lb"), not updating — the
-    # key forms no slot, so a fact can never contradict itself.
-    values_by_key = {}
-    for key, value in slots:
-        values_by_key.setdefault(key, set()).add(value)
-    unique = []
-    for key, value in slots:
-        if len(values_by_key[key]) > 1 or (key, value) in unique:
-            continue
-        unique.append((key, value))
-    return unique
+        candidates.append((m.start(),
+                           "cat:qty:%s:%s:count" % (subject, noun),
+                           _value_text(value)))
+    # Rule 7: one quantity slot per fact, keyed on the first direct-object
+    # or duration/frequency quantity — no extra slots for incidental
+    # numbers, and a fact can never contradict itself on a quantity.
+    if not candidates:
+        return []
+    candidates.sort(key=lambda c: c[0])
+    _position, key, value = candidates[0]
+    return [(key, value)]
 
 
 # ------------------------------------------------------------------- compile

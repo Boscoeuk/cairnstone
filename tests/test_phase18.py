@@ -189,12 +189,12 @@ def test_b3_quantity_slot_key_shapes():
         ("cat:qty:user:recipe:count", "2")]
     assert comp._quantity_slots(
         "Luna has been with her owner for about 6 months") == [
-        ("cat:qty:luna:month:day", "180")]
+        ("cat:qty:luna:luna:day", "180")]
     assert comp._quantity_slots("The user does yoga twice a week") == [
-        ("cat:qty:yoga:week:per_week", "2")]
+        ("cat:qty:yoga:yoga:per_week", "2")]
     assert comp._quantity_slots(
         "User has a therapy session with Dr. Smith every two weeks") == [
-        ("cat:qty:smith:week:per_week", "0.5")]
+        ("cat:qty:smith:smith:per_week", "0.5")]
 
 
 def test_b3_page_entity_resolution():
@@ -215,3 +215,110 @@ def test_b3_verb_equivalence_groups_documented():
         "see attend visit had a session with".split())
     assert comp._VERB_GROUPS["recipe"] == frozenset(
         "tried tasted made".split())
+
+
+# ------------------------------------------------- rev 3 precision (rules 1-7)
+#
+# The five false-positive pairs measured in docs/phase18-tighten.md: the two
+# facts assert different attributes, not competing values for one attribute,
+# so neither may supersede or flag the other.
+
+_FALSE_POSITIVE_PAIRS = [
+    ("TensorFold cold prefill processes 4,588 tokens in 9.19 s (~500 tok/s)",
+     "TensorFold caches 0 tokens for a single concatenated user message with "
+     "a changed question"),
+    ("The harness had no cap on question count; a 3-sample run is ~600 "
+     "questions and takes hours.",
+     "The naive_rag eval run on 1 sample with 12 questions wrote results to "
+     "eval/results/2026-11-05-naive_rag.json in 22.3 seconds"),
+    ("The full_context backend scored 83.3% accuracy at 15,043 tokens.",
+     "The naive_rag backend scored 66.7% accuracy at 770 tokens."),
+    ("The full_context backend scored 83.3% accuracy with mean 15,043 "
+     "context tokens, 3.15 s mean latency, and 91.7% cache hit.",
+     "The naive_rag backend scored 66.7% accuracy with mean 770 context "
+     "tokens, 2.38 s mean latency, and 0% cache hit."),
+    ("Day 2 of the Dubai trip (April 23, 2023) includes Jumeirah Beach "
+     "(25.231768, 55.261291), Karak House breakfast (25.229095, 55.261578), "
+     "Mall of the Emirates (25.118252, 55.200372), Al Fahidi Historical "
+     "Neighborhood (25.264225, 55.299586), and dinner at Al Fanar Restaurant "
+     "(25.227604, 55.277908)",
+     "Day 3 of the Dubai trip (April 24, 2023) includes Global Village "
+     "(25.072927, 55.308932), JBR The Beach (25.081542, 55.134379), lunch at "
+     "Automatic Restaurant (25.082405, 55.139757), Souk Madinat Jumeirah "
+     "(25.133796, 55.183401), and dinner at Al Ibrahimi (25.137567, "
+     "55.188116)"),
+]
+
+
+@pytest.mark.parametrize("older,newer", _FALSE_POSITIVE_PAIRS)
+def test_rev3_false_positive_pairs_produce_no_flag(db, older, newer):
+    """Rules 1-3: measurement/prepositional numbers, non-counting verbs and
+    day/ordinal numbers form no quantity slot, so the pair never collides."""
+    f1, f2 = _pair(db, ("misc/user", older), ("misc/user", newer))
+    result = consolidate(db[0], db[1])
+    assert _row(db[0], f1)["status"] == "active"
+    assert _row(db[0], f2)["status"] == "active"
+    assert result["superseded"] == 0 and result["flagged"] == 0, result
+
+
+@pytest.mark.parametrize("text", [
+    "Day 2 of the Dubai trip (April 23, 2023) includes Jumeirah Beach",
+    "Day 3 of the Dubai trip (April 24, 2023) includes Global Village",
+    "Phase 11 is mid-flight as of 2026-11-05",
+    "The full_context backend scored 83.3% accuracy at 15,043 tokens.",
+    "The naive_rag eval run on 1 sample with 12 questions",
+])
+def test_rev3_no_quantity_slot_for_ordinals_labels_and_pp_numbers(text):
+    """Rules 1 and 3: day/ordinal/label numbers and numbers inside
+    prepositional phrases form no quantity slot at all."""
+    assert comp._quantity_slots(text) == []
+
+
+def test_rev3_counting_verb_required(db):
+    """Rule 2: a number governed by a verb outside the closed counting set
+    ("caches 0 tokens" vs "processes 4,588 tokens") forms no count slot, so
+    the two TensorFold facts never collide."""
+    assert comp._quantity_slots(
+        "TensorFold cold prefill processes 4,588 tokens in 9.19 s") == []
+    assert comp._quantity_slots(
+        "TensorFold caches 0 tokens for a single concatenated user message") \
+        == []
+
+
+def test_rev3_one_quantity_slot_per_fact():
+    """Rule 7: a fact asserting several quantities keys on the first one and
+    emits no extra slots for incidental numbers."""
+    assert comp._quantity_slots(
+        "The user bought 3 tops and 2 hats from H&M") == [
+        ("cat:qty:user:top:count", "3")]
+    assert comp._quantity_slots(
+        "The user has had Luna for about 9 months and 2 vet visits") == [
+        ("cat:qty:luna:luna:day", "270")]
+
+
+# ------------------------------------------------- rev 4: specification numerals
+#
+# Measured on 85fa3a3f.db: "Average cost for a 5 kW solar system ..." was
+# superseded by "Average cost for a 10 kW solar system ..." — different
+# specifications, not an update. A number attached to a unit of measure and
+# followed by a noun stays in the key, so the two claims cannot collide.
+
+def test_rev4_specification_numerals_do_not_supersede(db):
+    f1, f2 = _pair(db,
+                   ("misc/user", "Average cost for a 5 kW solar system in "
+                    "California is $12,500 to $17,500"),
+                   ("misc/user", "Average cost for a 10 kW solar system in "
+                    "California is $25,000 to $35,000"))
+    consolidate(db[0], db[1])
+    assert _row(db[0], f1)["status"] == "active"
+    assert _row(db[0], f2)["status"] == "active"
+
+
+def test_rev4_trailing_measurement_is_still_a_value(db):
+    """\"ran 5 km\" -> \"ran 10 km\" is a value change, not a specification:
+    no noun follows the unit, so the number stays a value and the pair
+    supersedes (phase 17 D1 expects value ('5',))."""
+    assert comp._split_subject_slot("The user ran 5 km")[1] == ("5",)
+    assert comp._split_subject_slot("The user ran 10 km")[1] == ("10",)
+    assert (comp._split_subject_slot("The user ran 5 km")[0]
+            == comp._split_subject_slot("The user ran 10 km")[0])

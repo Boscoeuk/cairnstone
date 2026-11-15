@@ -151,3 +151,72 @@ remain.
 - The 86 new flags were classified by my instrumentation script, not by hand-reading all 86.
 - The eval harness was not re-run end to end (no model calls were made at all in this phase; the
   B3 tests and the probe are deterministic and model-free).
+
+
+# Revision 2 — precision (Polly, after the worker's first pass)
+
+Part A landed with the right mechanics and the wrong precision: 67 of 112 probe flags were
+`cat:qty` false positives, and the slot fired on numbers inside measurement phrases ("at 15,043
+tokens", "with 2 samples", "Day 2 of the Dubai trip"). The worker's tightening pass then hit a
+model-side thinking loop and exited without committing; the code and tests were on disk and green,
+so I verified them myself, added the remaining fixes and wrote this revision.
+
+## What changed
+
+Seven precision rules are implemented in `_quantity_slots` (`src/cairnstone/compile.py`): counts
+fire only on a direct-object quantity governed by a closed counting-verb set, numbers inside
+non-time prepositional phrases are rejected, ordinals and noun-label numbers ("Day 2", "Phase 11",
+"18th") are rejected, the attribute is the object head noun rather than the nearest word, durations
+and frequencies have their own shapes, and a fact emits at most one quantity slot.
+
+One further defect surfaced when I re-read the supersessions rather than the counts: a number
+attached to a unit of measure and followed by a noun is a **specification**, not a value. Measured on
+`85fa3a3f.db`, "Average cost for a 5 kW solar system ... $12,500" was being **superseded** by
+"Average cost for a 10 kW solar system ... $25,000" — two different systems, and supersession is
+destructive. `_is_spec_digit` now keeps such numerals in the key ("5 kw solar system" vs
+"10 kw solar system" key apart), while a trailing measurement with no noun after it ("ran 5 km")
+stays a value, so the phase 17 D1 distance updates still resolve.
+
+## Verification (run by me, not reported by the worker)
+
+    $ .venv/bin/python -m pytest -q
+    239 passed in 9.22s
+
+Mutant proofs, each run out of band and restored afterwards:
+
+    mutant: _quantity_slots returns []        -> 5 failed (Emma, H&M, yoga, Luna, Dr Smith)
+    mutant: page scope restored               -> 2 failed (H&M, yoga); alpha/beta still passes
+    mutant: _is_spec_digit returns False      -> 1 failed (solar specification pair)
+    restored                                  -> 239 passed
+
+Collateral probe (`eval/probe_phase17.py`, 27 databases, consolidation over backup copies only):
+
+    before this revision (rev 3 landed):  superseded=5 flagged=86 duplicates_linked=39
+    after:                                superseded=4 flagged=21 duplicates_linked=39
+    phase 17 baseline:                    superseded=0 flagged=13 duplicates_linked=39
+
+## What is still wrong, stated plainly
+
+- **Two `cat:qty` flags remain and both are false positives**, from one pair: "The user has 2 coupons
+  for $1 off Tide" vs "The user has 1 coupon for 50 cents off Bounty". The attribute is `coupon` and
+  the distinguishing brand is dropped. These are flags, not supersessions, so nothing is retired;
+  accepted for this phase rather than widening the attribute and re-splitting the Emma paraphrase.
+- **One supersession is ambiguous**: Giorgio Mammoliti "proposed a motion in January 2005 ... street
+  racing" retired by "proposed a motion in October 2005 ... street racing". The sentence is otherwise
+  identical, so this reads as a corrected date; it could be two separate motions. Not resolvable from
+  the fact text alone.
+- The 21 remaining flags are the known occupation/location residue class, re-admitted because entity
+  scope compares `misc/user` with `people/user` where page scope did not. That is the intended
+  trade-off of A4, but it is a real increase in review load (13 -> 21) and Tes should judge whether
+  the cross-page supersessions are worth it.
+- Extraction defects are untouched (A5): Luna is labelled a dog; two different Alexes are merged on
+  `people/alex`. Entity scope inherits both.
+
+## What I did NOT verify
+
+- The probe re-runs consolidation on the existing databases; it does not recompile them. Its
+  superseded/flagged counts are this pass's mutations, but the superseded facts listed by
+  `--dump-pairs` include historical state already stored in those files.
+- No model calls were made. Retrieval, brief construction, the answer prompt and the judge are
+  untested against the new slot keys.
+- Part B (B1 arm (a) unconsolidated, B2 mechanism metric, the 74-question run) is not started.
