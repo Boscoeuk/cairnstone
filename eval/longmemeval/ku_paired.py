@@ -432,23 +432,29 @@ def check_sidecar(db_path, frozen_code_sha, config_sha256, dataset_sha256,
         return False, "sidecar-mismatch", None
     required = ("question_id", "code_sha", "run_head_sha", "config_sha256",
                 "dataset_sha256", "compile_started_utc", "compile_finished_utc",
-                "captures", "facts", "db_sha256")
+                "captures", "facts", "db_sha256", "compile_consolidated")
     if any(k not in meta for k in required):
         return False, "sidecar-mismatch", None
     if current_sha is None:
         conn, _brain_id, current_sha = open_and_hash(db_path)
         conn.close()
+    # Phase 18 B1: a brain compiled WITH the dedupe/supersede pass has already
+    # been consolidated, so the nightly pass can only be idempotent on it and
+    # (b) - (a) is zero by construction (Tes review, t_d67491f3). The sidecar
+    # records which mode compiled it, and a brain from the wrong mode is
+    # refused rather than reused.
     if (meta["code_sha"] != frozen_code_sha
             or meta["config_sha256"] != config_sha256
             or meta["dataset_sha256"] != dataset_sha256
-            or meta["db_sha256"] != current_sha):
+            or meta["db_sha256"] != current_sha
+            or meta["compile_consolidated"] is not False):
         return False, "sidecar-mismatch", None
     return True, "sidecar-ok", meta
 
 
 def write_sidecar(db_path, *, question_id, code_sha, run_head_sha,
                   config_sha256, dataset_sha256, summary, started_utc,
-                  db_sha256=None):
+                  db_sha256=None, compile_consolidated=False):
     """Write the pristine brain's provenance sidecar (P8.8). The harness owns
     it; it is never repaired by hand.
 
@@ -474,6 +480,7 @@ def write_sidecar(db_path, *, question_id, code_sha, run_head_sha,
         "captures": summary["captures"],
         "facts": summary["facts_accepted"],
         "db_sha256": db_sha256 or _canonical_sha(db_path),
+        "compile_consolidated": compile_consolidated,
     }
     sidecar_path(db_path).write_text(
         json.dumps(meta, indent=1, sort_keys=True) + "\n")
@@ -645,8 +652,9 @@ def _open_pristine(question, db_path, client, budget, code_sha, run_head_sha,
         else:
             conn.close()
     started = _utcnow()
+    # Phase 18 B1: arm (a) must be a brain the pass has not touched.
     conn, brain_id, summary = lme.compile_question(question, db_path, client,
-                                                   True)
+                                                   True, consolidate=False)
     warm_embedding_cache(conn, brain_id, question, budget)
     sha = checkpointed_sha(conn, db_path)
     write_sidecar(db_path, question_id=qid, code_sha=code_sha,
@@ -798,6 +806,30 @@ def run_one(question, budget, client, config, start_label=None):
         ).fetchone()[0],
     }
 
+    # ---- B2 (phase 18): the mechanism metric. Accuracy at this n cannot see
+    # a mechanism this small, so record directly whether the pass retired a
+    # stale fact and whether that stale text was still in each arm's brief.
+    stale = []
+    for r in cons_conn.execute(
+            "SELECT f.id, f.text, f.superseded_by FROM facts f"
+            " WHERE f.status = 'superseded'").fetchall():
+        text = (r["text"] or "").strip()
+        probe = text[:60]
+        stale.append({
+            "fact_id": r["id"],
+            "text": text[:160],
+            "superseded_by": r["superseded_by"],
+            "in_brief_a": bool(probe) and probe in (arm_a.get("brief") or ""),
+            "in_brief_b": bool(probe) and probe in (arm_b.get("brief") or ""),
+        })
+    row["stale_facts"] = stale
+    row["mechanism"] = {
+        "stale_facts_total": len(stale),
+        "stale_in_brief_a": sum(1 for s in stale if s["in_brief_a"]),
+        "stale_in_brief_b": sum(1 for s in stale if s["in_brief_b"]),
+        "pristine_compiled_consolidated": False,
+    }
+
     # ---- P8.3: assert the pristine brain again after the whole question
     final_sha = checkpointed_sha(conn, db_path)
     conn.close()
@@ -835,6 +867,20 @@ def aggregate(rows):
                    "mcnemar_exact_p": round(mcnemar_exact(a_gained, a_lost), 4)},
         "b_vs_d": {"gained": d_gained, "lost": d_lost,
                    "mcnemar_exact_p": round(mcnemar_exact(d_gained, d_lost), 4)},
+        "mechanism": {
+            "stale_facts_total": sum((r.get("mechanism") or {}).get(
+                "stale_facts_total", 0) for r in rows),
+            "stale_in_brief_a": sum((r.get("mechanism") or {}).get(
+                "stale_in_brief_a", 0) for r in rows),
+            "stale_in_brief_b": sum((r.get("mechanism") or {}).get(
+                "stale_in_brief_b", 0) for r in rows),
+            "questions_with_stale_in_brief_a": sum(
+                1 for r in rows
+                if (r.get("mechanism") or {}).get("stale_in_brief_a")),
+            "questions_with_stale_in_brief_b": sum(
+                1 for r in rows
+                if (r.get("mechanism") or {}).get("stale_in_brief_b")),
+        },
         "questions_mutated_by_consolidation": sum(
             1 for r in rows if r["consolidation"].get("superseded")
             or r["consolidation"].get("duplicates_linked")),

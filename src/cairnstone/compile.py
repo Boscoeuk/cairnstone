@@ -1929,9 +1929,28 @@ def compile_capture(conn, brain_id, capture_id, client):
             "accepted": len(accepted), "rejected": rejected}
 
 
-def compile_all(conn, brain_id, capture_ids, client):
-    """Compile a list of captures, then dedupe and supersede. Returns summary."""
+def compile_all(conn, brain_id, capture_ids, client, consolidate=True):
+    """Compile a list of captures, then dedupe and supersede. Returns summary.
+
+    Phase 18 B1: `consolidate=False` skips the dedupe/supersede pass, so the
+    brain holds every extracted fact in its uncompiled state. That is what the
+    paired knowledge-update experiment needs for arm (a): without it, arm (a)
+    has already been consolidated by this function and the nightly pass can
+    only be idempotent on top of it, which makes (b) - (a) zero by construction
+    (Tes review, t_d67491f3).
+    """
     results = [compile_capture(conn, brain_id, cid, client) for cid in capture_ids]
+    if not consolidate:
+        return {
+            "captures": len(results),
+            "failed_captures": [r["capture_id"] for r in results if not r["ok"]],
+            "facts_accepted": sum(r["accepted"] for r in results),
+            "facts_rejected": [(r["capture_id"], text, reason)
+                               for r in results for text, reason in r["rejected"]],
+            "duplicates_linked": 0,
+            "superseded": 0,
+            "consolidated": False,
+        }
     dupes = dedupe(conn, brain_id)
     superseded = supersede_contradictions(conn, brain_id)
     return {
@@ -1942,6 +1961,7 @@ def compile_all(conn, brain_id, capture_ids, client):
                            for r in results for text, reason in r["rejected"]],
         "duplicates_linked": dupes,
         "superseded": superseded,
+        "consolidated": True,
     }
 
 

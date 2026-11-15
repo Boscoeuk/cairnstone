@@ -14,6 +14,9 @@ import sys
 import pytest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "eval",
+                                "longmemeval"))
+import ku_paired
 
 from cairnstone import compile as comp
 from cairnstone import store
@@ -322,3 +325,87 @@ def test_rev4_trailing_measurement_is_still_a_value(db):
     assert comp._split_subject_slot("The user ran 10 km")[1] == ("10",)
     assert (comp._split_subject_slot("The user ran 5 km")[0]
             == comp._split_subject_slot("The user ran 10 km")[0])
+
+
+# ------------------------------------------------------- Part B (B1/B2)
+#
+# Tes review t_d67491f3: (b) = (a) was guaranteed by construction, because
+# compile_all already runs dedupe and supersede. Arm (a) must therefore be a
+# brain compiled WITHOUT that pass, and the sidecar must record which mode
+# compiled it so a brain from the wrong mode is refused rather than reused.
+
+def test_b1_unconsolidated_compile_leaves_contradictions_active(db):
+    conn, brain = db
+    c1 = _capture(db, "Caroline is single", "2023-05-01T00:00:00+00:00")
+    c2 = _capture(db, "Caroline is married", "2023-06-01T00:00:00+00:00")
+    f1 = _fact(db, "Caroline is single", c1, "people/caroline", "caroline")
+    f2 = _fact(db, "Caroline is married", c2, "people/caroline", "caroline")
+    # No capture ids: the facts are already written by _fact, so this exercises
+    # the dedupe/supersede branch alone, with no model call.
+    comp.compile_all(conn, brain, [], client=None, consolidate=False)
+    assert _row(conn, f1)["status"] == "active"
+    assert _row(conn, f2)["status"] == "active"
+    assert conn.execute("SELECT COUNT(*) FROM facts WHERE status = 'superseded'"
+                        ).fetchone()[0] == 0
+    # The pass then does the work arm (b) is meant to measure.
+    consolidate(conn, brain)
+    assert _row(conn, f1)["status"] == "superseded"
+    assert _row(conn, f2)["status"] == "active"
+
+
+def test_b1_consolidated_compile_still_resolves(db):
+    conn, brain = db
+    c1 = _capture(db, "Caroline is single", "2023-05-01T00:00:00+00:00")
+    c2 = _capture(db, "Caroline is married", "2023-06-01T00:00:00+00:00")
+    f1 = _fact(db, "Caroline is single", c1, "people/caroline", "caroline")
+    _fact(db, "Caroline is married", c2, "people/caroline", "caroline")
+    summary = comp.compile_all(conn, brain, [], client=None)
+    assert summary["consolidated"] is True
+    assert _row(conn, f1)["status"] == "superseded"
+
+
+def test_b1_sidecar_refuses_a_brain_compiled_with_the_pass(tmp_path):
+    """A sidecar that says compile_consolidated=True must not be reused by the
+    phase 18 experiment: that brain has already been consolidated."""
+    import json
+    db = tmp_path / "q.db"
+    conn = store.init_db(str(db))
+    ws = store.create_workspace(conn, "w")
+    brain = store.create_brain(conn, ws, "b", "b")
+    store.add_capture(conn, brain, "conversation", "x", "src")
+    conn.close()
+    meta = {
+        "question_id": "q", "code_sha": "c", "run_head_sha": "h",
+        "config_sha256": "cf", "dataset_sha256": "d",
+        "compile_started_utc": "t", "compile_finished_utc": "t",
+        "captures": 1, "facts": 1, "db_sha256": "sha",
+        "compile_consolidated": True,
+    }
+    (tmp_path / "q.meta.json").write_text(json.dumps(meta))
+    ok, reason, _ = ku_paired.check_sidecar(db, "c", "cf", "d",
+                                            current_sha="sha")
+    assert not ok and reason == "sidecar-mismatch"
+    meta["compile_consolidated"] = False
+    (tmp_path / "q.meta.json").write_text(json.dumps(meta))
+    ok, reason, _ = ku_paired.check_sidecar(db, "c", "cf", "d",
+                                            current_sha="sha")
+    assert ok and reason == "sidecar-ok"
+
+
+def test_b2_aggregate_reports_the_mechanism_metric():
+    def row(correct, stale_a, stale_b):
+        arm = lambda ok: {"correct": ok, "judge_ambiguous": False}
+        return {
+            "arm_a": arm(correct), "arm_b": arm(correct),
+            "arm_c": arm(False), "arm_d": arm(False),
+            "consolidation": {"superseded": 0, "duplicates_linked": 0},
+            "mechanism": {"stale_facts_total": 1, "stale_in_brief_a": stale_a,
+                          "stale_in_brief_b": stale_b},
+        }
+    agg = ku_paired.aggregate([row(True, 1, 0), row(False, 1, 1)])
+    mech = agg["mechanism"]
+    assert mech["stale_facts_total"] == 2
+    assert mech["stale_in_brief_a"] == 2
+    assert mech["stale_in_brief_b"] == 1
+    assert mech["questions_with_stale_in_brief_a"] == 2
+    assert mech["questions_with_stale_in_brief_b"] == 1

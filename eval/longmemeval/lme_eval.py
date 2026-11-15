@@ -149,8 +149,14 @@ def build_captures(question: dict, conn, brain_id: int | None) -> list[int]:
 
 
 def compile_question(question: dict, db_path: Path, client: LLMClient,
-                     recompile: bool) -> tuple[Any, int, dict]:
-    """Build and compile the per-question brain. Returns (conn, brain_id, summary)."""
+                     recompile: bool,
+                     consolidate: bool = True) -> tuple[Any, int, dict]:
+    """Build and compile the per-question brain. Returns (conn, brain_id, summary).
+
+    `consolidate=False` (phase 18 B1) compiles every extracted fact without the
+    dedupe/supersede pass, which is what the paired knowledge-update experiment
+    needs for arm (a): a brain that the nightly pass has not already resolved.
+    """
     if db_path.exists() and not recompile:
         conn = store.init_db(str(db_path))
         brain_id = conn.execute("SELECT id FROM brains ORDER BY id LIMIT 1") \
@@ -164,7 +170,8 @@ def compile_question(question: dict, db_path: Path, client: LLMClient,
     ws = store.create_workspace(conn, "default")
     brain_id = store.create_brain(conn, ws, "default", "default")
     capture_ids = build_captures(question, conn, brain_id)
-    summary = cairn_compile.compile_all(conn, brain_id, capture_ids, client)
+    summary = cairn_compile.compile_all(conn, brain_id, capture_ids, client,
+                                        consolidate=consolidate)
     conn.close()
     tmp.replace(db_path)
     conn = store.init_db(str(db_path))
