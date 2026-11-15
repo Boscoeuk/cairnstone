@@ -42,27 +42,30 @@ harness caught the answerer replying "Yesterday" to a question whose gold answer
 
 ## P6 — Contradiction supersedes, never overwrites
 
-Two active facts on one page with the same subject and slot but different values are a
+Two active facts on the same entity with the same subject and slot but different values are a
 contradiction. The newer capture wins; the older is marked `superseded` with `superseded_by` set
 to the replacement, and a `fact.superseded` event is written. Both remain readable. Nothing is
 deleted, ever. If the two captures have the same timestamp, the contradiction is flagged for
 review and neither is superseded — ambiguity is recorded, not resolved by coin flip.
 
-**Scope of the comparison (phase 17, F1):** the scan compares facts **within one page**. A fact on
-page A cannot supersede or flag a fact on page B. This is deliberate: a brain-wide scan at `fe71ff1`
-paired 20 of 43 new supersessions/flags across pages, including plainly wrong pairs. Restoring page
-scope removed those false pairs but also loses genuine cross-page contradictions. Measured on the
-27-database probe corpus, 3 genuine supersessions are lost and 2 of them are cross-page: the Dear
-Evan Hansen "since December 2022 -> since 2022-12-01" pair in
-`eval/results/lme-db/gpt4_76048e76.db`, and the Fitbit tenure pair in
-`eval/results/lme-db/08e075c7.db` whose facts sit on `misc/user` and `people/user`. The third lost
-supersession is **same-page** and is not a page-scope loss at all: it is the dogfood
-`projects/cairnstone` "first CI run failed" fact against the same sentence restamped
-"as of 2026-11-06", which the F3a provenance-stamp rule (see P7) correctly treats as one claim.
-**Known limitation:** the same entity can be split across pages (`misc/user` and `people/user`), so
-a real contradiction between those pages is neither superseded nor flagged — the Fitbit pair above
-stays active together. Keying on entity rather than page is the fix, and is out of scope for phase
-17.
+**Scope of the comparison (phase 18, A4 — entity scope replaces page scope):** the scan compares
+facts whose pages resolve to the same **entity**: the last page-path segment, lowercased, a leading
+`the-` stripped and separators normalised, so `misc/user`, `misc/the-user`, `people/user` and
+`decisions/user` all resolve to `user`, while `projects/alpha` stays distinct from `projects/beta`.
+A page is a routing artefact, not an identity — placement (P4) routes a fact to `people`, `misc` or
+`decisions` by kind and confidence, so the same entity legitimately accumulates facts on several
+pages, and a contradiction between them is a real contradiction. Phase 17 (F1) had restricted the
+scan to one page after a brain-wide scan at `fe71ff1` paired 20 of 43 supersessions/flags across
+pages, including plainly wrong pairs; the phase-18 entity key replaces that page scope with a
+narrower one: pages naming the same entity compare, pages naming different entities never do, and
+the alpha/beta separation the page scope was restoring is now enforced by the entity key itself.
+Measured on the 27-database probe corpus, page scope lost 3 genuine supersessions, 2 of them
+cross-page: the Dear Evan Hansen "since December 2022 -> since 2022-12-01" pair in
+`eval/results/lme-db/gpt4_76048e76.db` and the Fitbit tenure pair in `eval/results/lme-db/08e075c7.db`
+whose facts sit on `misc/user` and `people/user`; both are resolved again under entity scope. The
+third lost supersession is **same-page** and was not a page-scope loss at all: it is the dogfood
+`projects/cairnstone` "first CI run failed" fact against the same sentence restamped "as of
+2026-11-06", which the F3a provenance-stamp rule (see P7) correctly treats as one claim.
 
 ## P7 — Dedupe by evidence, not by wording
 

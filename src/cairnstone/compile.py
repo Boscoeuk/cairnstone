@@ -619,6 +619,19 @@ def _claim_key(text):
 
 # ------------------------------------------------------------- contradictions
 
+def _page_entity(path):
+    """The entity a page names (phase 18 A4): the last path segment,
+    lowercased, a leading "the-" stripped and separators normalised to
+    spaces — misc/user, misc/the-user, people/user and decisions/user all
+    resolve to "user", while projects/alpha stays distinct from
+    projects/beta. A page is a routing artefact, not an identity (policy P6).
+    """
+    segment = (path or "").rstrip("/").split("/")[-1].lower()
+    if segment.startswith("the-"):
+        segment = segment[len("the-"):]
+    return " ".join(re.split(r"[-_]+", segment)).strip()
+
+
 def supersede_contradictions(conn, brain_id):
     """Supersede older facts whose subject/slot matches but value differs.
 
@@ -671,9 +684,16 @@ def _supersede_contradictions(conn, brain_id, commit=True):
 
     Phase 16 (N10): `commit=False` leaves the writes uncommitted for a caller
     that runs the whole pass in one transaction.
+
+    Phase 18 (A4): the scan groups facts by the ENTITY their page names
+    (_page_entity), not by page — a page is a routing artefact, not an
+    identity, so genuinely contradicting claims split across misc/user and
+    people/user now resolve, while projects/alpha and projects/beta stay
+    separate (policy P6).
     """
     rows = conn.execute(
-        "SELECT f.id, f.page_id, f.text, f.capture_id, c.captured_at FROM facts f"
+        "SELECT f.id, f.page_id, f.text, f.capture_id, c.captured_at, p.path"
+        " FROM facts f"
         " JOIN pages p ON p.id = f.page_id"
         " JOIN captures c ON c.id = f.capture_id"
         " WHERE p.brain_id = ? AND f.status = 'active' AND f.duplicate_of IS NULL"
@@ -696,21 +716,16 @@ def _supersede_contradictions(conn, brain_id, commit=True):
         cur = latest.get(r["canon"])
         if cur is None or clock > cur:
             latest[r["canon"]] = clock
-    by_page = {}
+    by_entity = {}
     for r in rows:
-        by_page.setdefault(r["page_id"], []).append(r)
+        # Phase 18 (A4): the comparison state resets per ENTITY, not per page —
+        # a page is a routing artefact, not an identity (policy P6). Facts on
+        # misc/user and people/user compare; projects/alpha and projects/beta
+        # never do.
+        by_entity.setdefault(_page_entity(r["path"]), []).append(r)
     superseded_ids = set()
     superseded = flagged = 0
-    # Phase 17 (F1): the comparison state resets PER PAGE, as policy P6 and the
-    # phase-16 brief specify ("on the same page"). The phase-16 canonicalisation
-    # work had let one `claims` dict span the whole brain, so a fact on page A
-    # could supersede or flag a fact on page B ("first CI run failed" on
-    # projects/alpha retired by a projects/beta fact; phase-1 vs phase-2;
-    # conv-26 vs conv-30 counts). Known limitation, documented in P6: genuinely
-    # contradicting pairs that live on different pages (user facts split between
-    # misc/user and people/user; the Fitbit tenure supersession) are no longer
-    # resolved. A future phase may key on entity rather than page.
-    for page_id, facts in by_page.items():
+    for entity, facts in by_entity.items():
         # slot key -> [(value, row, clock)]: every active canonical claim on
         # that slot, on this page. Phase 16 (N11): a slot can carry several
         # stale claims at once ("is married" and "spouse is Tomas" alongside a
@@ -752,7 +767,11 @@ def _resolve_slot(conn, entries, key, superseded_ids, commit=True):
     - the newest clock is shared by disagreeing claims (policy P6 ambiguity):
       every disagreeing pair is flagged and nothing is superseded;
     - the older claim is an event fact and the newest is a state fact (N11):
-      an event is history, so it stays active with no flag;
+      an event is history, so it stays active with no flag — EXCEPT on a
+      quantity slot (`cat:qty:`): a quantity is a measurement that changes
+      over time, and a possession event ("bought three tops") and a
+      possession state ("owns five tops") are two readings of one
+      measurement, so the older reading is superseded (phase 18 A3);
     - the slot is advisory (location, occupation): both stay active and the
       pair is flagged (D5b).
     """
@@ -789,7 +808,7 @@ def _resolve_slot(conn, entries, key, superseded_ids, commit=True):
         if old_row["id"] == winner[1]["id"] or old_row["id"] in superseded_ids:
             continue
         if _is_event_fact(old_row["text"]) and not _is_event_fact(
-                winner[1]["text"]):
+                winner[1]["text"]) and not key.startswith("cat:qty:"):
             continue  # N11: event history is not retracted by a later state
         if _is_advisory_slot(key):
             if _write_contradiction_flag(conn, old_row["id"], winner[1]["id"],
@@ -1240,6 +1259,8 @@ def _fact_slots(text):
         value = _SPOUSE_VALUES.get(m.group(2).lower())
         if prefix and value:
             slots.append(("cat:relationship_status:%s" % prefix, value))
+    # Phase 18 (A1): quantity slots — counts, durations, frequencies.
+    slots.extend(_quantity_slots(text))
     return slots
 
 
@@ -1407,6 +1428,319 @@ def _canonical_slot_key(residual):
             tok = tok[:-1]
         tokens.append(tok)
     return " ".join(tokens)
+
+
+# Phase 18 (A1-A3): quantity slots. Counts, durations and frequencies become
+# slots of their own, so a changed number supersedes the older claim even when
+# the extractor's phrasing differs. Key shape: cat:qty:<subject>:<attribute>:<unit>
+# with the normalised value. The attribute is the object head noun (counts) or
+# the measured noun (durations/frequencies): the first content noun after the
+# quantity, skipping prepositions and possessives; when no noun follows (the
+# common shape of duration and frequency claims — "for about 6 months", "twice
+# a week") it is the nearest content noun before the quantity, scanning
+# backward past verbs, prepositions and possessive phrases, with compound heads
+# ("yoga classes") folding to their modifier ("yoga"). The subject is the
+# nearest content noun before the quantity, found by the same backward scan.
+#
+# A2: number and frequency words are normalised on the KEY PATH only — the
+# stored fact text, quotes and citations are never rewritten.
+#
+# A3: verb-equivalence groups keep a paraphrase from splitting the key. They
+# are what lets the backward scan recognise irregular past verbs ("bought",
+# "got", "had") as verbs: pure copulas (is/are/was/were/be/been/being/am) and
+# do/does/did are recognised without the groups, but have/has/had are possession
+# verbs and are recognised only through the possession group.
+_VERB_GROUPS = {
+    "possession": frozenset("own have bought purchased got".split()),
+    "meeting": frozenset("see attend visit had a session with".split()),
+    "recipe": frozenset("tried tasted made".split()),
+}
+
+_GROUP_VERB_STEMS = frozenset(
+    stem for group in _VERB_GROUPS.values() for stem in group)
+
+# Irregular inflections the s-stem rule cannot reach ("has" -> "have").
+_IRREGULAR_GROUP_VERBS = {"has": "have", "had": "have", "saw": "see"}
+
+_COPULAS = frozenset("is are was were am be been being".split())
+
+_QTY_ADVERBS = frozenset(
+    "already recently currently now still also just today".split())
+
+# Tokens the quantity scans never treat as a content noun: prepositions,
+# articles, conjunctions, determiners, titles, copulas, do/does/did and time
+# adverbs. Possession verbs (have/has/had) are deliberately NOT here — they
+# are recognised only through the possession group (A3), so dropping the verb
+# groups changes which noun the backward scan lands on.
+_QTY_SKIP_TOKENS = frozenset("""
+    a an the and or but every per some any each with for about over nearly
+    almost from in on at by of to around since during after before
+    dr mr mrs ms prof
+""".split()) | _COPULAS | {"do", "does", "did"} | _QTY_ADVERBS
+
+_QTY_POSSESSIVE_PRONOUNS = frozenset(
+    "her his their its my your our".split())
+
+_DURATION_UNIT_DAYS = {"day": 1, "week": 7, "month": 30, "year": 365}
+
+_WEEK_DAYS = 7.0
+
+_QTY_NUM_WORDS = ("zero one two three four five six seven eight nine ten "
+                  "eleven twelve thirteen fourteen fifteen sixteen seventeen "
+                  "eighteen nineteen twenty thirty forty fifty sixty seventy "
+                  "eighty ninety hundred thousand").split()
+
+_NUMBER_WORDS = {word: value for value, word in enumerate(
+    ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight",
+     "nine", "ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+     "sixteen", "seventeen", "eighteen", "nineteen"])}
+_NUMBER_WORDS.update({"twenty": 20, "thirty": 30, "forty": 40, "fifty": 50,
+                      "sixty": 60, "seventy": 70, "eighty": 80, "ninety": 90,
+                      "hundred": 100, "thousand": 1000})
+
+_FREQUENCY_WORDS = {"once": 1, "twice": 2}
+
+_QTY_WORD_RE = re.compile(r"[a-z']+", re.IGNORECASE)
+
+_QTY_NUM_ALT = r"\d+(?:,\d+)*|" + "|".join(_QTY_NUM_WORDS)
+_QTY_NUM_RE = re.compile(r"\b(?:" + _QTY_NUM_ALT + r")\b", re.IGNORECASE)
+
+# Number words are not subject nouns either.
+_QTY_SKIP_TOKENS |= frozenset(_QTY_NUM_WORDS)
+
+_QTY_FREQ_WORD_RE = re.compile(
+    r"\b(once|twice)\s+(?:a|an|per)\s+(day|week|month|year)s?\b", re.I)
+_QTY_FREQ_TIMES_RE = re.compile(
+    r"\b(?P<n>" + _QTY_NUM_ALT + r")\s+times?\s+(?:a|an|per)\s+"
+    r"(?P<unit>day|week|month|year)s?\b", re.I)
+_QTY_FREQ_EVERY_RE = re.compile(
+    r"\bevery\s+(?:(?P<n>" + _QTY_NUM_ALT + r")\s+)?"
+    r"(?P<unit>day|week|month|year)s?\b", re.I)
+_QTY_DUR_RE = re.compile(
+    r"\b(?P<n>" + _QTY_NUM_ALT + r")\s+(?P<unit>day|week|month|year)s?\b",
+    re.I)
+
+_QTY_COUPLE_RE = re.compile(r"\ba\s+(couple|dozen)\b", re.IGNORECASE)
+
+
+def _qty_tokens(text):
+    """Lowercased word tokens of the normalised text, with character spans."""
+    return [(m.group(0).lower(), m.start(), m.end())
+            for m in _QTY_WORD_RE.finditer(_norm(text))]
+
+
+def _qty_number_value(token):
+    """Numeric value of a number token: digits (commas stripped) or a number
+    word (A2). None when the token is not a number."""
+    digits = token.replace(",", "")
+    if digits.isdigit():
+        return int(digits)
+    if token in _NUMBER_WORDS:
+        return _NUMBER_WORDS[token]
+    return None
+
+
+def _is_qty_verb(token):
+    """True when a token is a verb for the quantity scans: a verb-equivalence
+    group member (A3 — stem-matched so "owns" hits "own", plus the irregular
+    map so "has"/"had" hit "have"), a pure copula, do/does/did, or a regular
+    past tense in -ed. Possession verbs are recognised ONLY through the group,
+    so dropping the groups changes the scan's behaviour (the A3 mutant proof).
+    """
+    if token in _COPULAS or token in ("do", "does", "did"):
+        return True
+    if token in _IRREGULAR_GROUP_VERBS and \
+            _IRREGULAR_GROUP_VERBS[token] in _GROUP_VERB_STEMS:
+        return True
+    if token.endswith("ed") and len(token) > 4:
+        return True
+    stem = token[:-1] if token.endswith("s") and not token.endswith("ss") \
+        else token
+    return stem in _GROUP_VERB_STEMS or token in _GROUP_VERB_STEMS
+
+
+def _qty_subject_prefix(tokens, quantity_start):
+    """The subject part of a quantity slot key: the nearest content noun before
+    the quantity, scanning backward. Skip-set tokens (prepositions, articles,
+    conjunctions, determiners, titles, copulas, do/does/did, time adverbs) and
+    verbs (A3 groups, -ed past tense) are skipped; a possessive phrase ("her
+    owner") is skipped whole; a compound head ("yoga classes") folds to its
+    modifier. Returns the singularised noun, or None."""
+    i = len(tokens) - 1
+    while i >= 0 and tokens[i][1] >= quantity_start:
+        i -= 1
+    while i >= 0:
+        token = tokens[i][0]
+        if token in _QTY_SKIP_TOKENS or _is_qty_verb(token):
+            i -= 1
+            continue
+        if token in _QTY_POSSESSIVE_PRONOUNS and i > 0:
+            i -= 2  # possessive phrase: skip the pronoun and the possessed noun
+            continue
+        if i > 0 and tokens[i - 1][0] not in _QTY_SKIP_TOKENS \
+                and not _is_qty_verb(tokens[i - 1][0]):
+            i -= 1  # compound head: the modifier names the measured thing
+            continue
+        return _canonical_slot_key(token) or None
+    return None
+
+
+def _qty_attribute_after(tokens, quantity_end):
+    """The first content noun after the quantity (the object head noun of a
+    count), skipping prepositions, articles, possessive markers, conjunctions
+    and pronouns within a four-token window. None when no noun follows before
+    a verb or the window ends."""
+    seen = 0
+    for token, start, _end in tokens:
+        if start < quantity_end:
+            continue
+        seen += 1
+        if seen > 4:
+            return None
+        if token in _QTY_SKIP_TOKENS or token.endswith("'s") \
+                or token in _QTY_POSSESSIVE_PRONOUNS:
+            continue
+        if _is_qty_verb(token) or token in _NUMBER_WORDS:
+            return None
+        return _canonical_slot_key(token) or None
+    return None
+
+
+def _quantity_slots(text):
+    """All (slot key, value) quantity pairs a fact asserts (phase 18 A1/A2).
+
+    Three shapes, each normalised before keying:
+
+    - counts: a number (digits, number words, "a couple", "a dozen") followed
+      by a noun — unit "count", value the number;
+    - durations: "<number> <unit>" with unit day/week/month/year — normalised
+      to days (month = 30, year = 365), unit "day";
+    - frequencies: "once/twice a week", "N times a week", "every [N] weeks" —
+      normalised to a per-week rate ("every two weeks" = 0.5), unit "per_week".
+
+    The attribute is the first content noun after the quantity: the object
+    noun for a count, the unit word ("month", "week") for a duration or
+    frequency. The subject is the nearest content noun before the quantity
+    (_qty_subject_prefix). A fact carrying identifier digits (phase 17 D1 —
+    "phase 1", "budget 600") is contextualised and forms no quantity slots;
+    neither do hyphen-attached compounds ("12-week"), percents, money, clock
+    times or bare years. Number and frequency words are normalised on the key
+    path only (A2): the stored fact text is never rewritten.
+    """
+    norm = _strip_bare_as_of_tail(_norm(text))
+    if any(_is_identifier_digit(norm, m) for m in _QTY_NUM_RE.finditer(norm)
+           if m.group(0)[0].isdigit()):
+        return []
+    tokens = _qty_tokens(norm)
+    slots = []
+    claimed = []
+
+    def _free(start, end):
+        return all(end <= s or start >= e for s, e in claimed)
+
+    def _value_text(value):
+        normalised = round(float(value), 4)
+        return str(int(normalised)) if normalised.is_integer() \
+            else str(normalised)
+
+    # Frequencies first, so "every two weeks" is never read as a duration.
+    for rx, kind in ((_QTY_FREQ_WORD_RE, "word"),
+                     (_QTY_FREQ_TIMES_RE, "times"),
+                     (_QTY_FREQ_EVERY_RE, "every")):
+        for m in rx.finditer(norm):
+            if not _free(m.start(), m.end()):
+                continue
+            if kind == "word":
+                n = _FREQUENCY_WORDS[m.group(1).lower()]
+                unit = m.group(2).lower()
+            else:
+                n = _qty_number_value(m.group("n").lower()) \
+                    if m.group("n") else 1
+                unit = m.group("unit").lower()
+            if not n:
+                continue
+            if kind == "every":
+                rate = _WEEK_DAYS / (n * _DURATION_UNIT_DAYS[unit])
+            else:
+                rate = n * _WEEK_DAYS / _DURATION_UNIT_DAYS[unit]
+            subject = _qty_subject_prefix(tokens, m.start())
+            if subject is None:
+                continue
+            claimed.append((m.start(), m.end()))
+            slots.append(("cat:qty:%s:%s:per_week"
+                          % (subject, _canonical_slot_key(unit)),
+                          _value_text(rate)))
+    # Durations: "<number> <unit>" normalised to days.
+    for m in _QTY_DUR_RE.finditer(norm):
+        if not _free(m.start(), m.end()):
+            continue
+        n = _qty_number_value(m.group("n").lower())
+        if not n:
+            continue
+        unit = m.group("unit").lower()
+        subject = _qty_subject_prefix(tokens, m.start())
+        if subject is None:
+            continue
+        claimed.append((m.start(), m.end()))
+        slots.append(("cat:qty:%s:%s:day"
+                      % (subject, _canonical_slot_key(unit)),
+                      _value_text(n * _DURATION_UNIT_DAYS[unit])))
+    # Counts: a number followed by an object noun.
+    for m in _QTY_NUM_RE.finditer(norm):
+        if not _free(m.start(), m.end()):
+            continue
+        raw = m.group(0)
+        value = _qty_number_value(raw.lower())
+        if value is None:
+            continue
+        end = m.end()
+        if raw[0].isdigit():
+            after = norm[end:]
+            if after[:1] in "-%:/.$" or norm[:m.start()][-1:] in "-$%:/.":
+                continue  # compound, range, percent, money, clock, decimal
+            if re.fullmatch(r"(?:19|20)\d\d", raw.replace(",", "")) \
+                    and not re.match(r"\s*(?:day|week|month|year)s?\b", after,
+                                     re.I):
+                continue  # a bare year, not a count
+        else:
+            # "two hundred" / "three thousand" fold into one value.
+            mult = re.match(r"\s*(hundred|thousand)\b", norm[end:], re.I)
+            if mult and value < 100:
+                value *= _NUMBER_WORDS[mult.group(1).lower()]
+                end += mult.end()
+        noun = _qty_attribute_after(tokens, end)
+        if noun is None:
+            continue
+        subject = _qty_subject_prefix(tokens, m.start())
+        if subject is None:
+            continue
+        slots.append(("cat:qty:%s:%s:count" % (subject, noun),
+                      _value_text(value)))
+    # "a couple of N" / "a dozen N" (A2): a count of two / twelve.
+    for m in _QTY_COUPLE_RE.finditer(norm):
+        if not _free(m.start(), m.end()):
+            continue
+        noun = _qty_attribute_after(tokens, m.end())
+        if noun is None:
+            continue
+        subject = _qty_subject_prefix(tokens, m.start())
+        if subject is None:
+            continue
+        value = 2 if m.group(1).lower() == "couple" else 12
+        slots.append(("cat:qty:%s:%s:count" % (subject, noun),
+                      _value_text(value)))
+    # A fact that states two different values for one attribute is
+    # enumerating ("weights including 140 lb, 200 lb"), not updating — the
+    # key forms no slot, so a fact can never contradict itself.
+    values_by_key = {}
+    for key, value in slots:
+        values_by_key.setdefault(key, set()).add(value)
+    unique = []
+    for key, value in slots:
+        if len(values_by_key[key]) > 1 or (key, value) in unique:
+            continue
+        unique.append((key, value))
+    return unique
 
 
 # ------------------------------------------------------------------- compile
