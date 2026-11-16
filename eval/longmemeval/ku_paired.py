@@ -823,6 +823,31 @@ def run_one(question, budget, client, config, start_label=None):
             "in_brief_b": bool(probe) and probe in (arm_b.get("brief") or ""),
         })
     row["stale_facts"] = stale
+
+    # ---- Tes review t_e75489ef, condition 2: emit every pair the pass
+    # produced, not just counts. Arm (a) is compiled without the pass, so every
+    # supersession here was made by this pass and every pair is attributable.
+    supersede_pairs = []
+    for r in cons_conn.execute(
+            "SELECT f.text AS old_text, g.text AS new_text"
+            " FROM facts f JOIN facts g ON g.id = f.superseded_by"
+            " WHERE f.status = 'superseded'").fetchall():
+        supersede_pairs.append({"old": (r["old_text"] or "")[:200],
+                                "new": (r["new_text"] or "")[:200]})
+    flag_pairs = []
+    for r in cons_conn.execute(
+            "SELECT subject_id, payload_json FROM change_events"
+            " WHERE kind = 'fact.contradiction_flagged'").fetchall():
+        payload = json.loads(r["payload_json"] or "{}")
+        texts = []
+        for fid in (r["subject_id"], payload.get("contradicts")):
+            t = cons_conn.execute("SELECT text FROM facts WHERE id = ?",
+                                  (fid,)).fetchone()
+            texts.append((t[0] if t else "")[:200])
+        flag_pairs.append({"slot": payload.get("slot", "")[:120],
+                           "a": texts[0], "b": texts[1]})
+    row["supersede_pairs"] = supersede_pairs
+    row["flag_pairs"] = flag_pairs
     row["mechanism"] = {
         "stale_facts_total": len(stale),
         "stale_in_brief_a": sum(1 for s in stale if s["in_brief_a"]),
@@ -867,6 +892,11 @@ def aggregate(rows):
                    "mcnemar_exact_p": round(mcnemar_exact(a_gained, a_lost), 4)},
         "b_vs_d": {"gained": d_gained, "lost": d_lost,
                    "mcnemar_exact_p": round(mcnemar_exact(d_gained, d_lost), 4)},
+        "pairs": {
+            "superseded": sum(len(r.get("supersede_pairs") or [])
+                              for r in rows),
+            "flagged": sum(len(r.get("flag_pairs") or []) for r in rows),
+        },
         "mechanism": {
             "stale_facts_total": sum((r.get("mechanism") or {}).get(
                 "stale_facts_total", 0) for r in rows),

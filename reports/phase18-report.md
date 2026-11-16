@@ -199,18 +199,55 @@ Collateral probe (`eval/probe_phase17.py`, 27 databases, consolidation over back
 
 - **Two `cat:qty` flags remain and both are false positives**, from one pair: "The user has 2 coupons
   for $1 off Tide" vs "The user has 1 coupon for 50 cents off Bounty". The attribute is `coupon` and
-  the distinguishing brand is dropped. These are flags, not supersessions, so nothing is retired;
-  accepted for this phase rather than widening the attribute and re-splitting the Emma paraphrase.
+  the distinguishing brand is dropped. On the corpus they are only flags because both captures share
+  a stamp; **with different stamps the same pair supersedes** (Tes reproduced `superseded=1`), so the
+  safety of that pair is stamp-dependent, not structural.
 - **One supersession is ambiguous**: Giorgio Mammoliti "proposed a motion in January 2005 ... street
   racing" retired by "proposed a motion in October 2005 ... street racing". The sentence is otherwise
   identical, so this reads as a corrected date; it could be two separate motions. Not resolvable from
   the fact text alone.
-- The 21 remaining flags are the known occupation/location residue class, re-admitted because entity
-  scope compares `misc/user` with `people/user` where page scope did not. That is the intended
-  trade-off of A4, but it is a real increase in review load (13 -> 21) and Tes should judge whether
-  the cross-page supersessions are worth it.
+- **The flag composition is not one class.** A4 contributes **+6** advisory flags on the 27
+  databases (not +8: the other movement is the quantity slots). They are mostly multi-valued
+  attributes — a person can be a photographer and a singer — plus benign equal-instant duplicates
+  (3 of them on the pilot brains). Flags retire nothing; both facts stay active. Tes accepted entity
+  scope on this evidence, with the live risk being a cross-page supersession between two genuinely
+  different entities that share a last path segment (the merged-Alexes case).
 - Extraction defects are untouched (A5): Luna is labelled a dog; two different Alexes are merged on
   `people/alex`. Entity scope inherits both.
+
+## Corrections after Tes review t_e75489ef (Part A accepted, GO for the run)
+
+Tes found a destructive defect this report had not named. On the real brain
+`eval/results/lme-db/f0853d11.db` the frequency slot retires **two true facts**:
+
+    Luna the cat has been waking the user up at 4:30 AM every day   -> superseded
+    User wakes up at 6:30 AM every day, even on weekends             -> superseded
+    (both retired in favour of "User swims laps at their local pool 1-2 times a week")
+
+All three form the slot `cat:qty:user:user:per_week` (7, 7, 2). For frequencies and durations the key
+shape is `cat:qty:<subject>:<subject>:<unit>`, so **the attribute equals the subject by construction**
+and any two facts about one entity with different rates collide whatever activity they describe. The
+safety argument in this report — that a wrong supersession needs equal subject, attribute and unit —
+therefore reduces to subject plus unit for these slots, and is not safe enough.
+
+Consequence: **two of the probe's four supersessions are false positives.** Only the Fitbit tenure pair
+and the Dear Evan Hansen pair are genuine; the other two are these retirements. Attribution is A1, not
+A4: with page scope restored both facts are still retired, and with `_quantity_slots` disabled there
+are zero supersessions.
+
+This is a correctness defect in the quantity slots, not merely a precision one: a wrong retirement
+removes a true fact from the brain. It is not fixed here because the obvious guard — turning ambiguous
+frequency/duration collisions into flags — would also break the genuine Luna 6->9 month pair, whose two
+facts share only "luna". A real fix is a design change and belongs after the measurement.
+
+Tes also recorded two false negatives, both in the safe direction: "completed a 5 km run" -> "completed
+a 10 km run" does not supersede (the spec rule keeps the numeral because a noun follows the unit), and
+"every other week" -> "every week" matches no frequency. Both miss an update; neither retires anything.
+
+On the run corpus Tes's model-free check over the 20 compiled pilot brains found **5 supersessions —
+exactly the five designed B3 pairs — and 3 benign flags, with zero destructive false positives**. The
+run is a GO on the condition that every supersession and flag pair it produces is emitted and
+hand-checked before any accuracy claim; the harness now records both per question.
 
 ## What I did NOT verify
 
