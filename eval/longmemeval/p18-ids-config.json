@@ -1,5 +1,5 @@
 {
- "frozen_code_sha": "87fe898",
+ "frozen_code_sha": "63521eb",
  "dataset_path": "eval/datasets/longmemeval_s_cleaned.json",
  "ids": [
   "01493427",
@@ -162,5 +162,5 @@
  "budget_tokens": 600,
  "max_mutation_rate": 0.2,
  "sample_procedure": "phase 18: all 74 eligible knowledge-update ids (Tes review t_d67491f3 item 6), sorted ascending; no sampling, no random call",
- "note": "Phase 18 B1/B2 run. Arm (a) compiles WITHOUT the dedupe/supersede pass; arm (b) is the consolidated copy. Frozen code 87fe898."
+ "note": "Phase 18 B1/B2 run. Arm (a) compiles WITHOUT the dedupe/supersede pass; arm (b) is the consolidated copy. Every supersession and flag pair is emitted per question (tes review t_e75489ef condition 2). Frozen code 63521eb."
 }
