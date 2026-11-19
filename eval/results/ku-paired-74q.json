@@ -11113,5 +11113,16 @@
   }
  ],
  "partial": false,
- "elapsed_s": 140377.9
+ "elapsed_s": 140377.9,
+ "answerer": {
+  "name": "glm-5.3-flash",
+  "base_url": "http://127.0.0.1:8460/v1",
+  "engine": "tensorfold-native (owned_by=tensorfold), context_length 262144",
+  "note": "recorded post-hoc from the code default (CAIRNSTONE_BASE_URL/CAIRNSTONE_MODEL were not overridden) and confirmed live at /health and /v1/models; the run itself recorded only the judge (tes review t_46574b75, R5)"
+ },
+ "judge": {
+  "name": "spark-side-model",
+  "endpoint": "the spark-side endpoint (port 8889)",
+  "note": "scrubbed for publish-guard; live identity is the DeepSeek-V4.1-Flash route, label pinned by image/recipe string"
+ }
 }

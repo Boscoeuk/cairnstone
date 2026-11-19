@@ -110,11 +110,16 @@ What it gives you that those do not:
    briefs degrade to lexical when the embedding sidecar is absent.
 4. **It keeps history instead of overwriting it.** Facts are superseded, never deleted; duplicates are
    linked as corroboration; and a model-free consolidation pass runs nightly to resolve what it can
-   and flag what it cannot.
+   and flag what it cannot. That pass is hygiene — one live value per attribute, stale records gone
+   from future briefs — not an accuracy claim: at n=74 knowledge-update questions it changed 73 of 74
+   brains and moved accuracy by one question in each direction (see
+   `reports/ku-paired-74q-result.md`).
 
 And what it is **not** good at: commonsense questions needing inference beyond the recorded claims
 (63.6% against 72.7% for full context), single-hop questions, where it trails slightly (73.7% vs
-76.3%), and knowledge-update questions, where every backend tested scored 1 of 3. Those are stated
+76.3%). Knowledge-update questions are measured separately at n=74: compiled memory 0.811, keyword
+0.770, dataset-only 0.703, with consolidation neither helping nor hurting (1 gained, 2 lost, p=1.0).
+Those are stated
 here rather than buried, because the honest claim is auditability and cost, not superiority.
 
 ## Measured results

@@ -939,6 +939,27 @@ def load_pool():
     return json.loads(path.read_text())
 
 
+def answerer_identity(base_url, model):
+    """The model that answers, recorded in the artifact (tes R5).
+
+    Best effort: the endpoint's /health is advisory, never a precondition — a
+    run must not fail because an engine does not publish one.
+    """
+    import urllib.request
+    out = {"name": model, "endpoint": base_url, "engine": None}
+    health = base_url.rstrip("/")
+    if health.endswith("/v1"):
+        health = health[:-3]
+    try:
+        with urllib.request.urlopen(health + "/health", timeout=5) as r:
+            body = json.loads(r.read().decode())
+        out["engine"] = body.get("model") or body.get("engine")
+        out["engine_owned_by"] = body.get("owned_by")
+    except Exception:  # noqa: BLE001 - advisory only
+        pass
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(
         description="Phase 17 four-arm paired consolidation test (P8)")
@@ -995,6 +1016,13 @@ def main():
 
     client = LLMClient(base_url=lme.ANSWER_BASE_URL, model=lme.ANSWER_MODEL)
     lme._client = client
+    # Tes review t_46574b75 R5: the answerer identity was recorded nowhere, so
+    # an accuracy number could not be attributed to the model that produced it.
+    # Record it beside the judge identity, in the artifact, for every run.
+    answerer = answerer_identity(lme.ANSWER_BASE_URL, lme.ANSWER_MODEL)
+    print("answerer at start: name=%s endpoint=%s engine=%s"
+          % (answerer.get("name"), answerer.get("endpoint"),
+             answerer.get("engine")), flush=True)
     harness.JUDGE_URL = lme.JUDGE_URL.rstrip("/") + "/chat/completions"
     harness.JUDGE_MODEL = lme.JUDGE_MODEL
 
@@ -1015,6 +1043,7 @@ def main():
         # rather than paying for the compile of a 48-session haystack twice.
         json.dump({"config_sha256": cfg["_config_sha256"],
                    "frozen_code_sha": code_sha,
+                   "answerer": answerer,
                    "run_head_sha": run_head_sha,
                    "budget_tokens": budget,
                    "max_mutation_rate": cfg["max_mutation_rate"],
@@ -1026,6 +1055,7 @@ def main():
     agg = aggregate(rows)
     json.dump({"config_sha256": cfg["_config_sha256"],
                "frozen_code_sha": code_sha,
+               "answerer": answerer,
                "run_head_sha": run_head_sha,
                "budget_tokens": budget,
                "max_mutation_rate": cfg["max_mutation_rate"],
